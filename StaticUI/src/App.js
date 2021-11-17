@@ -1,33 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
-import Ddm from './components/Navbar';
+import Navbar from './components/Navbar';
+import { Routes, Route } from "react-router-dom";
+import Home from './Pages/Home';
+import Projects from './Pages/Projects';
+import Reports from './Pages/Reports';
+import Breadcrumbs from './components/Breadcrumbs';
 
 function App() {
   return (
-    <div className="App">
-      <Ddm
-        label="Pay with"
-        withBackground={true}
-        forceOpen={true} 
-        items={[
-          "Home"
-        ]}
-        />
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <>
+      <header>
+        <Navbar options={[{name: "Home", href: "/"}, {name: "Projects", href: "/projects"}, {name: "Reports", href: "/reports"}]}/>
       </header>
-    </div>
+      <div class="container mx-auto">
+      <Breadcrumbs items={["Home"]} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/reports" element={<Reports />} />
+      </Routes>
+      </div>
+
+    </>
   );
 }
 
