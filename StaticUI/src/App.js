@@ -12,8 +12,8 @@ function App() {
       <header>
         <Navbar options={[{name: "Home", href: "/"}, {name: "Projects", href: "/projects"}, {name: "Reports", href: "/reports"}]}/>
       </header>
-      <div class="container mx-auto">
-      <Breadcrumbs items={["Home"]} />
+      <div className="container mx-auto">
+      <Breadcrumbs />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/projects" element={<Projects />} />

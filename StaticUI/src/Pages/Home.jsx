@@ -3,7 +3,7 @@ import Ticket from "../components/Ticket";
 
 const Home = () => {
     return (
-        <div class="bg-gray-100 p-8">
+        <div className="bg-gray-100 p-8">
             <div>
                 <h2 className="text-2xl">Today</h2>
                 <div className="whitespace-nowrap overflow-x-auto">

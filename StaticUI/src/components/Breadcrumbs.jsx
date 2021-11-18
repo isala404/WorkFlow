@@ -11,14 +11,14 @@ const Breadcrumbs = () => {
         }
         return {
             name: toTitleCase(item),
-            url: `${URLs.slice(0, URLs.indexOf(item) + 1).join('/')}`
+            url: `${URLs.slice(1, URLs.indexOf(item) + 1).join('/')}`
         }
     }).filter(item => item !== null);
     items.unshift({ name: "Home", url: "/" })
     console.log("items", items)
     return (
-        <div class="my-5">
-            <ol class="list-reset flex text-grey-dark">
+        <div className="my-5">
+            <ol className="list-reset flex text-grey-dark">
                 {items.map((item) => {
                     return (
                         <>

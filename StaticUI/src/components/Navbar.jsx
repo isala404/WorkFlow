@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom'
+import { getCurrentCompany, setCurrentCompany } from '../libs/getCompany';
 
 const Navbar = (props) => {
     const [profileOptions, setProfileOptions] = useState(false);
@@ -10,7 +11,7 @@ const Navbar = (props) => {
                 <div className="flex items-center justify-between h-16">
                     <div className=" flex items-center">
                         <a className="flex-shrink-0" href="/">
-                            <img className="h-8 w-8" src="icons/rocket.svg" alt="Workflow" />
+                            <img className="h-8 w-8" src="/icons/rocket.svg" alt="Workflow" />
                         </a>
                         <div className="hidden md:block">
                             <div className="ml-10 flex items-baseline space-x-4">
@@ -109,28 +110,18 @@ const NavOptions = (options) => {
 }
 
 const CompanySelect = () => {
+    const [company, setCompany] = useState(getCurrentCompany());
+
     return (
-        <select className="block w-52 text-gray-700 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 mx-auto" name="animals">
-            <option value="">
-                Select a company
+        <select className="block w-52 text-gray-700 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 mx-auto" name="company" onChange={(e) => { setCompany(e.target.value); setCurrentCompany(e.target.value) }} value={company}>
+            <option value="netflix">
+                Netflix
             </option>
-            <option value="dog">
-                Dog
+            <option value="cloudflare">
+                Cloudflare
             </option>
-            <option value="cat">
-                Cat
-            </option>
-            <option value="hamster">
-                Hamster
-            </option>
-            <option value="parrot">
-                Parrot
-            </option>
-            <option value="spider">
-                Spider
-            </option>
-            <option value="goldfish">
-                Goldfish
+            <option value="iconicto">
+                Iconicto
             </option>
         </select>
     )
