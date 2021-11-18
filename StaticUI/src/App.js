@@ -5,6 +5,7 @@ import Home from './Pages/Home';
 import Projects from './Pages/Projects';
 import Project from './Pages/Project';
 import Reports from './Pages/Reports';
+import UserSettings from './Pages/UserSettings';
 import Breadcrumbs from './components/Breadcrumbs';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/:company/projects" element={<Projects />} />
         <Route path="/:company/projects/:project" element={<Project />} />
         <Route path="/:company/reports" element={<Reports />} />
+        <Route path="/user/settings" element={<UserSettings />} />
       </Routes>
       </div>
 
