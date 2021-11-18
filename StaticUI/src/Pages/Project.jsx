@@ -6,7 +6,7 @@ const Project = () => {
         <div>
             <div className="flex flex-row-reverse md:-mt-10 mb-5">
                 <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
-                <button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Update Project</button>
+                <a href="Richmond Academy/edit"><button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Update Project</button></a>
             </div>
 
             <div className="flex flex-wrap justify-around justify-items-stretch h-4/5 mb-5" style={{ minHeight: "80vh" }}>

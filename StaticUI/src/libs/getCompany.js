@@ -8,9 +8,16 @@ export const getCurrentCompany = (pretty=false) => {
 }
 
 export const setCurrentCompany = (company) => {
+    if (company === "new"){
+        // eslint-disable-next-line no-restricted-globals
+        location.replace("/create/company");
+        return
+    }
+    // eslint-disable-next-line no-restricted-globals
+    const newURI = String(location.href).replace(getCurrentCompany(), company);
     localStorage.setItem('currentCompany', company);
     // eslint-disable-next-line no-restricted-globals
-    location.reload();
+    location.replace(newURI);
 }
 
 export const toTitleCase = (str) => {

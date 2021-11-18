@@ -42,7 +42,7 @@ const Navbar = (props) => {
                                                         </span>
                                                     </span>
                                                 </a>
-                                                <a href="#" className="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
+                                                <a href={`/${getCurrentCompany()}/edit`} className="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
                                                     <span className="flex flex-col">
                                                         <span>
                                                             Company Settings
@@ -127,6 +127,9 @@ const CompanySelect = () => {
             </option>
             <option value="iconicto">
                 Iconicto
+            </option>
+            <option value="new">
+                Create New Company
             </option>
         </select>
     )

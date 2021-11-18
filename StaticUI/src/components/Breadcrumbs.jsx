@@ -2,11 +2,11 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom'
 import { toTitleCase } from '../libs/getCompany';
-import { useParams } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 
 const Breadcrumbs = () => {
     const location = useLocation();
-    const { company } = useParams();
+    // const { company } = useParams();
 
     let URLs = location.pathname.substring(1).split('/').filter(item => item !== null && item !== '');
     URLs = URLs.map((item, index) => {

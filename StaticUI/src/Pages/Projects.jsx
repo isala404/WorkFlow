@@ -4,7 +4,7 @@ const Home = () => {
     return (
         <div className="container">
             <h1 className="inline text-4xl mt-8">Projects</h1>
-            <button class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-md rounded-lg focus:border-4 border-blue-300 float-right">Create Project</button>
+            <a href="projects/create"><button class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-md rounded-lg focus:border-4 border-blue-300 float-right">Create Project</button></a>
             <table className="table-auto border mt-10 xl:text-lg container">
                 <thead className="border bg-gray-50 ">
                     <tr className="border">
