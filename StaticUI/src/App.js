@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import { Routes, Route } from "react-router-dom";
 import Home from './Pages/Home';
 import Projects from './Pages/Projects';
+import Project from './Pages/Project';
 import Reports from './Pages/Reports';
 import Breadcrumbs from './components/Breadcrumbs';
 
@@ -16,8 +17,9 @@ function App() {
       <Breadcrumbs />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/reports" element={<Reports />} />
+        <Route path="/:company/projects" element={<Projects />} />
+        <Route path="/:company/projects/:project" element={<Project />} />
+        <Route path="/:company/reports" element={<Reports />} />
       </Routes>
       </div>
 
