@@ -1,7 +1,7 @@
 import React from "react";
 
 const Task = ({ name, description, prority, dueDate, estimatedTime, assignee, status = "none" }) => {
-    const colorMap = { 'todo': 'bg-gray-400', 'inprogress': 'bg-yellow-100', 'done': 'bg-green-200', 'none': 'bg-gray-100' };
+    const colorMap = { 'todo': 'bg-gray-400', 'inprogress': 'bg-yellow-100', 'done': 'bg-green-200', 'none': 'bg-gray-50' };
     return (
         <div className={`inline-block whitespace-normal w-96 p-4 border-2 border-black m-2 ${colorMap[status]}`} >
             <span className="float-right"><Prority level={prority} /></span>

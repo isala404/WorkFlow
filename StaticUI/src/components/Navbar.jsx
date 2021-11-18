@@ -90,16 +90,21 @@ const NavOptions = (options) => {
     return (
         <>
             {options.options.map((option) => {
-                if (option.href === location.pathname) {
+                if (option.href !== "/") {
+                    option.hrefwithcompany = `/${getCurrentCompany()}${option.href}`
+                } else {
+                    option.hrefwithcompany = '/'
+                }
+                if (location.pathname.endsWith(option.href) || location.pathname.split("/")[2] === option.href.split("/")[1]) {
                     return (
-                        <a key={option.href} className="text-gray-800 dark:text-white block px-3 py-2 rounded-md text-base font-medium" href={option.href}>
+                        <a key={option.href} className="text-gray-800 block px-3 py-2 rounded-md text-base font-medium" href={option.hrefwithcompany}>
                             {option.name}
                         </a>
                     )
                 }
                 else {
                     return (
-                        <a key={option.href} className="text-gray-300 hover:text-gray-800 dark:hover:text-white block px-3 py-2 rounded-md text-base font-medium" href={option.href}>
+                        <a key={option.href} className="text-gray-400 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium" href={option.hrefwithcompany}>
                             {option.name}
                         </a>
                     )
