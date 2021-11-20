@@ -10,6 +10,8 @@ import CreateCompany from './Pages/CreateCompany';
 import UpdateCompany from './Pages/UpdateCompany';
 import CreateProject from './Pages/CreateProject';
 import UpdateProject from './Pages/UpdateProject';
+import CreateTicket from './Pages/CreateTicket';
+import UpdateTicket from './Pages/UpdateTicket';
 import Breadcrumbs from './components/Breadcrumbs';
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
         <Route path="/:company/projects/:project" element={<Project />} />
         <Route path="/:company/projects/create" element={<CreateProject />} />
         <Route path="/:company/projects/:project/edit" element={<UpdateProject />} />
+        <Route path="/:company/projects/:project/create-ticket" element={<CreateTicket />} />
+        <Route path="/:company/projects/:project/:ticket" element={<UpdateTicket />} />
         <Route path="/:company/reports" element={<Reports />} />
         <Route path="/user/settings" element={<UserSettings />} />
         <Route path="/create/company" element={<CreateCompany />} />

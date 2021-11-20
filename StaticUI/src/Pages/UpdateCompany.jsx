@@ -8,10 +8,10 @@ const CreateCompany = () => {
                 <h1 className="text-2xl text-center">Update {getCurrentCompany(true)}</h1>
                 <form>
                     <div class="mb-6">
-                        <label for="basic-url" class="text-grey-darker inline-block mb-2">Name</label>
+                        <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
                         <input type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Company" required={true} />
                     </div>
-                    <label for="basic-url" class="text-grey-darker inline-block mb-2">Company URI</label>
+                    <label for="name" class="text-grey-darker inline-block mb-2">Company URI</label>
                     <div class="flex flex-wrap items-stretch w-full mb-4 relative">
                         <div class="flex -mr-px">
                             <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/</span>

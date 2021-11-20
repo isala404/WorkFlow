@@ -7,7 +7,7 @@ const CreateProject = () => {
             <h1 className="text-2xl text-center">Create a new Project</h1>
             <form>
                 <div class="mb-6">
-                    <label for="basic-url" class="text-grey-darker inline-block mb-2">Name</label>
+                    <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
                     <input type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required={true} />
                 </div>
                 <label for="basic-url" class="text-grey-darker inline-block mb-2">Project URI</label>
