@@ -51,11 +51,11 @@ const Home = () => {
             <div className="flex flex-row justify-between mb-2 w-96 ml-auto mr-10 xl:mr-48">
                 <div className="w-full mr-3">
                     <label for="startDate" class="text-grey-darker inline-block mb-2">Start Date</label>
-                    <input type="text" id="startDate" name="startDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021" required={true} />
+                    <input type="date" id="startDate" name="startDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021" required={true} />
                 </div>
                 <div className="w-full ml-3">
                     <label for="endDate" class="text-grey-darker inline-block mb-2">End Date</label>
-                    <input type="text" id="endDate" name="endDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021" required={true} />
+                    <input type="date" id="endDate" name="endDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021" required={true} />
                 </div>
             </div>
             <div className="w-100 xl:w-3/6 m-auto">

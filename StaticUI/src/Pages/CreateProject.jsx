@@ -6,9 +6,27 @@ const CreateProject = () => {
         <div className="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mt-20">
             <h1 className="text-2xl text-center">Create a new Project</h1>
             <form>
-                <div class="mb-6">
+                <div class="mb-2">
                     <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
                     <input type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required={true} />
+                </div>
+                <div class="mb-2">
+                    <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
+                    <select id="status" className="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="status" required>
+                        <option value="todo">
+                            To-Do
+                        </option>
+                        <option value="in-progress">
+                            In-Progress
+                        </option>
+                        <option value="completed">
+                            Completed
+                        </option>
+                    </select>
+                </div>
+                <div class="mb-2">
+                    <label for="duedate" class="text-grey-darker inline-block mb-2">Due Date</label>
+                    <input type="date" id="duedate" name="duedate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required={true} />
                 </div>
                 <label for="basic-url" class="text-grey-darker inline-block mb-2">Project URI</label>
                 <div class="flex flex-wrap items-stretch w-full mb-4 relative">

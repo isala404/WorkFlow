@@ -45,14 +45,28 @@ const Home = () => {
                             </option>
                         </select>
                     </div>
+                    <div class="mb-2">
+                        <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
+                        <select id="status" className="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="status" required>
+                            <option value="todo">
+                                To-Do
+                            </option>
+                            <option value="in-progress">
+                                In-Progress
+                            </option>
+                            <option value="completed">
+                                Completed
+                            </option>
+                        </select>
+                    </div>
                     <div className="flex flex-row justify-between mb-2">
                         <div className="w-full mr-3">
                             <label for="duedate" class="text-grey-darker inline-block mb-2">Due Date</label>
-                            <input type="text" id="duedate" name="duedate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required={true} />
+                            <input type="datetime-local" id="duedate" name="duedate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required={true} />
                         </div>
                         <div className="w-full ml-3">
-                            <label for="eta" class="text-grey-darker inline-block mb-2">Estimated time</label>
-                            <input type="text" id="eta" name="eta" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="15 hours" required={true} />
+                            <label for="eta" class="text-grey-darker inline-block mb-2">Estimated time (hours)</label>
+                            <input type="number" id="eta" name="eta" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="15 hours" required={true} />
                         </div>
                     </div>
                     <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Submit</button>
