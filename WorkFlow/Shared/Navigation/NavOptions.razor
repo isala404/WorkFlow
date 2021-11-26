@@ -1,0 +1,41 @@
+﻿@foreach (NavRoutes option in Options)
+{
+    if (option.Selected)
+    {
+        <a class="text-black-900 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithComapny">
+            @option.Name
+        </a>
+    }
+    else
+    {
+        <a class="text-gray-500 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithComapny">
+            @option.Name
+        </a>
+    }
+}
+
+@code {
+
+    public NavRoutes[] Options { get; set; } = NavMenu.NavCtrl.NavOptions;
+
+    [Parameter]
+    public String CurrentCompany { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        string location = NavMenu.NavCtrl.NavigationManager.Uri;
+
+        foreach (NavRoutes option in Options)
+        {
+            if (option.Href != "/")
+                option.HrefWithComapny = String.Format("/{0}{1}", CurrentCompany, option.Href);
+            else
+                option.HrefWithComapny = "/";
+
+            if (location.EndsWith(option.Href) || location.Split("/")[2] == option.Href.Split("/")[1])
+                option.Selected = true;
+            else
+                option.Selected = false;
+        }
+    }
+}
