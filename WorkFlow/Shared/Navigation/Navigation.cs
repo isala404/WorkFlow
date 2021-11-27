@@ -9,21 +9,21 @@ namespace WorkFlow.Shared.Navigation
 {
     public class Navigation : ComponentBase
     {
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
 
-        private ProtectedLocalStorage ProtectedLocalStorage { get; set; }
-        
+        private ProtectedLocalStorage ProtectedLocalStorage { get; }
+
         public readonly NavRoutes[] NavOptions =
         {
-            new NavRoutes { Name = "Home", Href = "/" },
-            new NavRoutes { Name = "Projects", Href = "/projects" },
-            new NavRoutes { Name = "Reports", Href = "/reports" },
+            new NavRoutes {Name = "Home", Href = "/"},
+            new NavRoutes {Name = "Projects", Href = "/projects"},
+            new NavRoutes {Name = "Reports", Href = "/reports"},
         };
+
         public readonly List<CompanyLink> CompanyLinks = new();
         private string _currentCompany;
 
-        private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
+        private static readonly TextInfo MyTi = new CultureInfo("en-US", false).TextInfo;
 
         public Navigation(NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStore)
         {
@@ -31,10 +31,10 @@ namespace WorkFlow.Shared.Navigation
             this.ProtectedLocalStorage = protectedLocalStore;
 
             // TODO: Fetch this from database
-            this.CompanyLinks.Add(new CompanyLink { Name = "Netflix", Uri = "netflix" });
-            this.CompanyLinks.Add(new CompanyLink { Name = "Cloudflare", Uri = "cloudflare" });
-            this.CompanyLinks.Add(new CompanyLink { Name = "Iconicto", Uri = "iconicto" });
-            this.CompanyLinks.Add(new CompanyLink { Name = "Create New Company", Uri = "new" });
+            this.CompanyLinks.Add(new CompanyLink {Name = "Netflix", Uri = "netflix"});
+            this.CompanyLinks.Add(new CompanyLink {Name = "Cloudflare", Uri = "cloudflare"});
+            this.CompanyLinks.Add(new CompanyLink {Name = "Iconicto", Uri = "iconicto"});
+            this.CompanyLinks.Add(new CompanyLink {Name = "Create New Company", Uri = "new"});
 
             // Select the first company in the list by default
             // This value will be updated via the ASP.net Session Storage
@@ -43,34 +43,40 @@ namespace WorkFlow.Shared.Navigation
 
         public async Task<string> RestoreLastCompany()
         {
-            var result = await this.ProtectedLocalStorage.GetAsync<String>("CurrentCompany");
+            var result = await this.ProtectedLocalStorage.GetAsync<string>("CurrentCompany");
             if (result.Success && result.Value != null)
             {
                 this._currentCompany = result.Value;
             }
+
             return this._currentCompany;
         }
 
-        public string GetCurrentCompany(bool pretty=false)
+        public string GetCurrentCompany(bool pretty = false)
         {
-            if (pretty)
-                return this._myTi.ToTitleCase(this._currentCompany);
-            return this._currentCompany;
+            return pretty ? MyTi.ToTitleCase(this._currentCompany) : this._currentCompany;
         }
 
-        public void SetCurrentCompany(string company)
+        public static string TitleCase(string text)
+        {
+            return MyTi.ToTitleCase(text);
+        }
+
+        public void SetCurrentCompany(string company, bool withOutReload = false)
         {
             if (company == "new")
             {
                 this.NavigationManager.NavigateTo("/create/company");
                 return;
             }
+
             var newLocation = this.NavigationManager.Uri.Replace(this._currentCompany, company);
             this._currentCompany = company;
             Task.Run(() => this.ProtectedLocalStorage.SetAsync("CurrentCompany", _currentCompany)).Wait();
-            this.NavigationManager.NavigateTo(newLocation, true);
+            
+            if (!withOutReload)
+                this.NavigationManager.NavigateTo(newLocation, true);
         }
-
     }
 
     public class NavRoutes
@@ -85,5 +91,11 @@ namespace WorkFlow.Shared.Navigation
     {
         public string Name { get; init; }
         public string Uri { get; init; }
+    }
+
+    public class Breadcrumb
+    {
+        public string Name { get; init; }
+        public string Url { get; init; }
     }
 }

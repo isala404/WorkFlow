@@ -1,63 +1,68 @@
 @using Humanizer
-<div class="inline-block whitespace-normal w-96 p-4 border-2 border-black m-2 @_statusColorMap[@Status]" >
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<div class="inline-block whitespace-normal w-96 p-4 border-2 border-black m-2 @_statusColorMap[@Status]">
     <span class="float-right">
         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="@_priorityColorMap[@Priority]" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-                </svg>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
+        </svg>
     </span>
-            <h2 class="font-bold">@Name</h2>
-            <p style="min-height: 72px;">@Description</p>
-            <div class="flex mt-3">
-                <div class="flex">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    @DueDate.ToShortDateString()
-                </div>
-                <div class="flex ml-2">
-
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    @EstimatedTime.Hours Hours
-                </div>
-                <div class="flex ml-auto">
-                    <img src="https://avatars.dicebear.com/api/bottts/@(Assignee).svg" alt="profile-pic" height="24" width="24" />
-                    @Assignee
-                </div>
-            </div>
+    <h2 class="font-bold">@Name</h2>
+    <p style="min-height: 72px;">@Description</p>
+    <div class="flex mt-3">
+        <div class="flex">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            @DueDate.ToShortDateString()
         </div>
+        <div class="flex ml-2">
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            @EstimatedTime.Hours Hours
+        </div>
+        <div class="flex ml-auto">
+            <img src="https://avatars.dicebear.com/api/bottts/@(Assignee).svg" alt="profile-pic" height="24" width="24"/>
+            @Assignee
+        </div>
+    </div>
+</div>
 
 @code {
+
     [Parameter]
     public string Name { get; set; }
-    
+
     [Parameter]
     public string Description { get; set; }
-    
+
     [Parameter]
     public int Priority { get; set; }
-    
+
     [Parameter]
     public DateTime DueDate { get; set; }
-    
+
     [Parameter]
     public TimeSpan EstimatedTime { get; set; }
-    
+
     [Parameter]
     public string Assignee { get; set; }
 
     [Parameter]
     public string Status { get; set; } = "none";
 
-    private Dictionary<string, string> _statusColorMap = new Dictionary<string, string>(){
+    private Dictionary<string, string> _statusColorMap = new Dictionary<string, string>()
+    {
         {"todo", "bg-gray-400"},
         {"inprogress", "bg-yellow-100"},
         {"done", "bg-green-200"},
         {"none", "bg-gray-50"},
     };
-    
-    private Dictionary<int, string> _priorityColorMap = new Dictionary<int, string>(){
+
+    private Dictionary<int, string> _priorityColorMap = new Dictionary<int, string>()
+    {
         {1, "#f50000"},
         {2, "#ffcc00"},
         {3, "#d8d8d8"},
@@ -66,9 +71,9 @@
     protected override void OnInitialized()
     {
         if (Description.Length > 130)
-        {
             Description = Description.Truncate(130);
-        }
+        if (Name.Length > 30)
+            Description = Description.Truncate(30);
     }
 
 }

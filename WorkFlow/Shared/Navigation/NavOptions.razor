@@ -16,14 +16,14 @@
 
 @code {
 
-    private NavRoutes[] Options { get; set; } = NavMenu.NavCtrl.NavOptions;
+    private NavRoutes[] Options { get; set; } = MainLayout.NavCtrl.NavOptions;
 
     [Parameter]
     public string CurrentCompany { get; set; }
 
     protected override void OnParametersSet()
     {
-        var location = NavMenu.NavCtrl.NavigationManager.Uri;
+        var location = MainLayout.NavCtrl.NavigationManager.Uri;
 
         foreach (var option in Options)
         {
@@ -35,4 +35,5 @@
                 option.Selected = false;
         }
     }
+
 }

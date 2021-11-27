@@ -1,0 +1,40 @@
+@inject NavigationManager _navigationManager
+
+<div class="my-5">
+    <ol class="list-reset flex text-grey-dark">
+        @foreach (var url in _urLs)
+        {
+            <li>
+                <a href="@url.Url" class="font-bold">@url.Name</a>
+            </li>
+            <li>
+                <span class="mx-2">></span>
+            </li>
+        }
+
+    </ol>
+</div>
+
+@code {
+    [Parameter]
+    public string CurrentCompany { get; set; }
+
+    private List<Breadcrumb> _urLs;
+
+    protected override void OnParametersSet()
+    {
+        var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
+        var subPaths = currentPath.Skip(1);
+
+        _urLs = new List<Breadcrumb> {new Breadcrumb {Name = Navigation.TitleCase(CurrentCompany), Url = "/"}};
+
+        var url = "/" + CurrentCompany;
+        foreach (var path in subPaths)
+        {
+            if (path == "")
+                continue;
+            url += "/" + path;
+            _urLs.Add(new Breadcrumb {Name = Navigation.TitleCase(path), Url = url});
+        }
+    }
+}

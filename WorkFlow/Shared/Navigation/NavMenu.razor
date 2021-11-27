@@ -1,31 +1,27 @@
-﻿@inject NavigationManager _navigationManager
-@inject ProtectedLocalStorage _protectedLocalStore
-@inject ProtectedSessionStorage _protectedSessionStore
-
-<nav class="bg-white dark:bg-gray-800 shadow ">
+﻿<nav class="bg-white dark:bg-gray-800 shadow ">
     <div class="max-w-7xl mx-auto px-8">
         <div class="flex items-center justify-between h-16">
             <div class=" flex items-center">
                 <a class="flex-shrink-0" href="/">
-                    <img class="h-8 w-8" src="/icons/rocket.svg" alt="Workflow" />
+                    <img class="h-8 w-8" src="/icons/rocket.svg" alt="Workflow"/>
                 </a>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <NavOptions CurrentCompany="@_currentCompany" />
+                        <NavOptions CurrentCompany="@CurrentCompany"/>
                     </div>
                 </div>
             </div>
             <div class="block">
                 <div class="ml-4 flex items-center md:ml-6">
                     <div class="hidden md:block">
-                        <CompanySelect CurrentCompany="@_currentCompany" />
+                        <CompanySelect CurrentCompany="@CurrentCompany"/>
                     </div>
 
                     <div class="ml-3 relative">
                         <div class="relative inline-block text-left">
                             <div>
                                 <button @onclick="ToggleProfileOptions" type="button" class="flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-50 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500" id="options-menu">
-                                    <img src="https://avatars.dicebear.com/api/bottts/isala.svg" alt="profile-pic" height="40" width="40" />
+                                    <img src="https://avatars.dicebear.com/api/bottts/isala.svg" alt="profile-pic" height="40" width="40"/>
                                 </button>
                             </div>
                             @if (_profileOptions)
@@ -39,7 +35,7 @@
                                                 </span>
                                             </span>
                                         </a>
-                                        <a href="/@_currentCompany/edit" class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
+                                        <a href="/@CurrentCompany/edit" class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
                                             <span class="flex flex-col">
                                                 <span>
                                                     Company Settings
@@ -73,19 +69,18 @@
 
     <div class="md:hidden">
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 @(_showMobileNavLinks ? "block" : "hidden")">
-            <NavOptions CurrentCompany="@_currentCompany" />
-            <CompanySelect CurrentCompany="@_currentCompany" />
+            <NavOptions CurrentCompany="@CurrentCompany"/>
+            <CompanySelect CurrentCompany="@CurrentCompany"/>
         </div>
     </div>
 </nav>
 
 @code {
-    public static Navigation NavCtrl;
-
+    [Parameter]
+    public string CurrentCompany { get; set; }
+    
     private bool _profileOptions = false;
     private bool _showMobileNavLinks = false;
-
-    private string _currentCompany;
 
     private void ToggleProfileOptions()
     {
@@ -95,20 +90,5 @@
     private void ToggleMobileNav()
     {
         _showMobileNavLinks = !_showMobileNavLinks;
-    }
-
-    protected override void OnInitialized()
-    {
-        NavCtrl = new Navigation(_navigationManager, _protectedLocalStore);
-        _currentCompany = NavCtrl.GetCurrentCompany();
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            _currentCompany = await NavCtrl.RestoreLastCompany();
-            StateHasChanged();
-        }
     }
 }

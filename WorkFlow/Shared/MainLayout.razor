@@ -1,8 +1,43 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager _navigationManager
+@inject ProtectedLocalStorage _protectedLocalStore
 
 <header>
-    <NavMenu />
+    <NavMenu CurrentCompany="@_currentCompany" />
 </header>
 <div class="container mx-auto">
+    <Breadcrumbs CurrentCompany="@_currentCompany" />
     @Body
 </div>
+
+
+@code
+{
+    public static Navigation.Navigation NavCtrl;
+    
+    private string _currentCompany;
+
+    protected override void OnInitialized()
+    {
+        NavCtrl = new Navigation.Navigation(_navigationManager, _protectedLocalStore);
+        _currentCompany = NavCtrl.GetCurrentCompany();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
+            
+            _currentCompany = await NavCtrl.RestoreLastCompany();
+
+            if (currentPath.First() != "" && currentPath.First() != _currentCompany)
+            {
+                NavCtrl.SetCurrentCompany(currentPath.First());
+                _currentCompany = currentPath.First();
+            }
+            
+            StateHasChanged();
+        }
+    }
+}
