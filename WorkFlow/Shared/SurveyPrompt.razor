@@ -7,9 +7,21 @@
         <a target="_blank" class="font-weight-bold" href="https://go.microsoft.com/fwlink/?linkid=2137813">brief survey</a>
     </span>
     and tell us what you think.
+    
+    <Ticket
+        Name="Create Something Something"
+        Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+        Priority="1"
+        Assignee="Isala Piyarisi"
+        Status="todo"
+        DueDate=@DateTime.Parse("03/11/2021")
+        EstimatedTime=@TimeSpan.Parse("02:00:00")
+    />
 </div>
 
 @code {
+    // DueDate="03/11/2021"
+    // EstimatedTime="15 Hours"
     // Demonstrates how a parent component can supply parameters
     [Parameter]
     public string Title { get; set; }

@@ -1,17 +1,17 @@
 ﻿<select value="@CurrentCompany"  @onchange="SetCompany" class="block w-52 text-gray-700 py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 mx-auto" name="company">
-    @foreach (var Company in NavMenu.NavCtrl.CompanyLinks)
+    @foreach (var company in NavMenu.NavCtrl.CompanyLinks)
     {
-        <option value=@Company.Uri>@Company.Name</option>
+        <option value=@company.Uri>@company.Name</option>
     }
 </select>
 
 @code {
     [Parameter]
-    public String CurrentCompany { get; set; }
+    public string CurrentCompany { get; set; }
 
-    protected void SetCompany(ChangeEventArgs e)
+    private void SetCompany(ChangeEventArgs e)
     {
-        CurrentCompany = e.Value.ToString();
+        if (e.Value != null) CurrentCompany = e.Value.ToString();
 
         NavMenu.NavCtrl.SetCurrentCompany(CurrentCompany);
     }
