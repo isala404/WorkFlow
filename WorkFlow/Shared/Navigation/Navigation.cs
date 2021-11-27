@@ -11,7 +11,8 @@ namespace WorkFlow.Shared.Navigation
     {
         [Inject]
         public NavigationManager NavigationManager { get; set; }
-        public ProtectedLocalStorage ProtectedLocalStorage { get; set; }
+
+        private ProtectedLocalStorage ProtectedLocalStorage { get; set; }
         
         public readonly NavRoutes[] NavOptions =
         {
@@ -19,10 +20,10 @@ namespace WorkFlow.Shared.Navigation
             new NavRoutes { Name = "Projects", Href = "/projects" },
             new NavRoutes { Name = "Reports", Href = "/reports" },
         };
-        public List<CompanyLink> CompanyLinks = new();
-        private string currentCompany = "C# STOP COMPLAINING YOU LITTLE BITCH";
+        public readonly List<CompanyLink> CompanyLinks = new();
+        private string _currentCompany;
 
-        private readonly TextInfo myTI = new CultureInfo("en-US", false).TextInfo;
+        private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
 
         public Navigation(NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStore)
         {
@@ -30,14 +31,14 @@ namespace WorkFlow.Shared.Navigation
             this.ProtectedLocalStorage = protectedLocalStore;
 
             // TODO: Fetch this from database
-            this.CompanyLinks.Add(new CompanyLink { Name = "Netflix", URI = "netflix" });
-            this.CompanyLinks.Add(new CompanyLink { Name = "Cloudflare", URI = "cloudflare" });
-            this.CompanyLinks.Add(new CompanyLink { Name = "Iconicto", URI = "iconicto" });
-            this.CompanyLinks.Add(new CompanyLink { Name = "Create New Company", URI = "new" });
+            this.CompanyLinks.Add(new CompanyLink { Name = "Netflix", Uri = "netflix" });
+            this.CompanyLinks.Add(new CompanyLink { Name = "Cloudflare", Uri = "cloudflare" });
+            this.CompanyLinks.Add(new CompanyLink { Name = "Iconicto", Uri = "iconicto" });
+            this.CompanyLinks.Add(new CompanyLink { Name = "Create New Company", Uri = "new" });
 
             // Select the first company in the list by default
             // This value will be updated via the ASP.net Session Storage
-            currentCompany = CompanyLinks[0].URI;
+            _currentCompany = CompanyLinks[0].Uri;
         }
 
         public async Task<string> RestoreLastCompany()
@@ -45,16 +46,16 @@ namespace WorkFlow.Shared.Navigation
             var result = await this.ProtectedLocalStorage.GetAsync<String>("CurrentCompany");
             if (result.Success && result.Value != null)
             {
-                this.currentCompany = result.Value;
+                this._currentCompany = result.Value;
             }
-            return this.currentCompany;
+            return this._currentCompany;
         }
 
         public string GetCurrentCompany(bool pretty=false)
         {
             if (pretty)
-                return this.myTI.ToTitleCase(this.currentCompany);
-            return this.currentCompany;
+                return this._myTi.ToTitleCase(this._currentCompany);
+            return this._currentCompany;
         }
 
         public void SetCurrentCompany(string company)
@@ -64,9 +65,9 @@ namespace WorkFlow.Shared.Navigation
                 this.NavigationManager.NavigateTo("/create/company");
                 return;
             }
-            string newLocation = this.NavigationManager.Uri.Replace(this.currentCompany, company);
-            this.currentCompany = company;
-            Task.Run(() => this.ProtectedLocalStorage.SetAsync("CurrentCompany", currentCompany)).Wait();
+            var newLocation = this.NavigationManager.Uri.Replace(this._currentCompany, company);
+            this._currentCompany = company;
+            Task.Run(() => this.ProtectedLocalStorage.SetAsync("CurrentCompany", _currentCompany)).Wait();
             this.NavigationManager.NavigateTo(newLocation, true);
         }
 
@@ -74,15 +75,15 @@ namespace WorkFlow.Shared.Navigation
 
     public class NavRoutes
     {
-        public string Name { get; set; }
-        public string Href { get; set; }
-        public string HrefWithComapny { get; set; }
+        public string Name { get; init; }
+        public string Href { get; init; }
+        public string HrefWithCompany { get; set; }
         public bool Selected { get; set; }
     }
 
     public class CompanyLink
     {
-        public string Name { get; set; }
-        public string URI { get; set; }
+        public string Name { get; init; }
+        public string Uri { get; init; }
     }
 }

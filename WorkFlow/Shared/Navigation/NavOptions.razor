@@ -1,14 +1,14 @@
-﻿@foreach (NavRoutes option in Options)
+﻿@foreach (var option in Options)
 {
     if (option.Selected)
     {
-        <a class="text-black-900 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithComapny">
+        <a class="text-black-900 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithCompany">
             @option.Name
         </a>
     }
     else
     {
-        <a class="text-gray-500 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithComapny">
+        <a class="text-gray-500 hover:text-gray-800 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithCompany">
             @option.Name
         </a>
     }
@@ -16,21 +16,18 @@
 
 @code {
 
-    public NavRoutes[] Options { get; set; } = NavMenu.NavCtrl.NavOptions;
+    private NavRoutes[] Options { get; set; } = NavMenu.NavCtrl.NavOptions;
 
     [Parameter]
-    public String CurrentCompany { get; set; }
+    public string CurrentCompany { get; set; }
 
     protected override void OnParametersSet()
     {
-        string location = NavMenu.NavCtrl.NavigationManager.Uri;
+        var location = NavMenu.NavCtrl.NavigationManager.Uri;
 
-        foreach (NavRoutes option in Options)
+        foreach (var option in Options)
         {
-            if (option.Href != "/")
-                option.HrefWithComapny = String.Format("/{0}{1}", CurrentCompany, option.Href);
-            else
-                option.HrefWithComapny = "/";
+            option.HrefWithCompany = option.Href != "/" ? $"/{CurrentCompany}{option.Href}" : "/";
 
             if (location.EndsWith(option.Href) || location.Split("/")[2] == option.Href.Split("/")[1])
                 option.Selected = true;
