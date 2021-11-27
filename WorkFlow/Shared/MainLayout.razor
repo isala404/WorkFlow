@@ -19,7 +19,9 @@
 
     protected override void OnInitialized()
     {
-        NavCtrl = new Navigation.Navigation(_navigationManager, _protectedLocalStore);
+        var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
+
+        NavCtrl = new Navigation.Navigation(_navigationManager, _protectedLocalStore, currentPath.First());
         _currentCompany = NavCtrl.GetCurrentCompany();
     }
 
@@ -28,16 +30,18 @@
         if (firstRender)
         {
             var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
-            
-            _currentCompany = await NavCtrl.RestoreLastCompany();
 
-            if (currentPath.First() != "" && currentPath.First() != _currentCompany)
+            if (NavCtrl.GetCurrentCompany() != currentPath.First())
             {
-                NavCtrl.SetCurrentCompany(currentPath.First());
-                _currentCompany = currentPath.First();
+                _currentCompany = await NavCtrl.RestoreLastCompany();
+
+                if (currentPath.First() != "" && currentPath.First() != _currentCompany)
+                {
+                    NavCtrl.SetCurrentCompany(currentPath.First());
+                    _currentCompany = currentPath.First();
+                }
+                StateHasChanged();
             }
-            
-            StateHasChanged();
         }
     }
 }

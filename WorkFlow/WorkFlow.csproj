@@ -13,4 +13,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Company" />
+    <Folder Include="Pages\Ticket" />
+    <Folder Include="Pages\User" />
+  </ItemGroup>
+
 </Project>

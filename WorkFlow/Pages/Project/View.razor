@@ -1,0 +1,112 @@
+@page "/{Company}/project/{project}"        
+
+<div>
+    <div class="flex flex-row-reverse md:-mt-10 mb-5">
+        <a href="@Company/project/@Project/ticket/create">
+            <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
+        </a>
+        <a href="@Company/project/@Project/manage">
+            <button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Manage Project</button>
+        </a>
+    </div>
+
+    <div class="flex flex-wrap justify-around justify-items-stretch h-4/5 mb-5" style="min-height: 80vh;">
+        <div class="bg-gray-400 border-2 border-black" style="width: 405px;">
+            <h2 class="text-center text-2xl border-b-2 border-black">TO-DOs</h2>
+            <div>
+                <a href="@Company/project/@Project/ticket/1">
+                    <Ticket
+                        Name="Create Something Something"
+                        Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                        Priority="2"
+                        Assignee="Isala Piyarisi"
+                        DueDate=@DateTime.Parse("03/11/2021")
+                        EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                </a>
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+            </div>
+        </div>
+        <div class="bg-yellow-100 border-2 border-black" style="width: 405px;">
+            <h2 class="text-center text-2xl border-b-2 border-black">In-Progress</h2>
+            <div>
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+            </div>
+        </div>
+        <div class="bg-green-200 border-2 border-black" style="width: 405px;">
+            <h2 class="text-center text-2xl border-b-2 border-black">Completed</h2>
+            <div>
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+                <Ticket
+                    Name="Create Something Something"
+                    Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
+                    Priority="2"
+                    Assignee="Isala Piyarisi"
+                    DueDate=@DateTime.Parse("03/11/2021")
+                    EstimatedTime=@TimeSpan.Parse("02:00:00") />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Company { get; set; }
+
+    [Parameter]
+    public string Project { get; set; }
+
+}

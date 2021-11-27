@@ -16,16 +16,16 @@ namespace WorkFlow.Shared.Navigation
         public readonly NavRoutes[] NavOptions =
         {
             new NavRoutes {Name = "Home", Href = "/"},
-            new NavRoutes {Name = "Projects", Href = "/projects"},
-            new NavRoutes {Name = "Reports", Href = "/reports"},
+            new NavRoutes {Name = "Projects", Href = "/project"},
+            new NavRoutes {Name = "Reports", Href = "/report"},
         };
 
         public readonly List<CompanyLink> CompanyLinks = new();
-        private string _currentCompany;
+        private string _currentCompany = "C# STOP COMPLAINING BUT USELESS THINGS";
 
         private static readonly TextInfo MyTi = new CultureInfo("en-US", false).TextInfo;
 
-        public Navigation(NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStore)
+        public Navigation(NavigationManager navigationManager, ProtectedLocalStorage protectedLocalStore, string currentCompany)
         {
             this.NavigationManager = navigationManager;
             this.ProtectedLocalStorage = protectedLocalStore;
@@ -38,7 +38,10 @@ namespace WorkFlow.Shared.Navigation
 
             // Select the first company in the list by default
             // This value will be updated via the ASP.net Session Storage
-            _currentCompany = CompanyLinks[0].Uri;
+            if (!string.IsNullOrEmpty(currentCompany))
+                SetCurrentCompany(currentCompany, false);
+            else
+                _currentCompany = CompanyLinks[0].Uri;
         }
 
         public async Task<string> RestoreLastCompany()
@@ -62,7 +65,7 @@ namespace WorkFlow.Shared.Navigation
             return MyTi.ToTitleCase(text);
         }
 
-        public void SetCurrentCompany(string company, bool withOutReload = false)
+        public void SetCurrentCompany(string company, bool reload = true)
         {
             if (company == "new")
             {
@@ -74,7 +77,7 @@ namespace WorkFlow.Shared.Navigation
             this._currentCompany = company;
             Task.Run(() => this.ProtectedLocalStorage.SetAsync("CurrentCompany", _currentCompany)).Wait();
             
-            if (!withOutReload)
+            if (reload)
                 this.NavigationManager.NavigateTo(newLocation, true);
         }
     }
