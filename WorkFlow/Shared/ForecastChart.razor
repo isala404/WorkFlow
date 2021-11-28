@@ -1,0 +1,111 @@
+@using ChartJs.Blazor;
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Enums
+@using ChartJs.Blazor.LineChart
+
+<Chart Config="_config"></Chart>
+
+@code {
+
+    [Parameter]
+    public int[] Data { get; set; }
+
+    [Parameter]
+    public DateTime[] Labels { get; set; }
+
+    [Parameter]
+    public string BackgroundColor { get; set; }
+
+    [Parameter]
+    public string BorderColor { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string Label { get; set; }
+
+    private LineConfig _config;
+
+    protected override void OnInitialized()
+    {
+        _config = new LineConfig
+        {
+            Options = new LineOptions
+            {
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = Title
+                },
+                Tooltips = new Tooltips
+                {
+                    Mode = InteractionMode.Nearest,
+                    Intersect = true
+                },
+                Hover = new Hover
+                {
+                    Mode = InteractionMode.Nearest,
+                    Intersect = true
+                },
+                Scales = new Scales
+                {
+                    XAxes = new List<CartesianAxis>
+                    {
+                        new CategoryAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Month"
+                            }
+                        }
+                    },
+                    YAxes = new List<CartesianAxis>
+                    {
+                        new LinearCartesianAxis
+                        {
+                            ScaleLabel = new ScaleLabel
+                            {
+                                LabelString = "Value"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        IDataset<int> dataset = new LineDataset<int>(Data)
+        {
+            Label = Label,
+            BackgroundColor = BackgroundColor,
+            BorderColor = BorderColor,
+        };
+
+        foreach (var label in Labels)
+        {
+            _config.Data.Labels.Add(label.ToShortDateString());
+        }
+        _config.Data.Datasets.Add(dataset);
+    }
+
+    protected override void OnParametersSet()
+    {
+        _config.Data.Labels.Clear();
+        _config.Data.Datasets.Clear();
+        IDataset<int> dataset = new LineDataset<int>(Data)
+        {
+            Label = Label,
+            BackgroundColor = BackgroundColor,
+            BorderColor = BorderColor,
+        };
+
+        foreach (var label in Labels)
+        {
+            _config.Data.Labels.Add(label.ToString("dd-MM-yyyy"));
+        }
+        _config.Data.Datasets.Add(dataset);
+    }
+
+}

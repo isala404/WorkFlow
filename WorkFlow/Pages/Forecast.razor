@@ -1,0 +1,72 @@
+@page "/{Company}/report"
+
+<div class="flex flex-col m-auto mb-5">
+    <div class="flex flex-row justify-between mb-2 w-96 ml-auto mr-10 xl:mr-48">
+        <div class="w-full mr-3">
+            <label for="startDate" class="text-grey-darker inline-block mb-2">Start Date</label>
+            <input @bind="StartDate" type="date" id="startDate" name="startDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5"/>
+        </div>
+        <div class="w-full ml-3">
+            <label for="endDate" class="text-grey-darker inline-block mb-2">End Date</label>
+            <input @bind="EndDate" type="date" id="endDate" name="endDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5"/>
+        </div>
+    </div>
+    <div class="w-100 xl:w-3/6 m-auto">
+        <ForecastChart Data="@_projectEstimates" Labels="@_timeSeries" Title="Estimated Number of Projects" Label="Projects" BorderColor="#3e95cd" BackgroundColor="#7bb6dd"/>
+    </div>
+    <div class="w-100 xl:w-3/6 m-auto">
+        <ForecastChart Data="@_peopleEstimates" Labels="@_timeSeries" Title="Estimated Number of People Required" Label="People" BorderColor="#3e95cd" BackgroundColor="#7bb6dd"/>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Company { get; set; }
+
+    private DateTime _startDate = DateTime.Today.AddDays(-30);
+
+    private DateTime StartDate
+    {
+        get => _startDate;
+        set
+        {
+            _startDate = value;
+            FetchNewData();
+        }
+    }
+
+    private DateTime _endDate = DateTime.Today;
+
+    private DateTime EndDate
+    {
+        get => _endDate;
+        set
+        {
+            _endDate = value;
+            FetchNewData();
+        }
+    }
+
+    private readonly int[] _projectEstimates = {86, 114, 106, 106, 107, 111, 133};
+    private readonly int[] _peopleEstimates = {70, 90, 44, 60, 83, 90, 100};
+
+    private readonly DateTime[] _timeSeries =
+    {
+        DateTime.Parse("11/01/2021"),
+        DateTime.Parse("11/02/2021"),
+        DateTime.Parse("11/03/2021"),
+        DateTime.Parse("11/04/2021"),
+        DateTime.Parse("11/05/2021"),
+        DateTime.Parse("11/06/2021"),
+        DateTime.Parse("11/07/2021"),
+    };
+
+    private void FetchNewData()
+    {
+        _timeSeries[0] = StartDate;
+        _timeSeries[^1] = EndDate;
+        StateHasChanged();
+    }
+
+}
