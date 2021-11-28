@@ -3,10 +3,10 @@
 @inject ProtectedLocalStorage _protectedLocalStore
 
 <header>
-    <NavMenu CurrentCompany="@_currentCompany" />
+    <NavMenu CurrentCompany="@_currentCompany"/>
 </header>
 <div class="container mx-auto">
-    <Breadcrumbs CurrentCompany="@_currentCompany" />
+    <Breadcrumbs CurrentCompany="@_currentCompany" CurrentPath="@_currentPath"/>
     @Body
 </div>
 
@@ -14,34 +14,42 @@
 @code
 {
     public static Navigation.Navigation NavCtrl;
-    
+
     private string _currentCompany;
+    private string _currentPath;
 
     protected override void OnInitialized()
     {
-        var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
+        _currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+        var subPaths = _currentPath.Split("/");
 
-        NavCtrl = new Navigation.Navigation(_navigationManager, _protectedLocalStore, currentPath.First());
+        NavCtrl = new Navigation.Navigation(_navigationManager, _protectedLocalStore, subPaths.First());
         _currentCompany = NavCtrl.GetCurrentCompany();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
         if (firstRender)
         {
-            var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
+            var subPaths = currentPath.Split("/");
 
-            if (NavCtrl.GetCurrentCompany() != currentPath.First())
+            if (NavCtrl.GetCurrentCompany() != subPaths.First())
             {
                 _currentCompany = await NavCtrl.RestoreLastCompany();
 
-                if (currentPath.First() != "" && currentPath.First() != _currentCompany && currentPath.First() != "user")
+                if (subPaths.First() != "" && subPaths.First() != _currentCompany && subPaths.First() != "user")
                 {
-                    NavCtrl.SetCurrentCompany(currentPath.First());
-                    _currentCompany = currentPath.First();
+                    NavCtrl.SetCurrentCompany(subPaths.First());
+                    _currentCompany = subPaths.First();
                 }
                 StateHasChanged();
             }
+        }
+        if (_currentPath != currentPath)
+        {
+            _currentPath = currentPath;
+            StateHasChanged();
         }
     }
 }

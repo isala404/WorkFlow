@@ -18,15 +18,18 @@
 @code {
     [Parameter]
     public string CurrentCompany { get; set; }
+    
+    [Parameter]
+    public string CurrentPath { get; set; }
 
     private List<Breadcrumb> _urLs;
 
     protected override void OnParametersSet()
     {
-        var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
+        var currentPath = CurrentPath.Split("/");
         var subPaths = currentPath.Skip(1);
 
-        _urLs = new List<Breadcrumb> {new Breadcrumb {Name = Navigation.TitleCase(CurrentCompany), Url = "/"}};
+        _urLs = new List<Breadcrumb> {new() {Name = Navigation.TitleCase(CurrentCompany), Url = "/"}};
 
         var url = "/" + CurrentCompany;
         foreach (var path in subPaths)
@@ -37,4 +40,5 @@
             _urLs.Add(new Breadcrumb {Name = Navigation.TitleCase(path), Url = url});
         }
     }
+
 }
