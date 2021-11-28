@@ -1,0 +1,67 @@
+@page "/user/settings"
+@using User = WorkFlow.Pages.Company.User
+
+<div class="flex flex-col items-center" style="height: 80vh;">
+    <div class="inline-block min-w-100">
+        <div class="bg-gray-100 w-96 h-auto my-10 w-auto p-5">
+            <h2 class="text-xl ml-8">Update Profile</h2>
+            <EditForm Model="@_user" OnValidSubmit="@HandleValidSubmit" >
+                <div class="flex justify-around mt-8">
+                    <div class="mx-3 lg:mx-10">
+                        <div class="mb-6">
+                            <label for="name" class="text-sm font-medium text-gray-900 block mb-2">Name</label>
+                            <input @bind="_user.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/>
+                        </div>
+                        <div class="mb-6">
+                            <label for="email" class="text-sm font-medium text-gray-900 block mb-2">Email</label>
+                            <input @bind="_user.Email" type="email" id="email" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/>
+                        </div>
+                    </div>
+                    <div class="mx-3 lg:mx-10">
+                        <div class="mb-6">
+                            <label for="password" class="text-sm font-medium text-gray-900 block mb-2">Password</label>
+                            <input @bind="_user.Password" type="password" id="password" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/>
+                        </div>
+                        <div class="mb-6">
+                            <label for="confirmPassword" class="text-sm font-medium text-gray-900 block mb-2">Confirm Password</label>
+                            <input @bind="_user.PasswordConfirm" type="password" id="confirmPassword" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-around">
+                    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-80">Submit</button>
+                    <button @onclick="DeleteUser" type="button" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center w-80">Delete Profile</button>
+                </div>
+            </EditForm>
+        </div>
+        <div class="bg-gray-100 my-10 w-auto p-5">
+            <h2 class="text-xl ml-8">Companies</h2>
+            @foreach (var company in _companies)
+            {
+                <CompanyEdit company="@company"/>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+
+    private readonly Company[] _companies = new[]
+    {
+        new Company {Name = "Netflix", Uri = "netflix"},
+        new Company {Name = "Cloudflare", Uri = "cloudflare"},
+        new Company {Name = "Iconicto", Uri = "iconicto"},
+    };
+
+    private readonly Data.User _user = new();
+    
+    private void HandleValidSubmit()
+    {
+        Console.WriteLine($"User Update: {_user.Name}, {_user.Email}, {_user.Password}, {_user.PasswordConfirm}");
+    }
+    
+    private void DeleteUser()
+    {
+        Console.WriteLine($"User Delete: {_user.Name}, {_user.Email}, {_user.Password}, {_user.PasswordConfirm}");
+    }
+}
