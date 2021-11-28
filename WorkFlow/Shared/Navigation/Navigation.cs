@@ -38,7 +38,7 @@ namespace WorkFlow.Shared.Navigation
 
             // Select the first company in the list by default
             // This value will be updated via the ASP.net Session Storage
-            if (!string.IsNullOrEmpty(currentCompany))
+            if (!string.IsNullOrEmpty(currentCompany) && !currentCompany.Equals("user"))
                 SetCurrentCompany(currentCompany, false);
             else
                 _currentCompany = CompanyLinks[0].Uri;

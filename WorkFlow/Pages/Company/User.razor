@@ -1,0 +1,31 @@
+<div class="w-100 m-2 p-2 border border-black bg-white">
+    @Name
+    <button @onclick="RemoveUser" class="bg-red-500 text-white rounded-full h-6 px-3 float-right ml-3">Remove</button>
+    <select value="@Role" @onchange="RoleChanged" class="w-18 text-gray-700 px-1 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 mx-auto float-right">
+        <option value="ADMIN">
+            Admin
+        </option>
+        <option value="USER">
+            User
+        </option>
+    </select>
+</div>
+
+@code {
+
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public UserRole Role { get; set; }
+
+    private void RoleChanged(ChangeEventArgs e)
+    {
+        Console.WriteLine($"User Role Change: {Name}, {e.Value}");
+    }
+    
+    private void RemoveUser()
+    {
+        Console.WriteLine($"User removed from company: {Name}");
+    }
+}

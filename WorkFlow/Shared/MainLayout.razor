@@ -35,7 +35,7 @@
             {
                 _currentCompany = await NavCtrl.RestoreLastCompany();
 
-                if (currentPath.First() != "" && currentPath.First() != _currentCompany)
+                if (currentPath.First() != "" && currentPath.First() != _currentCompany && currentPath.First() != "user")
                 {
                     NavCtrl.SetCurrentCompany(currentPath.First());
                     _currentCompany = currentPath.First();

@@ -2,14 +2,14 @@
 
 <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mt-20">
     <h1 class="text-2xl text-center">Create a new Project</h1>
-    <EditForm Model="@project" OnValidSubmit="@HandleValidSubmit">
+    <EditForm Model="@_project" OnValidSubmit="@HandleValidSubmit">
         <div class="mb-2">
             <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
-            <input @bind="project.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required/>
+            <input @bind="_project.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required/>
         </div>
         <div class="mb-2">
             <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
-            <InputSelect @bind-Value="project.Status" id="status" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="status" required>
+            <InputSelect @bind-Value="_project.Status" id="status" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="status" required>
                 <option value="ToDo">
                     To-Do
                 </option>
@@ -23,14 +23,14 @@
         </div>
         <div class="mb-2">
             <label for="due-date" class="text-grey-darker inline-block mb-2">Due Date</label>
-            <input @bind="project.DueDate" type="date" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
+            <input @bind="_project.DueDate" type="date" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
         </div>
         <label for="project-uri" class="text-grey-darker inline-block mb-2">Project URI</label>
         <div class="flex flex-wrap items-stretch w-full mb-4 relative">
             <div class="flex -mr-px">
                 <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@MainLayout.NavCtrl.GetCurrentCompany()/</span>
             </div>
-            <input @bind="project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
+            <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
         </div>
         <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Submit</button>
     </EditForm>
@@ -44,11 +44,11 @@
     [Parameter]
     public string Project { get; set; }
 
-    private Project project = new();
+    private readonly Project _project = new();
 
     private void HandleValidSubmit()
     {
-        Console.WriteLine($"{project.Name}, {project.DueDate}, {project.Status}, {project.Uri}");
+        Console.WriteLine($"Project Created: {_project.Name}, {_project.DueDate}, {_project.Status}, {_project.Uri}");
     }
 
 }

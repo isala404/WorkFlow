@@ -1,9 +1,15 @@
     <div class="w-100 m-2 p-2 border border-black bg-white">
         @Name
-        <button class="bg-red-500 text-white rounded-full h-6 px-3 float-right ml-3">Remove</button>
+        <button @onclick="RemoveUser" class="bg-red-500 text-white rounded-full h-6 px-3 float-right ml-3">Remove</button>
     </div>
 
 @code {
     [Parameter]
     public string Name { get; set; }
+    
+        
+    private void RemoveUser()
+    {
+        Console.WriteLine($"User removed from project: {Name}");
+    }
 }

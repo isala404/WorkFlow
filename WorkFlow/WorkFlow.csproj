@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Pages\Company" />
     <Folder Include="Pages\Ticket" />
     <Folder Include="Pages\User" />
   </ItemGroup>
