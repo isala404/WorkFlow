@@ -1,5 +1,4 @@
 @page "/user/settings"
-@using User = WorkFlow.Pages.Company.User
 
 <div class="flex flex-col items-center" style="height: 80vh;">
     <div class="inline-block min-w-100">
@@ -53,7 +52,7 @@
         new Company {Name = "Iconicto", Uri = "iconicto"},
     };
 
-    private readonly Data.User _user = new();
+    private readonly User _user = new();
     
     private void HandleValidSubmit()
     {

@@ -1,40 +1,40 @@
 @page "/{Company}/project/{project}/manage"
 
-<div class="flex flex-col lg:w-2/4 m-auto">
-    <div class="flex flex-grow flex-col bg-gray-100 p-5 mt-20">
+<div class="flex flex-col lg:w-2/4 m-auto mb-5">
+    <div class="flex flex-grow flex-col bg-gray-100 p-5">
         <h1 class="text-2xl text-center">Update @_project.Name Project</h1>
-    <EditForm Model="@_project" OnValidSubmit="@HandleValidSubmit">
-        <div class="mb-2">
-            <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
-            <input @bind="_project.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required/>
-        </div>
-        <div class="mb-2">
-            <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
-            <InputSelect @bind-Value="_project.Status" id="status" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="status" required>
-                <option value="ToDo">
-                    To-Do
-                </option>
-                <option value="InProgress">
-                    In-Progress
-                </option>
-                <option value="Completed">
-                    Completed
-                </option>
-            </InputSelect>
-        </div>
-        <div class="mb-2">
-            <label for="due-date" class="text-grey-darker inline-block mb-2">Due Date</label>
-            <input @bind="_project.DueDate" type="date" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
-        </div>
-        <label for="project-uri" class="text-grey-darker inline-block mb-2">Project URI</label>
-        <div class="flex flex-wrap items-stretch w-full mb-4 relative">
-            <div class="flex -mr-px">
-                <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@MainLayout.NavCtrl.GetCurrentCompany()/</span>
+        <EditForm Model="@_project" OnValidSubmit="@HandleValidSubmit">
+            <div class="mb-2">
+                <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
+                <input @bind="_project.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required/>
             </div>
-            <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
-        </div>
-        <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Submit</button>
-    </EditForm>
+            <div class="mb-2">
+                <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
+                <InputSelect @bind-Value="_project.Status" id="status" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="status" required>
+                    <option value="ToDo">
+                        To-Do
+                    </option>
+                    <option value="InProgress">
+                        In-Progress
+                    </option>
+                    <option value="Completed">
+                        Completed
+                    </option>
+                </InputSelect>
+            </div>
+            <div class="mb-2">
+                <label for="due-date" class="text-grey-darker inline-block mb-2">Due Date</label>
+                <input @bind="_project.DueDate" type="date" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
+            </div>
+            <label for="project-uri" class="text-grey-darker inline-block mb-2">Project URI</label>
+            <div class="flex flex-wrap items-stretch w-full mb-4 relative">
+                <div class="flex -mr-px">
+                    <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@MainLayout.NavCtrl.GetCurrentCompany()/</span>
+                </div>
+                <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
+            </div>
+            <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Submit</button>
+        </EditForm>
     </div>
     <div class="flex flex-grow flex-col bg-gray-100 p-5 w-full m-auto mt-10">
         <h1 class="text-2xl">Manage Users</h1>
@@ -44,10 +44,10 @@
                 <span>Add</span>
             </button>
         </EditForm>
-        <User Name="John Doe"/>
-        <User Name="Jane Doe"/>
-        <User Name="John Smith"/>
-        <User Name="Jane Smith"/>
+        <ProjectUser Name="John Doe"/>
+        <ProjectUser Name="Jane Doe"/>
+        <ProjectUser Name="John Smith"/>
+        <ProjectUser Name="Jane Smith"/>
     </div>
     <button @onclick="DeleteProject" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Project</button>
 </div>
@@ -67,8 +67,8 @@
         Console.WriteLine($"Project Updated: {_project.Name}, {_project.DueDate}, {_project.Status}, {_project.Uri}");
     }
 
-    private readonly InviteUser _inviteUser = new ();
-    
+    private readonly InviteUser _inviteUser = new();
+
     private void SentInviteToUser()
     {
         Console.WriteLine($"Invited User: {_inviteUser.Email}");
@@ -78,4 +78,5 @@
     {
         Console.WriteLine($"Project Delete: {_project.Name}, {_project.DueDate}, {_project.Status}, {_project.Uri}");
     }
+
 }

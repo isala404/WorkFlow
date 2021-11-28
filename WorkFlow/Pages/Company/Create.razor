@@ -1,6 +1,6 @@
 @page "/create/company"
 
-<div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mt-20">
+<div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mb-5">
     <h1 class="text-2xl text-center">Create a new company</h1>
     <EditForm Model="@_company" OnValidSubmit="@HandleValidSubmit">
         <div class="mb-6">
@@ -29,5 +29,5 @@
     {
         Console.WriteLine($"Company Created: {_company.Name}, {_company.Uri}");
     }
-    
+
 }
