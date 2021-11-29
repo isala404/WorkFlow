@@ -12,5 +12,10 @@ namespace WorkFlow.Data
             : base(options)
         {
         }
+
+        DbSet<Company> Companies { get; set; }
+        DbSet<Project> Projects { get; set; }
+        DbSet<Ticket> Tickets { get; set; }
+        DbSet<User> Users { get; set; }
     }
 }
