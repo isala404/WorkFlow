@@ -1,4 +1,6 @@
-﻿@foreach (var option in Options)
+﻿@inject WorkFlow.Client.Services.INavService NavService
+
+@foreach (var option in Options)
 {
     if (option.Selected)
     {
@@ -16,24 +18,33 @@
 
 @code {
 
-    private NavRoutes[] Options { get; set; } = MainLayout.NavCtrl.NavOptions;
+    private NavRoutes[] Options { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Options = NavService.NavOptions;
+    }
 
     [Parameter]
     public string CurrentCompany { get; set; }
 
     protected override void OnParametersSet()
     {
-        var location = MainLayout.NavCtrl.NavigationManager.Uri;
+        if (NavService.NavigationManager == null)
+            return;
 
-        foreach (var option in Options)
+        var location = NavService.NavigationManager.Uri;
+
+        for (int i = 0; i < Options.Length; i++)
         {
-            option.HrefWithCompany = option.Href != "/" ? $"/{CurrentCompany}{option.Href}" : "/";
+            Options[i].HrefWithCompany = Options[i].Href != "/" ? $"/{CurrentCompany}{Options[i].Href}" : "/";
 
-            if (location.EndsWith(option.Href) || location.Split("/")[2] == option.Href.Split("/")[1])
-                option.Selected = true;
+            if (location.EndsWith(Options[i].Href) || location.Split("/")[2] == Options[i].Href.Split("/")[1])
+                Options[i].Selected = true;
             else
-                option.Selected = false;
+                Options[i].Selected = false;
         }
+
     }
 
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WorkFlow.Client;
+using WorkFlow.Client.Services;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -13,6 +14,7 @@ builder.Services.AddHttpClient("WorkFlow.ServerAPI", client => client.BaseAddres
 // Supply HttpClient instances that include access tokens when making requests to the server project
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("WorkFlow.ServerAPI"));
 
+builder.Services.AddScoped<INavService, NavService>();
 builder.Services.AddApiAuthorization();
 
 await builder.Build().RunAsync();

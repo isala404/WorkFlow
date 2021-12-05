@@ -1,4 +1,5 @@
 @inject NavigationManager _navigationManager
+@inject WorkFlow.Client.Services.INavService NavService
 
 <div class="my-5">
     <ol class="list-reset flex text-grey-dark">
@@ -29,7 +30,7 @@
         var currentPath = CurrentPath.Split("/");
         var subPaths = currentPath.Skip(1);
 
-        _urLs = new List<Breadcrumb> {new() {Name = Navigation.TitleCase(CurrentCompany), Url = "/"}};
+        _urLs = new List<Breadcrumb> {new() {Name = NavService.TitleCase(CurrentCompany), Url = "/"}};
 
         var url = "/" + CurrentCompany;
         foreach (var path in subPaths)
@@ -37,7 +38,7 @@
             if (path == "")
                 continue;
             url += "/" + path;
-            _urLs.Add(new Breadcrumb {Name = Navigation.TitleCase(path), Url = url});
+            _urLs.Add(new Breadcrumb {Name = NavService.TitleCase(path), Url = url});
         }
     }
 

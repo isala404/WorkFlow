@@ -1,5 +1,6 @@
 @page "/{Company}/project/{project}"        
 
+
 <div>
     <div class="flex flex-row-reverse md:-mt-10 mb-5">
         <a href="@Company/project/@Project/ticket/create">
@@ -15,7 +16,7 @@
             <h2 class="text-center text-2xl border-b-2 border-black">TO-DOs</h2>
             <div>
                 <a href="@Company/project/@Project/ticket/1/manage">
-                    <Ticket
+                    <UserTicket
                         Name="Create Something Something"
                         Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                         Priority="2"
@@ -24,7 +25,7 @@
                         EstimatedTime=@TimeSpan.Parse("02:00:00")
                         />
                 </a>
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -32,7 +33,7 @@
                     DueDate=@DateTime.Parse("03/11/2021")
                     EstimatedTime=@TimeSpan.Parse("02:00:00")
                     />
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -40,7 +41,7 @@
                     DueDate=@DateTime.Parse("03/11/2021")
                     EstimatedTime=@TimeSpan.Parse("02:00:00")
                     />
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -48,7 +49,7 @@
                     DueDate=@DateTime.Parse("03/11/2021")
                     EstimatedTime=@TimeSpan.Parse("02:00:00")
                     />
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -61,7 +62,7 @@
         <div class="bg-yellow-100 border-2 border-black" style="width: 405px;">
             <h2 class="text-center text-2xl border-b-2 border-black">In-Progress</h2>
             <div>
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -69,7 +70,7 @@
                     DueDate=@DateTime.Parse("03/11/2021")
                     EstimatedTime=@TimeSpan.Parse("02:00:00")
                     />
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -77,7 +78,7 @@
                     DueDate=@DateTime.Parse("03/11/2021")
                     EstimatedTime=@TimeSpan.Parse("02:00:00")
                     />
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -90,7 +91,7 @@
         <div class="bg-green-200 border-2 border-black" style="width: 405px;">
             <h2 class="text-center text-2xl border-b-2 border-black">Completed</h2>
             <div>
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
@@ -98,7 +99,7 @@
                     DueDate=@DateTime.Parse("03/11/2021")
                     EstimatedTime=@TimeSpan.Parse("02:00:00")
                     />
-                <Ticket
+                <UserTicket
                     Name="Create Something Something"
                     Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
                     Priority="2"
