@@ -28,10 +28,10 @@
             </div>
             <div class="mb-2">
                 <label for="assignee" class="text-grey-darker inline-block mb-2">Assignee</label>
-                <InputSelect @bind-Value="_ticket.Assignee" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
+                <InputSelect @bind-Value="_ticket.Assignee.UserName" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
                     @foreach (var user in _users)
                     {
-                        <option value="@user.Name">@user.Name</option>
+                        <option value="@user.UserName">@user.Name</option>
                     }
                 </InputSelect>
             </div>
@@ -71,13 +71,18 @@
 
     private User[] _users = new[]
     {
-        new User {Name = "John Doe"},
-        new User {Name = "Jane Doe"},
-        new User {Name = "John Smith"},
+        new User {Name = "John Doe", UserName="john"},
+        new User {Name = "Jane Doe", UserName="jane"},
+        new User {Name = "John Smith", UserName="john2"},
     };
 
     private void DeleteTicket()
     {
         Console.WriteLine($"Ticket Deleted: {_ticket.Name}, {_ticket.Description}, {_ticket.Priority}, {_ticket.Assignee}, {_ticket.DueDate}, {_ticket.EstimatedTime}");
+    }
+
+    protected override void OnInitialized()
+    {
+        _ticket.Assignee = _users[0];
     }
 }

@@ -1,4 +1,5 @@
 @page "/{Company}/project/{project}/ticket/create"
+@inject WorkFlow.Shared.Interfaces.ITicket TicketService
 
 <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mt-20">
     <h1 class="text-2xl text-center">Create a new ticket</h1>
@@ -27,10 +28,10 @@
         </div>
         <div class="mb-2">
             <label for="assignee" class="text-grey-darker inline-block mb-2">Assignee</label>
-            <InputSelect @bind-Value="_ticket.Assignee" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
+            <InputSelect @bind-Value="_ticket.Assignee.UserName" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
                 @foreach (var user in _users)
                 {
-                    <option value="@user.Name">@user.Name</option>
+                    <option value="@user.UserName">@user.Name</option>
                 }
             </InputSelect>
         </div>
@@ -58,16 +59,21 @@
 
     private readonly Ticket _ticket = new();
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
-        Console.WriteLine($"Ticket Created: {_ticket.Name}, {_ticket.Description}, {_ticket.Priority}, {_ticket.Assignee}, {_ticket.DueDate}, {_ticket.EstimatedTime}");
+        var ticket = await TicketService.CreateTicket(_ticket);
+        Console.WriteLine($"Ticket Created: {ticket.Name}, {ticket.Description}, {ticket.Priority}, {ticket.Assignee}, {ticket.DueDate}, {ticket.EstimatedTime}");
     }
 
     private User[] _users = new[]
     {
-        new User {Name = "John Doe"},
-        new User {Name = "Jane Doe"},
-        new User {Name = "John Smith"},
+        new User {Name = "John Doe", UserName="john"},
+        new User {Name = "Jane Doe", UserName="jane"},
+        new User {Name = "John Smith", UserName="john2"},
     };
 
+        protected override void OnInitialized()
+    {
+        _ticket.Assignee = _users[0];
+    }
 }
