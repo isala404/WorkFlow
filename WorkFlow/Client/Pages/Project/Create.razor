@@ -1,4 +1,5 @@
 @page "/{Company}/project/create"
+@inject WorkFlow.Client.Services.INavService NavService
 
 <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mb-5">
     <h1 class="text-2xl text-center">Create a new Project</h1>
@@ -28,8 +29,7 @@
         <label for="project-uri" class="text-grey-darker inline-block mb-2">Project URI</label>
         <div class="flex flex-wrap items-stretch w-full mb-4 relative">
             <div class="flex -mr-px">
-                <!--TODO: FIX link here-->
-                <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/</span>
+                <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@NavService.GetCurrentCompany()</span>
             </div>
             <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
         </div>
@@ -40,10 +40,10 @@
 @code {
 
     [Parameter]
-    public string Company { get; set; }
+    public String Company { get; set; }
 
     [Parameter]
-    public string Project { get; set; }
+    public String Project { get; set; }
 
     private readonly Project _project = new();
 

@@ -18,12 +18,12 @@
 
 @code {
     [Parameter]
-    public string CurrentCompany { get; set; }
+    public String CurrentCompany { get; set; }
     
     [Parameter]
-    public string CurrentPath { get; set; }
+    public String CurrentPath { get; set; }
 
-    private List<Breadcrumb> _urLs;
+    private List<Breadcrumb> _urLs = default!;
 
     protected override void OnParametersSet()
     {

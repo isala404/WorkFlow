@@ -7,6 +7,7 @@ namespace WorkFlow.Shared
     {
         [Key]
         public Guid Id { get; set; }
+        [Required]
         public String Name { get; set; }
         public String Uri { get; set; }
         public User[] Users { get; set; }
