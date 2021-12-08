@@ -1,4 +1,7 @@
 @page "/{Company}/project/{project}/ticket/{ticket}/manage"
+@inject WorkFlow.Shared.Interfaces.ITicket TicketService
+@inject WorkFlow.Client.Services.INavService NavService
+@inject IUser UserService
 
 <div class="flex flex-col lg:w-2/4 m-auto">
     <div class="flex flex-grow flex-col bg-gray-100 p-5 mt-20">
@@ -28,12 +31,20 @@
             </div>
             <div class="mb-2">
                 <label for="assignee" class="text-grey-darker inline-block mb-2">Assignee</label>
-                <InputSelect @bind-Value="_ticket.Assignee.UserName" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
+                <select  @onchange="OnAssigneeChanged" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
+                    <option value="">Select User</option>
                     @foreach (var user in _users)
                     {
-                        <option value="@user.UserName">@user.Name</option>
+                        if (_ticket.Assignee.Id == user.Id)
+                        {
+                            <option selected="selected" value="@user.Id">@(user.Name ?? user.UserName)</option>   
+                        }
+                        else
+                        {
+                            <option value="@user.Id">@(user.Name ?? user.UserName)</option>
+                        }
                     }
-                </InputSelect>
+                </select>
             </div>
             <div class="flex flex-row justify-between mb-2">
                 <div class="w-full mr-3">
@@ -48,7 +59,7 @@
             <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Update Ticket</button>
         </EditForm>
     </div>
-    <button @onclick="DeleteTicket" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Ticket Company</button>
+    <button @onclick="DeleteTicket" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Ticket</button>
 </div>
 
 @code {
@@ -62,27 +73,37 @@
     [Parameter]
     public String Ticket { get; set; }
 
-    private readonly Ticket _ticket = new();
+    private TicketDto _ticket = new();
 
-    private void HandleValidSubmit()
+    private List<UserDto> _users = new();
+
+    private void OnAssigneeChanged(ChangeEventArgs e)
     {
-        Console.WriteLine($"Ticket Created: {_ticket.Name}, {_ticket.Description}, {_ticket.Priority}, {_ticket.Assignee}, {_ticket.DueDate}, {_ticket.EstimatedTime}");
+        foreach (var user in _users.Where(user => (string?) e.Value == user.Id))
+        {
+            _ticket.Assignee = user;
+            return;
+        }
     }
 
-    private User[] _users = new[]
+    private async void HandleValidSubmit()
     {
-        new User {Name = "John Doe", UserName="john"},
-        new User {Name = "Jane Doe", UserName="jane"},
-        new User {Name = "John Smith", UserName="john2"},
-    };
-
-    private void DeleteTicket()
-    {
-        Console.WriteLine($"Ticket Deleted: {_ticket.Name}, {_ticket.Description}, {_ticket.Priority}, {_ticket.Assignee}, {_ticket.DueDate}, {_ticket.EstimatedTime}");
+        _ticket.ProjectUri = Project;
+        await TicketService.UpdateTicket(Guid.Parse(Ticket), _ticket);
+        NavService.Reload();
     }
 
-    protected override void OnInitialized()
+
+    private async void DeleteTicket()
     {
-        _ticket.Assignee = _users[0];
+        await TicketService.DeleteTicket(Guid.Parse(Ticket));
+        NavService.NavigateToProject();
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = await UserService.GetUsersByProject(Project);
+        _ticket = await TicketService.GetTicket(Guid.Parse(Ticket));
+    }
+
 }

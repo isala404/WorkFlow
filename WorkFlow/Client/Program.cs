@@ -1,6 +1,9 @@
+using System;
+using System.Net.Http;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using WorkFlow.Client;
 using WorkFlow.Client.Services;
 using WorkFlow.Shared.Interfaces;
@@ -17,6 +20,7 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 
 builder.Services.AddScoped<INavService, NavService>();
 builder.Services.AddScoped<ITicket, TicketService>();
+builder.Services.AddScoped<IUser, UserService>();
 builder.Services.AddApiAuthorization();
 
 await builder.Build().RunAsync();

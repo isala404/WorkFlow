@@ -1,92 +1,116 @@
-﻿using WorkFlow.Shared.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using WorkFlow.Shared.Interfaces;
 using WorkFlow.Shared.Entities;
-using Microsoft.AspNetCore.Components;
+using Microsoft.EntityFrameworkCore;
+using WorkFlow.Server.Data;
+using WorkFlow.Shared.Dto;
 
 namespace WorkFlow.Server.Models
 {
     public class TicketModel : ITicket
     {
-        readonly List<Ticket> _ticketList = new()
+        private readonly ApplicationDbContext _context;
+
+        public TicketModel(ApplicationDbContext context)
         {
-            new Ticket
+            _context = context;
+        }
+
+        public async Task<TicketDto> CreateTicket(TicketDto ticket)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == ticket.Assignee.Id);
+            if (user == null) throw new InvalidDataException("Invalid User.");
+
+            var project = await _context.Projects.FirstOrDefaultAsync(project => project.Uri == ticket.ProjectUri);
+            if (project == null) throw new InvalidDataException("Invalid Project.");
+
+            var result = await _context.Tickets.AddAsync(new Ticket
             {
-                Id = Guid.Parse("eb4d87d3-f8d2-435a-83e1-b396922ac52c"),
-                Name = "Create Something Something",
-                Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed....",
-                Priority = Priority.LOW,
-                Assignee = new User { UserName = "supiri", Name = "Isala Piyarisi" },
-                Status = Status.ToDo,
-                DueDate = DateTime.Parse("03/11/2021"),
-                EstimatedTime = TimeSpan.Parse("02:00:00")
-            }
-        };
-        public Task<Ticket> CreateTicket(Ticket ticket)
-        {
-            _ticketList.Add(ticket);
-            return Task.FromResult(ticket);
+                Id = default,
+                Name = ticket.Name,
+                Description = ticket.Description,
+                Priority = ticket.Priority,
+                Status = ticket.Status,
+                Assignee = user,
+                DueDate = ticket.DueDate,
+                EstimatedTime = ticket.EstimatedTime,
+                Project = project
+            });
+            await _context.SaveChangesAsync();
+            return new TicketDto(result.Entity);
         }
 
-        public Task<bool> DeleteTicket(Guid ticketID)
+        public async Task<bool> DeleteTicket(Guid ticketId)
         {
-            foreach(var ticket in _ticketList)
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.Id == ticketId);
+            if (ticket == null) return false;
+
+            _context.Tickets.Remove(ticket);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<TicketDto> GetTicket(Guid ticketId)
+        {
+            var ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.Id == ticketId);
+            if (ticket == null) throw new InvalidDataException("Invalid Ticket ID.");
+            return new TicketDto(ticket);
+        }
+
+        public async Task<List<TicketDto>> List(User? user = null)
+        {
+            if (user == null) throw new InvalidDataException("Invalid User.");
+
+            List<TicketDto> tickets = new();
+            foreach (var project in user.Projects)
             {
-                if(ticket.Id == ticketID)
-                {
-                    _ticketList.Remove(ticket);
-                    return Task.FromResult(true);
-                }
+                var userTickets = await _context.Tickets.Where(ticket => ticket.Project == project)
+                    .ToListAsync();
+                tickets.AddRange(userTickets.Select(ticket => new TicketDto(ticket)));
             }
-            return Task.FromResult(false);
+
+            return tickets;
         }
 
-        public Task<Ticket?> GetTicket(Guid ticketID)
+        public async Task<List<TicketDto>> ListTicketsByProject(Guid projectId)
         {
-            Ticket? ticket = null;
-            for (int i = 0; i < _ticketList.Count; i++)
-            {
-                if (_ticketList[i].Id == ticketID)
-                {
-                    ticket = _ticketList[i];
-                    break;
-                }
-            }
-            return Task.FromResult(ticket);
+            List<TicketDto> tickets = new();
+            var projectTickets = await _context.Tickets.Where(ticket => ticket.Project.Id == projectId).ToListAsync();
+            tickets.AddRange(projectTickets.Select(ticket => new TicketDto(ticket)));
+            return tickets;
         }
 
-        public Task<List<Ticket>> List(User user)
+        public async Task<List<TicketDto>> ListTicketsByUser(string userId)
         {
-            if (true)
-            {
-                // TODO: Return only tickets of project user is part of
-                return Task.FromResult(_ticketList);
-            }
-            // TODO: Return only tickets of Companies user is part of
-            return Task.FromResult(_ticketList);
+            List<TicketDto> tickets = new();
+            var userTickets = await _context.Tickets.Where(ticket => ticket.Assignee.Id == userId).ToListAsync();
+            tickets.AddRange(userTickets.Select(ticket => new TicketDto(ticket)));
+            return tickets;
         }
 
-        public Task<List<Ticket>> ListTicketsByProject(Guid projectID)
+        public async Task<TicketDto> UpdateTicket(Guid ticketId, TicketDto ticket)
         {
-            return Task.FromResult(_ticketList);
-        }
+            var targetTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            if (targetTicket == null) throw new InvalidDataException("Invalid Ticket.");
 
-        public Task<List<Ticket>> ListTicketsByUser(Guid userID)
-        {
-            return Task.FromResult(_ticketList);
-        }
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == ticket.Assignee.Id);
+            if (user == null) throw new InvalidDataException("Invalid User.");
 
-        public Task<Ticket?> UpdateTicket(Guid ticketID, Ticket ticket)
-        {
-            Ticket? _ticket = null;
-            for (int i = 0; i < _ticketList.Count; i++)
-            {
-                if (_ticketList[i].Id == ticketID)
-                {
-                    _ticketList[i] = ticket;
-                    _ticket = _ticketList[i];
-                    break;
-                }
-            }
-            return Task.FromResult(_ticket);
+            targetTicket.Name = ticket.Name;
+            targetTicket.Description = ticket.Description;
+            targetTicket.Priority = ticket.Priority;
+            targetTicket.Status = ticket.Status;
+            targetTicket.Assignee = user;
+            targetTicket.DueDate = ticket.DueDate;
+            targetTicket.EstimatedTime = ticket.EstimatedTime;
+
+            await _context.SaveChangesAsync();
+
+            return new TicketDto(targetTicket);
         }
     }
 }

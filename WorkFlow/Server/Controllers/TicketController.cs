@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WorkFlow.Shared.Entities;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace WorkFlow.Server.Controllers
 {
@@ -15,50 +16,113 @@ namespace WorkFlow.Server.Controllers
 
         public TicketController(ITicket ticketModel)
         {
-            this.TicketModel = ticketModel;
+            TicketModel = ticketModel;
         }
 
-        // GET: api/<TicketController>
+        // GET: api/ticket
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var tickets = await TicketModel.List(new User());
-            return Ok(tickets);
+            try
+            {
+                // TODO: Get User
+                var tickets = await TicketModel.List();
+                return Ok(tickets);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        // GET: api/ticket/project/{projectId}
+        [HttpGet("project/{projectId:guid}")]
+        public async Task<IActionResult> GetByProject(Guid projectId)
+        {
+            try
+            {
+                var tickets = await TicketModel.ListTicketsByProject(projectId);
+                return Ok(tickets);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        // GET: api/ticket/user/{userId}
+        [HttpGet("project/{userId}")]
+        public async Task<IActionResult> GetByUser(string userId)
+        {
+            try
+            {
+                var tickets = await TicketModel.ListTicketsByUser(userId);
+                return Ok(tickets);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // GET api/<TicketController>/5
-        [HttpGet("{id}")]
+        // GET api/ticket/{id}
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            var tickets = await TicketModel.GetTicket(id);
-            if (tickets == null) return BadRequest("Invalid Ticket ID");
-            return Ok(tickets);
+            try
+            {
+                var tickets = await TicketModel.GetTicket(id);
+                return Ok(tickets);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // POST api/<TicketController>
+        // POST api/ticket
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Ticket ticket)
+        public async Task<IActionResult> Post([FromBody] TicketDto ticket)
         {
-            var newTicket = await TicketModel.CreateTicket(ticket);
-            return Ok(newTicket);
+            try
+            {
+                var newTicket = await TicketModel.CreateTicket(ticket);
+                return Ok(newTicket);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // PUT api/<TicketController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] Ticket ticket)
+        // PUT api/ticket/{id}
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Put(Guid id, [FromBody] TicketDto ticket)
         {
-            var updatedTicket = await TicketModel.UpdateTicket(id, ticket);
-            if (updatedTicket == null)
-                return BadRequest("Invalid Ticket ID");
-            return Ok(updatedTicket);
+            try
+            {
+                var tickets = await TicketModel.UpdateTicket(id, ticket);
+                return Ok(tickets);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // DELETE api/<TicketController>/5
-        [HttpDelete("{id}")]
+        // DELETE api/ticket/{id} 
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            bool deleted = await TicketModel.DeleteTicket(id);
-            return Ok(deleted);
+            try
+            {
+                var deleted = await TicketModel.DeleteTicket(id);
+                return Ok(deleted);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }

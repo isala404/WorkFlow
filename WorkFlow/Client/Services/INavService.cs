@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Components;
 
 namespace WorkFlow.Client.Services
 {
@@ -12,6 +13,13 @@ namespace WorkFlow.Client.Services
         public string TitleCase(string text);
         public void SetCurrentCompany(string company, bool reload = true);
         public void RestoreLastCompany();
+
+        public void NavigateToProjects();
+        public void NavigateToProject();
+
+        public void NavigateToHome();
+        public void Reload();
+        
     }
 
     public struct CompanyLink

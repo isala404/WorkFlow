@@ -17,14 +17,14 @@
                         </div>
                     </div>
                     <div class="mx-3 lg:mx-10">
-                        <div class="mb-6">
-                            <label for="password" class="text-sm font-medium text-gray-900 block mb-2">Password</label>
-                            <input @bind="_user.Password" type="password" id="password" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/>
-                        </div>
-                        <div class="mb-6">
-                            <label for="confirmPassword" class="text-sm font-medium text-gray-900 block mb-2">Confirm Password</label>
-                            <input @bind="_user.PasswordConfirm" type="password" id="confirmPassword" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/>
-                        </div>
+                        @* <div class="mb-6"> *@
+                        @*     <label for="password" class="text-sm font-medium text-gray-900 block mb-2">Password</label> *@
+                        @*     <input @bind="_user.Password" type="password" id="password" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/> *@
+                        @* </div> *@
+                        @* <div class="mb-6"> *@
+                        @*     <label for="confirmPassword" class="text-sm font-medium text-gray-900 block mb-2">Confirm Password</label> *@
+                        @*     <input @bind="_user.PasswordConfirm" type="password" id="confirmPassword" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" required={true}/> *@
+                        @* </div> *@
                     </div>
                 </div>
                 <div class="flex flex-row justify-around">
@@ -56,11 +56,11 @@
     
     private void HandleValidSubmit()
     {
-        Console.WriteLine($"User Update: {_user.Name}, {_user.Email}, {_user.Password}, {_user.PasswordConfirm}");
+        // Console.WriteLine($"User Update: {_user.Name}, {_user.Email}, {_user.Password}, {_user.PasswordConfirm}");
     }
     
     private void DeleteUser()
     {
-        Console.WriteLine($"User Delete: {_user.Name}, {_user.Email}, {_user.Password}, {_user.PasswordConfirm}");
+        // Console.WriteLine($"User Delete: {_user.Name}, {_user.Email}, {_user.Password}, {_user.PasswordConfirm}");
     }
 }

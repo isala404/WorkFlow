@@ -13,9 +13,8 @@ namespace WorkFlow.Server.Data
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
-        DbSet<Company> Companies { get; set; }
-        DbSet<Project> Projects { get; set; }
-        DbSet<Ticket> Tickets { get; set; }
-        DbSet<UserCompany> UserCompanies { get; set; }
+        public DbSet<Company> Companies { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
     }
 }

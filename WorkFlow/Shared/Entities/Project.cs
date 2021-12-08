@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace WorkFlow.Shared.Entities
@@ -7,12 +8,15 @@ namespace WorkFlow.Shared.Entities
     {
         [Key]
         public Guid Id { get; set; }
+        [Required]
         public String Name { get; set; }
-        public String Status { get; set; }
+        public Status Status { get; set; } = Status.ToDo;
         public DateTime DueDate { get; set; }
+        [Required]
         public String Uri { get; set; }
+        [Required]
         public Company Company { get; set; }
-        public Ticket[] Tickets { get; set; }
-        public User[] Users { get; set; }
-    }
+        public virtual ICollection<Ticket> Tickets { get; set; }
+        public virtual ICollection<User> Users { get; set; }
+    } 
 }

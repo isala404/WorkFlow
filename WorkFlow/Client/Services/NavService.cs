@@ -1,5 +1,9 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Components;
 using System.Globalization;
+using System.Linq;
+using System.Net.Http;
 
 namespace WorkFlow.Client.Services
 {
@@ -75,6 +79,34 @@ namespace WorkFlow.Client.Services
             if (!string.IsNullOrEmpty(firstSubPath) && !firstSubPath.Equals("user"))
                 SetCurrentCompany(firstSubPath, false);
    
+        }
+
+        public void NavigateToProjects()
+        {
+            NavigationManager?.NavigateTo($"{_currentCompany}/project");
+        }
+
+        public void NavigateToProject()
+        {
+            if (NavigationManager == null)
+                return;
+
+            var currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split("/");
+            Console.WriteLine(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+            if (currentPath.Length > 3 && currentPath[1] == "project")
+            {
+                NavigationManager.NavigateTo($"{_currentCompany}/project/{currentPath[2]}");
+            }
+        }
+
+        public void NavigateToHome()
+        {
+            NavigationManager?.NavigateTo("/");
+        }
+
+        public void Reload()
+        {
+            NavigationManager?.NavigateTo(NavigationManager.Uri, true);
         }
     }
 }

@@ -1,91 +1,56 @@
 ﻿@page "/"
+@inject WorkFlow.Shared.Interfaces.ITicket TicketService
 
 <div class="bg-gray-100 p-8">
     <div>
         <h2 class="text-2xl">Today</h2>
         <div class="whitespace-nowrap overflow-x-auto">
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="1"
-                Assignee="Isala Piyarisi"
-                Status="todo"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="2"
-                Assignee="Isala Piyarisi"
-                Status="inprogress"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="3"
-                Assignee="Isala Piyarisi"
-                Status="done"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="2"
-                Assignee="Isala Piyarisi"
-                Status="done"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
+           @foreach (var ticket in todayTickets)
+           {
+               <UserTicket ticket="@ticket" />
+           }
         </div>
     </div>
     <div>
         <h2 class="text-2xl">Overdue</h2>
         <div class="whitespace-nowrap overflow-x-auto">
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="3"
-                Assignee="Isala Piyarisi"
-                Status="todo"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="1"
-                Assignee="Isala Piyarisi"
-                Status="inprogress"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
+           @foreach (var ticket in overdueTickets)
+           {
+               <UserTicket ticket="@ticket" />
+           }
         </div>
     </div>
     <div>
         <h2 class="text-2xl">Next</h2>
         <div class="whitespace-nowrap overflow-x-auto">
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="2"
-                Assignee="Isala Piyarisi"
-                Status="todo"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="1"
-                Assignee="Isala Piyarisi"
-                Status="inprogress"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
-            <UserTicket
-                Name="Create Something Something"
-                Description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed...."
-                Priority="3"
-                Assignee="Isala Piyarisi"
-                Status="done"
-                DueDate=@DateTime.Parse("03/11/2021")
-                EstimatedTime=@TimeSpan.Parse("02:00:00") />
+           @foreach (var ticket in todoTickets)
+           {
+               <UserTicket ticket="@ticket" />
+           }
         </div>
     </div>
 </div>
+
+@code {
+    private List<TicketDto> todayTickets { get; set; } = new();
+    private List<TicketDto> overdueTickets { get; set; } = new();
+    private List<TicketDto> todoTickets { get; set; } = new();
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        var tickets = await TicketService.List();
+
+        foreach(var ticket in tickets)
+        {
+            int result = DateTime.Compare(ticket.DueDate, DateTime.Today);
+
+            if (result < 0)
+                overdueTickets.Add(ticket);
+            else if (result == 0)
+                todayTickets.Add(ticket);
+            else
+                todoTickets.Add(ticket);
+        }
+    }
+}

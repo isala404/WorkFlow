@@ -29,20 +29,10 @@
 
 @code {
     [Parameter]
-    public Ticket ticket { get; set; } = new Ticket
-        {
-            Id = Guid.Parse("eb4d87d3-f8d2-435a-83e1-b396922ac52c"),
-            Name = "Create Something Something",
-            Description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tinciduLorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce et sapien pulvinar ante pellentesque lacinia. Etiam tincidunt sed....",
-            Priority = Priority.LOW,
-            Assignee = new User { UserName = "supiri", Name = "Isala Piyarisi" },
-            Status = Status.ToDo,
-            DueDate = DateTime.Parse("03/11/2021"),
-            EstimatedTime = TimeSpan.Parse("02:00:00")
-        };
+    public TicketDto ticket { get; set; }
 
     [Parameter]
-    public bool HideColour { get; set; } = true;
+    public bool HideColour { get; set; } = false;
 
     private Dictionary<Status, string> _statusColorMap = new Dictionary<Status, string>()
     {
@@ -54,9 +44,9 @@
 
     private Dictionary<Priority, string> _priorityColorMap = new Dictionary<Priority, string>()
     {
-        {Priority.LOW, "#f50000"},
-        {Priority.MEDIUM, "#ffcc00"},
-        {Priority.HIGH, "#d8d8d8"},
+        {Priority.Low, "#f50000"},
+        {Priority.Medium, "#ffcc00"},
+        {Priority.High, "#d8d8d8"},
     };
 
     protected override void OnInitialized()

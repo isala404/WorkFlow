@@ -1,12 +1,12 @@
-@page "/{Company}/project/{project}"        
-
+@page "/{CompanyURI}/project/{ProjectURI}"        
+@inject WorkFlow.Shared.Interfaces.ITicket _ticketService
 
 <div>
-    <div class="flex flex-row-reverse md:-mt-10 mb-5">
-        <a href="@Company/project/@Project/ticket/create">
+    <div class="flex flex-row-reverse mb-5">
+        <a href="@CompanyURI/project/@ProjectURI/ticket/create">
             <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
         </a>
-        <a href="@Company/project/@Project/manage">
+        <a href="@CompanyURI/project/@ProjectURI/manage">
             <button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Manage Project</button>
         </a>
     </div>
@@ -15,28 +15,34 @@
         <div class="bg-gray-400 border-2 border-black" style="width: 405px;">
             <h2 class="text-center text-2xl border-b-2 border-black">TO-DOs</h2>
             <div>
-                <a href="@Company/project/@Project/ticket/1/manage">
-                    <UserTicket />
-                </a>
-                <UserTicket />
-                <UserTicket />
-                <UserTicket />
-                <UserTicket />
+                @foreach (var ticket in TodoTickets)
+                {
+                    <a href="@CompanyURI/project/@ProjectURI/ticket/@ticket.Id/manage">
+                        <UserTicket ticket="@ticket" HideColour="true" />
+                    </a>
+                }
             </div>
         </div>
         <div class="bg-yellow-100 border-2 border-black" style="width: 405px;">
             <h2 class="text-center text-2xl border-b-2 border-black">In-Progress</h2>
             <div>
-                <UserTicket />
-                <UserTicket />
-                <UserTicket />
+                @foreach (var ticket in InProgressTickets)
+                {
+                    <a href="@CompanyURI/project/@ProjectURI/ticket/@ticket.Id/manage">
+                        <UserTicket ticket="@ticket" HideColour="true" />
+                    </a>
+                }
             </div>
         </div>
         <div class="bg-green-200 border-2 border-black" style="width: 405px;">
             <h2 class="text-center text-2xl border-b-2 border-black">Completed</h2>
             <div>
-                <UserTicket />
-                <UserTicket />
+                @foreach (var ticket in CompletedTickets)
+                {
+                    <a href="@CompanyURI/project/@ProjectURI/ticket/@ticket.Id/manage">
+                        <UserTicket ticket="@ticket" HideColour="true" />
+                    </a>
+                }
             </div>
         </div>
     </div>
@@ -45,9 +51,34 @@
 @code {
 
     [Parameter]
-    public String Company { get; set; }
+    public String CompanyURI { get; set; }
 
     [Parameter]
-    public String Project { get; set; }
+    public String ProjectURI { get; set; }
+
+    private List<TicketDto> TodoTickets { get; } = new();
+    private List<TicketDto> InProgressTickets { get; } = new();
+    private List<TicketDto> CompletedTickets { get; } = new();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var tickets = await _ticketService.ListTicketsByProject(new Guid());
+        foreach (var ticket in tickets)
+        {
+            switch (ticket.Status)
+            {
+                case Status.ToDo:
+                    TodoTickets.Add(ticket);
+                    break;
+                case Status.InProgress:
+                    InProgressTickets.Add(ticket);
+                    break;
+                case Status.Completed:
+                    CompletedTickets.Add(ticket);
+                    break;
+            }
+        }
+    }
 
 }

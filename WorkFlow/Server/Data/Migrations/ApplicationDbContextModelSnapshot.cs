@@ -300,6 +300,21 @@ namespace WorkFlow.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ProjectUser", b =>
+                {
+                    b.Property<Guid>("ProjectsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProjectsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("ProjectUser");
+                });
+
             modelBuilder.Entity("WorkFlow.Shared.Entities.Company", b =>
                 {
                     b.Property<Guid>("Id")
@@ -335,22 +350,16 @@ namespace WorkFlow.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("Uri")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UserCompanyId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
-
-                    b.HasIndex("UserCompanyId");
 
                     b.ToTable("Projects");
                 });
@@ -362,6 +371,7 @@ namespace WorkFlow.Server.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AssigneeId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
@@ -404,9 +414,6 @@ namespace WorkFlow.Server.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("CompanyId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -444,9 +451,6 @@ namespace WorkFlow.Server.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ProjectId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -459,8 +463,6 @@ namespace WorkFlow.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -469,14 +471,12 @@ namespace WorkFlow.Server.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.HasIndex("ProjectId");
-
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("WorkFlow.Shared.Entities.UserCompany", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("UserCompanyId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -487,15 +487,16 @@ namespace WorkFlow.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserCompanyId");
 
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserCompanies");
+                    b.ToTable("UserCompany");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -549,6 +550,21 @@ namespace WorkFlow.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ProjectUser", b =>
+                {
+                    b.HasOne("WorkFlow.Shared.Entities.Project", null)
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkFlow.Shared.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("WorkFlow.Shared.Entities.Project", b =>
                 {
                     b.HasOne("WorkFlow.Shared.Entities.Company", "Company")
@@ -557,10 +573,6 @@ namespace WorkFlow.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkFlow.Shared.Entities.UserCompany", null)
-                        .WithMany("Projects")
-                        .HasForeignKey("UserCompanyId");
-
                     b.Navigation("Company");
                 });
 
@@ -568,7 +580,9 @@ namespace WorkFlow.Server.Migrations
                 {
                     b.HasOne("WorkFlow.Shared.Entities.User", "Assignee")
                         .WithMany()
-                        .HasForeignKey("AssigneeId");
+                        .HasForeignKey("AssigneeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("WorkFlow.Shared.Entities.Project", "Project")
                         .WithMany("Tickets")
@@ -581,30 +595,23 @@ namespace WorkFlow.Server.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("WorkFlow.Shared.Entities.User", b =>
-                {
-                    b.HasOne("WorkFlow.Shared.Entities.Company", null)
-                        .WithMany("Users")
-                        .HasForeignKey("CompanyId");
-
-                    b.HasOne("WorkFlow.Shared.Entities.Project", null)
-                        .WithMany("Users")
-                        .HasForeignKey("ProjectId");
-                });
-
             modelBuilder.Entity("WorkFlow.Shared.Entities.UserCompany", b =>
                 {
                     b.HasOne("WorkFlow.Shared.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Users")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WorkFlow.Shared.Entities.User", null)
+                    b.HasOne("WorkFlow.Shared.Entities.User", "User")
                         .WithMany("Companies")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Company");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WorkFlow.Shared.Entities.Company", b =>
@@ -617,18 +624,11 @@ namespace WorkFlow.Server.Migrations
             modelBuilder.Entity("WorkFlow.Shared.Entities.Project", b =>
                 {
                     b.Navigation("Tickets");
-
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("WorkFlow.Shared.Entities.User", b =>
                 {
                     b.Navigation("Companies");
-                });
-
-            modelBuilder.Entity("WorkFlow.Shared.Entities.UserCompany", b =>
-                {
-                    b.Navigation("Projects");
                 });
 #pragma warning restore 612, 618
         }
