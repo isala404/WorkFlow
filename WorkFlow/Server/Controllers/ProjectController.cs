@@ -39,6 +39,26 @@ namespace WorkFlow.Server.Controllers
                 };
             }
         }
+        
+        // GET: api/project/company/{companyID}
+        [HttpGet("company/{companyId:guid}")]
+        public async Task<IActionResult> GetByCompany(Guid companyId)
+        {
+            try
+            {
+                var companies = await ProjectModel.List(companyId);
+                return Ok(companies);
+            }
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
+            }
+        }
 
         // GET: api/project/5
         [HttpGet("{id:guid}", Name = "Get")]

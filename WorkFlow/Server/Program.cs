@@ -37,6 +37,7 @@ builder.Services.AddScoped<IUtility, UtilityService>();
 builder.Services.AddScoped<ITicket, TicketModel>();
 builder.Services.AddScoped<IUser, UserModel>();
 builder.Services.AddScoped<ICompany, CompanyModel>();
+builder.Services.AddScoped<IProject, ProjectModel>();
 
 var app = builder.Build();
 

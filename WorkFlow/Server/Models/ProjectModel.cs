@@ -36,20 +36,38 @@ namespace WorkFlow.Server.Models
             return projects;
         }
         
+        public async Task<List<ProjectDto>> List(Guid companyId)
+        {
+            var user = await _utilityService.GetUser();
+            if (user == null) throw new InvalidDataException("Invalid User.");
+
+            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany => userCompany.UserId == user.Id && userCompany.CompanyId == companyId);
+            if (userCompany == null) throw new InvalidDataException("Invalid Company.");
+            
+            if (userCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("User does not have required permission");
+
+            List<ProjectDto> projects = new();
+            
+            var userProjects = await _context.Projects.Where(project => project.Company.Id == userCompany.CompanyId).ToListAsync();
+            projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
+            
+            return projects;
+        }
+        
         public async Task<ProjectDto> Get(Guid projectId)
         {
             var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
             var project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == projectId && project.Users.Contains(user));
-            if(project == null)  throw new InvalidDataException("Invalid projectId.");
+            if(project == null)  throw new InvalidDataException("Invalid ProjectId.");
             
             return new ProjectDto(project);
         }
         
         public async Task<ProjectDto> Create(ProjectDto project)
         {
-            (User user, Company company) = await VerifyRequest(project);
+            (_, Company company) = await VerifyRequest(project);
 
             var newProject = new Project
             {
@@ -117,7 +135,7 @@ namespace WorkFlow.Server.Models
 
             return new ProjectDto(project);
         }
-        private async Task<Tuple<User, Company>> VerifyRequest(ProjectDto project)
+        private async Task<Tuple<User, Company>> VerifyRequest(ProjectDto project, bool admin = true)
         {
             var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
@@ -128,10 +146,11 @@ namespace WorkFlow.Server.Models
             var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
                 userCompany.Company == company && userCompany.User == user);
 
-            if (userCompany is not {Role: UserRole.Admin}) throw new UnauthorizedAccessException("User does not have required permission");
+            if (userCompany == null) throw new UnauthorizedAccessException("User does not have required permission");
+            
+            if (admin && userCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("User does not have required permission");
 
             return new Tuple<User, Company>(user, company);
         }
-        
     }
 }

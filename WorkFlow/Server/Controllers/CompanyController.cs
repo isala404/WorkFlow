@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
@@ -82,6 +83,26 @@ namespace WorkFlow.Server.Controllers
             }
         }
 
+        // PATCH: api/company/5
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> Patch(Guid id, [FromBody] UserCompanyDto user)
+        {
+            try
+            {
+                var company = await CompanyModel.ModifyUser(id, user);
+                return Ok(company);
+            }
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
+            }
+        }
+        
         // DELETE: api/company/5
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)

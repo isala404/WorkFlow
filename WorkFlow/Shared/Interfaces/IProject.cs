@@ -8,6 +8,7 @@ namespace WorkFlow.Shared.Interfaces
     public interface IProject
     {
         Task<List<ProjectDto>> List();
+        Task<List<ProjectDto>> List(Guid companyId);
         Task<ProjectDto> Get(Guid projectId);
         Task<ProjectDto> Create(ProjectDto project);
         Task<ProjectDto> Update(Guid projectId, ProjectDto project);

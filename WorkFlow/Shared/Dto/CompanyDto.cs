@@ -5,7 +5,10 @@ namespace WorkFlow.Shared.Dto
 {
     public class CompanyDto
     {
-        public CompanyDto(){}
+        public CompanyDto()
+        {
+        }
+
         public CompanyDto(Company company)
         {
             Id = company.Id;
@@ -17,5 +20,23 @@ namespace WorkFlow.Shared.Dto
         public String Uri { get; set; }
         // public virtual ICollection<Project> Projects { get; set; }
         // public virtual ICollection<UserCompany> Users { get; set; }
+    }
+
+    public class UserCompanyDto
+    {
+        public UserCompanyDto()
+        {
+        }
+
+        public UserCompanyDto(UserCompany userCompany)
+        {
+            UserId = userCompany.UserId;
+            CompanyId = userCompany.CompanyId;
+            Role = userCompany.Role;
+        }
+        
+        public String UserId { get; set; }
+        public Guid CompanyId { get; set; }
+        public UserRole Role { get; set; }
     }
 }

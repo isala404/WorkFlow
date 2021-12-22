@@ -12,5 +12,6 @@ namespace WorkFlow.Shared.Interfaces
         Task<CompanyDto> Create(CompanyDto company);
         Task<CompanyDto> Update(Guid companyId, CompanyDto company);
         Task<bool> Delete(Guid companyId);
+        Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto user);
     }
 }

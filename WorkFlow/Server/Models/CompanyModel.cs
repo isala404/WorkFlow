@@ -37,15 +37,9 @@ namespace WorkFlow.Server.Models
         
         public async Task<CompanyDto> Get(Guid companyId)
         {
-            var user = await _utilityService.GetUser();
-            if (user == null) throw new InvalidDataException("Invalid User.");
-
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
-                userCompany.CompanyId == companyId && userCompany.UserId == user.Id);
+            (_, Company company) = await VerifyRequest(companyId);
             
-            if(userCompany == null)  throw new InvalidDataException("Invalid CompanyId.");
-            
-            return new CompanyDto(userCompany.Company);
+            return new CompanyDto(company);
         }
         
         public async Task<CompanyDto> Create(CompanyDto company)
@@ -71,15 +65,8 @@ namespace WorkFlow.Server.Models
         
         public async Task<CompanyDto> Update(Guid companyId, CompanyDto company)
         {
-            var user = await _utilityService.GetUser();
-            if (user == null) throw new InvalidDataException("Invalid User.");
-
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
-                userCompany.CompanyId == companyId && userCompany.UserId == user.Id);
+            (_, Company targetCompany) = await VerifyRequest(companyId);
             
-            if(userCompany == null)  throw new InvalidDataException("Invalid CompanyId.");
-
-            var targetCompany = userCompany.Company;
             targetCompany.Name = company.Name;
             targetCompany.Uri = company.Uri;
             
@@ -89,18 +76,53 @@ namespace WorkFlow.Server.Models
 
         public async Task<bool> Delete(Guid companyId)
         {
-            var user = await _utilityService.GetUser();
-            if (user == null) throw new InvalidDataException("Invalid User.");
-
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
-                userCompany.CompanyId == companyId && userCompany.UserId == user.Id);
+            (_, Company company) = await VerifyRequest(companyId);
             
-            if(userCompany == null)  throw new InvalidDataException("Invalid CompanyId.");
-            
-            _context.Companies.Remove(userCompany.Company);
+            _context.Companies.Remove(company);
             await _context.SaveChangesAsync();
             return true;
         }
         
+        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto userCompanyDto)
+        {
+            (_, Company company) = await VerifyRequest(companyId);
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userCompanyDto.UserId);
+            if (user == null) throw new InvalidDataException("Invalid UserId.");
+
+            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(uc =>
+                uc.UserId == userCompanyDto.UserId && uc.CompanyId == companyId);
+            
+            if (userCompany != null)
+            {
+                company.Users.Remove(userCompany);
+            }
+            else
+            {
+                company.Users.Add(new UserCompany{UserId = userCompanyDto.UserId, CompanyId = companyId, Role = userCompanyDto.Role});   
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new CompanyDto(company);
+        }
+        
+        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, bool admin = true)
+        {
+            var user = await _utilityService.GetUser();
+            if (user == null) throw new InvalidDataException("Invalid User.");
+
+            var company = await _context.Companies.FirstOrDefaultAsync(company => company.Id == companyId);
+            if (company == null) throw new InvalidDataException("Invalid Company.");
+
+            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
+                userCompany.Company == company && userCompany.User == user);
+
+            if (userCompany == null) throw new UnauthorizedAccessException("User does not have required permission");
+            
+            if (admin && userCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("User does not have required permission");
+            
+            return new Tuple<UserCompany, Company>(userCompany, company);
+        }
     }
 }
