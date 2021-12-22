@@ -14,9 +14,12 @@ namespace WorkFlow.Server.Controllers
         [Microsoft.AspNetCore.Components.Inject]
         protected ITicket TicketModel { get; set; }
 
-        public TicketController(ITicket ticketModel)
+        private readonly IUtility _utilityService;
+
+        public TicketController(ITicket ticketModel, IUtility utilityService)
         {
             TicketModel = ticketModel;
+            _utilityService = utilityService;
         }
 
         // GET: api/ticket
@@ -25,8 +28,8 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                // TODO: Get User
-                var tickets = await TicketModel.List();
+                var user = await _utilityService.GetUser();
+                var tickets = await TicketModel.List(user);
                 return Ok(tickets);
             }
             catch (InvalidDataException e)

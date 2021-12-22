@@ -4,16 +4,17 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WorkFlow.Shared.Entities;
+using WorkFlow.Shared.Interfaces;
 
 
 namespace WorkFlow.Server.Models
 {
-    public class Utility
+    public class UtilityService: IUtility
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public Utility(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
+        public UtilityService(ApplicationDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;

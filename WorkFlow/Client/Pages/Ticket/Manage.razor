@@ -18,26 +18,26 @@
             <div class="mb-2">
                 <label for="priority" class="text-grey-darker inline-block mb-2">Priority</label>
                 <InputSelect @bind-Value="_ticket.Priority" id="priority" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
-                    <option value="HIGH">
+                    <option value="High">
                         High
                     </option>
-                    <option value="MEDIUM">
+                    <option value="Medium">
                         Medium
                     </option>
-                    <option value="LOW">
+                    <option value="Low">
                         Low
                     </option>
                 </InputSelect>
             </div>
             <div class="mb-2">
                 <label for="assignee" class="text-grey-darker inline-block mb-2">Assignee</label>
-                <select  @onchange="OnAssigneeChanged" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
+                <select @onchange="OnAssigneeChanged" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
                     <option value="">Select User</option>
                     @foreach (var user in _users)
                     {
                         if (_ticket.Assignee.Id == user.Id)
                         {
-                            <option selected="selected" value="@user.Id">@(user.Name ?? user.UserName)</option>   
+                            <option selected="selected" value="@user.Id">@(user.Name ?? user.UserName)</option>
                         }
                         else
                         {

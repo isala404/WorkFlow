@@ -33,8 +33,10 @@ builder.Services.AddAuthentication()
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services.AddScoped<IUtility, UtilityService>();
 builder.Services.AddScoped<ITicket, TicketModel>();
 builder.Services.AddScoped<IUser, UserModel>();
+builder.Services.AddScoped<ICompany, CompanyModel>();
 
 var app = builder.Build();
 

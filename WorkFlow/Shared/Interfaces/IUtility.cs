@@ -9,6 +9,6 @@ namespace WorkFlow.Shared.Interfaces
 {
     public interface IUtility
     {
-        Task<User> GetUser();
+        Task<User?> GetUser();
     }
 }
