@@ -45,7 +45,6 @@ namespace WorkFlow.Server.Models
             
             if(userCompany == null)  throw new InvalidDataException("Invalid CompanyId.");
             
-            await _context.SaveChangesAsync();
             return new CompanyDto(userCompany.Company);
         }
         

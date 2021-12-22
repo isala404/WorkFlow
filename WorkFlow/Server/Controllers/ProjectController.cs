@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
@@ -12,88 +10,133 @@ namespace WorkFlow.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CompanyController : ControllerBase
+    public class ProjectController : ControllerBase
     {
         [Microsoft.AspNetCore.Components.Inject]
-        protected ICompany CompanyModel { get; set; }
+        protected IProject ProjectModel { get; set; }
 
-        public CompanyController(ICompany companyModel)
+        public ProjectController(IProject projectModel)
         {
-            CompanyModel = companyModel;
+            ProjectModel = projectModel;
         }
-        
-        // GET: api/company
+
+        // GET: api/project
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             try
             {
-                var companies = await CompanyModel.List();
+                var companies = await ProjectModel.List();
                 return Ok(companies);
             }
-            catch (InvalidDataException e)
+            catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
             }
         }
 
-        // GET: api/company/5
+        // GET: api/project/5
         [HttpGet("{id:guid}", Name = "Get")]
         public async Task<IActionResult> Get(Guid id)
         {
             try
             {
-                var company = await CompanyModel.Get(id);
-                return Ok(company);
+                var project = await ProjectModel.Get(id);
+                return Ok(project);
             }
-            catch (InvalidDataException e)
+            catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
             }
         }
 
-        // POST: api/company
+        // POST: api/project
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CompanyDto company)
+        public async Task<IActionResult> Post([FromBody] ProjectDto project)
         {
             try
             {
-                var newCompany = await CompanyModel.Create(company);
-                return Ok(newCompany);
+                var newProject = await ProjectModel.Create(project);
+                return Ok(newProject);
             }
-            catch (InvalidDataException e)
+            catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
             }
         }
 
-        // PUT: api/company/5
+        // PUT: api/project/5
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] CompanyDto company)
+        public async Task<IActionResult> Put(Guid id, [FromBody] ProjectDto project)
         {
             try
             {
-                var updatedCompany = await CompanyModel.Update(id, company);
-                return Ok(updatedCompany);
+                var updatedProject = await ProjectModel.Update(id, project);
+                return Ok(updatedProject);
             }
-            catch (InvalidDataException e)
+            catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
             }
         }
 
-        // DELETE: api/company/5
+        // PATCH: api/project/5
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> Patch(Guid id, [FromBody] UserDto user)
+        {
+            try
+            {
+                var project = await ProjectModel.ModifyUser(id, user);
+                return Ok(project);
+            }
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
+            }
+        }
+
+        // DELETE: api/project/5
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                var deleted = await CompanyModel.Delete(id);
+                var deleted = await ProjectModel.Delete(id);
                 return Ok(deleted);
             }
-            catch (InvalidDataException e)
+            catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
             }
         }
     }
