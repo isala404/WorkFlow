@@ -61,7 +61,7 @@ namespace WorkFlow.Server.Controllers
         }
 
         // GET: api/project/5
-        [HttpGet("{id:guid}", Name = "Get")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
             try

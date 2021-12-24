@@ -1,4 +1,6 @@
-﻿@inject WorkFlow.Client.Services.INavService NavService
+﻿@inject NavigationManager _navigationManager
+@inject INavService _navService
+@implements IDisposable
 
 @foreach (var option in Options)
 {
@@ -18,33 +20,42 @@
 
 @code {
 
-    private NavRoutes[] Options { get; set; }
+    private NavRoutes[] Options { get; set; } = Array.Empty<NavRoutes>();
+
+
+    private void UpdateUi()
+    {
+        Options = _navService.NavOptions;
+        // var location = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+
+        for (var i = 0; i < Options.Length; i++)
+        {
+            Options[i].HrefWithCompany = Options[i].Href != "/" ? $"/{_navService.GetCurrentCompany().Uri}{Options[i].Href}" : "/";
+
+            // if (location.EndsWith(Options[i].Href) || location.Split("/")[2] == Options[i].Href.Split("/")[1])
+            //     Options[i].Selected = true;
+            // else
+            //     Options[i].Selected = false;
+        }
+        StateHasChanged();
+    }
+
+    private void UpdateUi(object? sender, LocationChangedEventArgs locationChangedEventArgs)
+    {
+        UpdateUi();
+    }
 
     protected override void OnInitialized()
     {
-        Options = NavService.NavOptions;
+        _navService.OnChange += UpdateUi;
+        _navigationManager.LocationChanged += UpdateUi;
+        UpdateUi();
     }
 
-    [Parameter]
-    public string CurrentCompany { get; set; }
-
-    protected override void OnParametersSet()
+    public void Dispose()
     {
-        if (NavService.NavigationManager == null)
-            return;
-
-        var location = NavService.NavigationManager.Uri;
-
-        for (int i = 0; i < Options.Length; i++)
-        {
-            Options[i].HrefWithCompany = Options[i].Href != "/" ? $"/{CurrentCompany}{Options[i].Href}" : "/";
-
-            if (location.EndsWith(Options[i].Href) || location.Split("/")[2] == Options[i].Href.Split("/")[1])
-                Options[i].Selected = true;
-            else
-                Options[i].Selected = false;
-        }
-
+        _navService.OnChange -= UpdateUi;
+        _navigationManager.LocationChanged -= UpdateUi;
     }
 
 }

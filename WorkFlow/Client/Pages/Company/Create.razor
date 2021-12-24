@@ -1,4 +1,6 @@
 @page "/create/company"
+@inject ICompany _companyService
+@inject INavService _navService
 
 <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mb-5">
     <h1 class="text-2xl text-center">Create a new company</h1>
@@ -20,13 +22,14 @@
 
 @code {
     [Parameter]
-    public String Company { get; set; }
+    public String Company { get; set; } = null!;
 
-    private readonly Company _company = new();
+    private readonly CompanyDto _company = new();
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
-        Console.WriteLine($"Company Created: {_company.Name}, {_company.Uri}");
+        await _companyService.Create(_company);
+        _navService.NavigateToHome(true);
     }
 
 }

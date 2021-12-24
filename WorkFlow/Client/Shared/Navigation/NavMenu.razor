@@ -1,4 +1,8 @@
-﻿<nav class="bg-white dark:bg-gray-800 shadow ">
+﻿@inject NavigationManager _navigationManager
+@inject INavService _navService
+@implements IDisposable
+
+<nav class="bg-white dark:bg-gray-800 shadow ">
     <div class="max-w-7xl mx-auto px-8">
         <div class="flex items-center justify-between h-16">
             <div class=" flex items-center">
@@ -7,14 +11,14 @@
                 </a>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <NavOptions CurrentCompany="@CurrentCompany"/>
+                        <NavOptions />
                     </div>
                 </div>
             </div>
             <div class="block">
                 <div class="ml-4 flex items-center md:ml-6">
                     <div class="hidden md:block">
-                        <CompanySelect CurrentCompany="@CurrentCompany"/>
+                        <CompanySelect />
                     </div>
 
                     <div class="ml-3 relative">
@@ -35,7 +39,7 @@
                                                 </span>
                                             </span>
                                         </a>
-                                        <a href="/@CurrentCompany/manage" class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
+                                        <a href="/@_navService.GetCurrentCompany().Uri/manage" class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
                                             <span class="flex flex-col">
                                                 <span>
                                                     Company Settings
@@ -69,16 +73,14 @@
 
     <div class="md:hidden">
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 @(_showMobileNavLinks ? "block" : "hidden")">
-            <NavOptions CurrentCompany="@CurrentCompany"/>
-            <CompanySelect CurrentCompany="@CurrentCompany"/>
+            <NavOptions />
+            <CompanySelect />
         </div>
     </div>
 </nav>
 
 @code {
-    [Parameter]
-    public String CurrentCompany { get; set; }
-    
+
     private bool _profileOptions = false;
     private bool _showMobileNavLinks = false;
 
@@ -91,4 +93,15 @@
     {
         _showMobileNavLinks = !_showMobileNavLinks;
     }
+
+    protected override void OnInitialized()
+    {
+        _navService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _navService.OnChange -= StateHasChanged;
+    }
+
 }

@@ -3,67 +3,96 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Linq;
-using System.Net.Http;
+using WorkFlow.Shared.Interfaces;
 
 namespace WorkFlow.Client.Services
 {
     public class NavService : INavService
     {
-        private readonly HttpClient _http;
-        private readonly TextInfo MyTi = new CultureInfo("en-US", false).TextInfo;
+        private readonly ICompany _companyService;
+        private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
         [Inject] public NavigationManager? NavigationManager { get; set; }
+        public event Action OnChange;
+
         public NavRoutes[] NavOptions { get; set; } =
         {
-            new NavRoutes {Name = "Home", Href = "/"},
-            new NavRoutes {Name = "Projects", Href = "/project"},
-            new NavRoutes {Name = "Reports", Href = "/report"},
+            new() {Name = "Home", Href = "/"},
+            new() {Name = "Projects", Href = "/project"},
+            new() {Name = "Reports", Href = "/report"},
         };
-        public List<CompanyLink> CompanyLinks {get; init;} = new List<CompanyLink>();
-        private string _currentCompany = "C# STOP COMPLAINING BUT USELESS THINGS";
+
+        public Stack<CompanyLink> CompanyLinks { get; init; } = new();
+        private CompanyLink _currentCompany;
 
 
-        public NavService(HttpClient http)
+        public NavService(ICompany companyService)
         {
-            _http = http;
-            // TODO: Fetch this from database
-            CompanyLinks.Add(new CompanyLink { Name = "Netflix", Uri = "netflix" });
-            CompanyLinks.Add(new CompanyLink { Name = "Cloudflare", Uri = "cloudflare" });
-            CompanyLinks.Add(new CompanyLink { Name = "Iconicto", Uri = "iconicto" });
-            CompanyLinks.Add(new CompanyLink { Name = "Create New Company", Uri = "new" });
+            _companyService = companyService;
+            CompanyLinks.Push(new CompanyLink { Name = "Create New Company", Uri = "new" });
+            FetchCompanies();
+        }
 
-            if (CompanyLinks.Count > 0)
+        private async void FetchCompanies()
+        {
+            foreach (var company in await _companyService.List())
             {
-                _currentCompany = CompanyLinks[0].Uri;
+                CompanyLinks.Push(new CompanyLink {Id = company.Id, Name = company.Name, Uri = company.Uri});
             }
+            if (CompanyLinks.Count > 1)
+            {
+                _currentCompany = CompanyLinks.Peek();
+            }
+            RestoreLastCompany();
+            OnChange.Invoke();
         }
 
-        public string GetCurrentCompany(bool pretty = false)
+        public CompanyLink GetCurrentCompany()
         {
-            return pretty ? MyTi.ToTitleCase(_currentCompany) : _currentCompany;
+            return _currentCompany;
         }
 
-        public void SetCurrentCompany(string company, bool reload = true)
+        public void SetCurrentCompany(string newCompanyUri, bool reload)
         {
             if (NavigationManager == null)
                 return;
 
-            if (company == "new")
+            if (newCompanyUri == "new")
             {
                 NavigationManager.NavigateTo("/create/company");
                 return;
             }
+            
+            var newLocation = NavigationManager.Uri.Replace(_currentCompany.Uri, newCompanyUri);
 
-            var newLocation = NavigationManager.Uri.Replace(_currentCompany, company);
-            _currentCompany = company;
+            try
+            {
+                _currentCompany = GetCompanyByUri(newCompanyUri);
+            }
+            catch (NullReferenceException)
+            {
+                NavigateToHome(false);
+            }
+            
             //Task.Run(() => ProtectedLocalStorage.SetAsync("CurrentCompany", _currentCompany)).Wait();
-
+            OnChange.Invoke();
+            
             if (reload)
                 NavigationManager.NavigateTo(newLocation, true);
         }
 
-        public string TitleCase(string text)
+        public CompanyLink GetCompanyByUri(string uri)
         {
-            return MyTi.ToTitleCase(text);
+            foreach (var companyLink in CompanyLinks.Where(companyLink => companyLink.Uri == uri))
+            {
+                return companyLink;
+            }
+
+            throw new NullReferenceException();
+        }
+        
+        public String TitleCase(string? text)
+        {
+            return text == null ? "" : _myTi.ToTitleCase(text);
         }
 
         public void RestoreLastCompany()
@@ -73,12 +102,18 @@ namespace WorkFlow.Client.Services
 
             var currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
             var firstSubPath = currentPath.Split("/").First();
-
-            // Select the first company in the list by default
-            // This value will be updated via the ASP.net Session Storage
-            if (!string.IsNullOrEmpty(firstSubPath) && !firstSubPath.Equals("user"))
+            
+            if (string.IsNullOrEmpty(firstSubPath) || firstSubPath.Equals("user")) return;
+            try
+            {
+                GetCompanyByUri(firstSubPath);
                 SetCurrentCompany(firstSubPath, false);
-   
+                Console.WriteLine("LOL 1");
+            }
+            catch (NullReferenceException)
+            {
+                // ignored
+            }
         }
 
         public void NavigateToProjects()
@@ -99,9 +134,9 @@ namespace WorkFlow.Client.Services
             }
         }
 
-        public void NavigateToHome()
+        public void NavigateToHome(bool reload)
         {
-            NavigationManager?.NavigateTo("/");
+            NavigationManager?.NavigateTo("/", reload);
         }
 
         public void Reload()

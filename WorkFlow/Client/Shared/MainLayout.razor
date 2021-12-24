@@ -1,26 +1,36 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager _navigationManager
-@inject WorkFlow.Client.Services.INavService NavService
+@inject INavService _navService
+@inject ICompany _companyService
+@implements IDisposable
 
-<header>
-    <NavMenu CurrentCompany="@_currentCompany"/>
-</header>
-<div class="container mx-auto px-5">
-    <Breadcrumbs CurrentCompany="@_currentCompany" CurrentPath="@_currentPath"/>
-    @Body
-</div>
+@if (_navService.CompanyLinks.Count <= 1)
+{
+    <h1>Loading</h1>    
+}
+else
+{
+    <header>
+        <NavMenu />
+    </header>
+    <div class="container mx-auto px-5">
+        <Breadcrumbs />
+        @Body
+    </div>
 
+}
 
 @code
 {
-    private String _currentCompany = default!;
-    private String _currentPath = default!;
 
     protected override void OnInitialized()
     {
-        _currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
-        NavService.NavigationManager = _navigationManager;
-        NavService.RestoreLastCompany();
-        _currentCompany = NavService.GetCurrentCompany();
+        _navService.NavigationManager = _navigationManager;
+        _navService.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        _navService.OnChange -= StateHasChanged;
     }
 }

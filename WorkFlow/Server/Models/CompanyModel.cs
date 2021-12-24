@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using WorkFlow.Server.Data;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
@@ -29,7 +30,7 @@ namespace WorkFlow.Server.Models
 
             List<CompanyDto> companies = new();
             
-            var userCompanies = await _context.UserCompany.Where(userCompany => userCompany.User == user).ToListAsync();
+            var userCompanies = await _context.UserCompany.Include(u => u.Company).Where(userCompany => userCompany.User.Id == user.Id).ToListAsync();
             companies.AddRange(userCompanies.Select(userCompany => new CompanyDto(userCompany.Company)));
             
             return companies;
@@ -50,14 +51,17 @@ namespace WorkFlow.Server.Models
             var newCompany = new Company
             {
                 Name = company.Name,
-                Uri = company.Uri
+                Uri = company.Uri,
+                Users = new List<UserCompany>
+                {
+                    new()
+                    {
+                        User = user,
+                        Role = UserRole.Admin
+                    }
+                }
             };
-            newCompany.Users.Add(new UserCompany
-            {
-                User = user,
-                Role = UserRole.Admin
-            });
-            
+
             var result = await _context.Companies.AddAsync(newCompany);
             await _context.SaveChangesAsync();
             return new CompanyDto(result.Entity);
