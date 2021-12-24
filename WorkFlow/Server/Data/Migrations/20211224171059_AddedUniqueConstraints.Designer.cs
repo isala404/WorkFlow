@@ -12,8 +12,8 @@ using WorkFlow.Server.Data;
 namespace WorkFlow.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211224111952_UpdatedUserCompany")]
-    partial class UpdatedUserCompany
+    [Migration("20211224171059_AddedUniqueConstraints")]
+    partial class AddedUniqueConstraints
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -329,9 +329,12 @@ namespace WorkFlow.Server.Migrations
 
                     b.Property<string>("Uri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Uri")
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });
@@ -357,11 +360,14 @@ namespace WorkFlow.Server.Migrations
 
                     b.Property<string>("Uri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("Uri")
+                        .IsUnique();
 
                     b.ToTable("Projects");
                 });
@@ -496,7 +502,8 @@ namespace WorkFlow.Server.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "CompanyId")
+                        .IsUnique();
 
                     b.ToTable("UserCompany");
                 });

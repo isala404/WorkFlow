@@ -327,9 +327,12 @@ namespace WorkFlow.Server.Migrations
 
                     b.Property<string>("Uri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Uri")
+                        .IsUnique();
 
                     b.ToTable("Companies");
                 });
@@ -355,11 +358,14 @@ namespace WorkFlow.Server.Migrations
 
                     b.Property<string>("Uri")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("Uri")
+                        .IsUnique();
 
                     b.ToTable("Projects");
                 });
@@ -494,7 +500,8 @@ namespace WorkFlow.Server.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "CompanyId")
+                        .IsUnique();
 
                     b.ToTable("UserCompany");
                 });
