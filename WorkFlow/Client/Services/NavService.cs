@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Linq;
+using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
 namespace WorkFlow.Client.Services
@@ -21,14 +22,14 @@ namespace WorkFlow.Client.Services
             new() {Name = "Reports", Href = "/report"},
         };
 
-        public Stack<CompanyLink> CompanyLinks { get; init; } = new();
-        private CompanyLink _currentCompany;
+        public Stack<CompanyDto> CompanyList { get; init; } = new();
+        private CompanyDto _currentCompany;
 
 
         public NavService(ICompany companyService)
         {
             _companyService = companyService;
-            CompanyLinks.Push(new CompanyLink { Name = "Create New Company", Uri = "new" });
+            CompanyList.Push(new CompanyDto { Name = "Create New Company", Uri = "new" });
             FetchCompanies();
         }
 
@@ -36,17 +37,17 @@ namespace WorkFlow.Client.Services
         {
             foreach (var company in await _companyService.List())
             {
-                CompanyLinks.Push(new CompanyLink {Id = company.Id, Name = company.Name, Uri = company.Uri});
+                CompanyList.Push(company);
             }
-            if (CompanyLinks.Count > 1)
+            if (CompanyList.Count > 1)
             {
-                _currentCompany = CompanyLinks.Peek();
+                _currentCompany = CompanyList.Peek();
             }
             RestoreLastCompany();
             OnChange.Invoke();
         }
 
-        public CompanyLink GetCurrentCompany()
+        public CompanyDto GetCurrentCompany()
         {
             return _currentCompany;
         }
@@ -80,9 +81,9 @@ namespace WorkFlow.Client.Services
                 NavigationManager.NavigateTo(newLocation, true);
         }
 
-        public CompanyLink GetCompanyByUri(string uri)
+        public CompanyDto GetCompanyByUri(string uri)
         {
-            foreach (var companyLink in CompanyLinks.Where(companyLink => companyLink.Uri == uri))
+            foreach (var companyLink in CompanyList.Where(companyLink => companyLink.Uri == uri))
             {
                 return companyLink;
             }
@@ -108,7 +109,6 @@ namespace WorkFlow.Client.Services
             {
                 GetCompanyByUri(firstSubPath);
                 SetCurrentCompany(firstSubPath, false);
-                Console.WriteLine("LOL 1");
             }
             catch (NullReferenceException)
             {
@@ -116,22 +116,9 @@ namespace WorkFlow.Client.Services
             }
         }
 
-        public void NavigateToProjects()
+        public void NavigateToProjects(bool reload)
         {
-            NavigationManager?.NavigateTo($"{_currentCompany}/project");
-        }
-
-        public void NavigateToProject()
-        {
-            if (NavigationManager == null)
-                return;
-
-            var currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).Split("/");
-            Console.WriteLine(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-            if (currentPath.Length > 3 && currentPath[1] == "project")
-            {
-                NavigationManager.NavigateTo($"{_currentCompany}/project/{currentPath[2]}");
-            }
+            NavigationManager?.NavigateTo($"{_currentCompany.Uri}/project", reload);
         }
 
         public void NavigateToHome(bool reload)

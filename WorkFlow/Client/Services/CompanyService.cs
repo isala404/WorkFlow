@@ -20,7 +20,8 @@ namespace WorkFlow.Client.Services
         public async Task<List<CompanyDto>> List()
         {
             var company = await _http.GetFromJsonAsync<List<CompanyDto>>("api/company/");
-            return company ?? new List<CompanyDto>();
+            if (company == null) throw new ApplicationException("Error while getting companies"); 
+            return company;
         }
 
         public async Task<CompanyDto> Get(Guid companyId)
@@ -61,7 +62,7 @@ namespace WorkFlow.Client.Services
 
         public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto user)
         {
-            var response = await _http.PostAsJsonAsync($"api/company/{companyId}/", user);
+            var response = await _http.PostAsJsonAsync($"api/company/user/{companyId}/", user);
             if (!response.IsSuccessStatusCode) throw new ApplicationException($"Operation Failed, Reason: {response.ReasonPhrase}");
             
             var updatedCompany = await response.Content.ReadFromJsonAsync<CompanyDto>();

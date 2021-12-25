@@ -80,6 +80,26 @@ namespace WorkFlow.Server.Controllers
             }
         }
 
+        // GET: api/project/uri
+        [HttpGet("{uri}")]
+        public async Task<IActionResult> Get(string uri)
+        {
+            try
+            {
+                var project = await ProjectModel.Get(uri);
+                return Ok(project);
+            }
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                };
+            }
+        }
+        
         // POST: api/project
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProjectDto project)
@@ -95,7 +115,7 @@ namespace WorkFlow.Server.Controllers
                 {
                     InvalidDataException => BadRequest(e.Message),
                     UnauthorizedAccessException => Unauthorized(e.Message),
-                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, $"Something went wrong: {e.Message}")
                 };
             }
         }
@@ -115,7 +135,7 @@ namespace WorkFlow.Server.Controllers
                 {
                     InvalidDataException => BadRequest(e.Message),
                     UnauthorizedAccessException => Unauthorized(e.Message),
-                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, "Something went wrong")
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, $"Something went wrong: {e.Message}")
                 };
             }
         }

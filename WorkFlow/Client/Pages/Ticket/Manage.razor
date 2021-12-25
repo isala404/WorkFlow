@@ -97,7 +97,7 @@
     private async void DeleteTicket()
     {
         await TicketService.DeleteTicket(Guid.Parse(Ticket));
-        NavService.NavigateToProject();
+        // NavService.NavigateToProject();
     }
 
     protected override async Task OnInitializedAsync()

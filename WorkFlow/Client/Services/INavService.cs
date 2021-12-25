@@ -9,28 +9,19 @@ namespace WorkFlow.Client.Services
     {
         public NavigationManager? NavigationManager { get; set; }
         public event Action OnChange;
-        public Stack<CompanyLink> CompanyLinks { get; init; }
+        public Stack<CompanyDto> CompanyList { get; init; }
         public NavRoutes[] NavOptions { get; set; }
-        public CompanyLink GetCurrentCompany();
+        public CompanyDto GetCurrentCompany();
         public String TitleCase(string text);
         public void SetCurrentCompany(string newCompanyUri, bool reload);
         public void RestoreLastCompany();
-        public CompanyLink GetCompanyByUri(string uri);
-        public void NavigateToProjects();
-        public void NavigateToProject();
-
+        public CompanyDto GetCompanyByUri(string uri);
+        public void NavigateToProjects(bool reload);
         public void NavigateToHome(bool reload);
         public void Reload();
         
     }
-
-    public readonly struct CompanyLink
-    {
-        public Guid Id { get; init; }
-        public string Name { get; init; }
-        public string Uri { get; init; }
-    }
-
+    
     public struct NavRoutes
     {
         public string Name { get; init; }

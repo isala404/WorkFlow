@@ -10,6 +10,7 @@ namespace WorkFlow.Shared.Interfaces
         Task<List<ProjectDto>> List();
         Task<List<ProjectDto>> List(Guid companyId);
         Task<ProjectDto> Get(Guid projectId);
+        Task<ProjectDto> Get(String uri);
         Task<ProjectDto> Create(ProjectDto project);
         Task<ProjectDto> Update(Guid projectId, ProjectDto project);
         Task<bool> Delete(Guid projectId);

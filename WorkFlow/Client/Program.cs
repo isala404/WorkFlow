@@ -22,6 +22,7 @@ builder.Services.AddScoped<INavService, NavService>();
 builder.Services.AddScoped<ITicket, TicketService>();
 builder.Services.AddScoped<IUser, UserService>();
 builder.Services.AddScoped<ICompany, CompanyService>();
+builder.Services.AddScoped<IProject, ProjectService>();
 builder.Services.AddApiAuthorization();
 
 await builder.Build().RunAsync();

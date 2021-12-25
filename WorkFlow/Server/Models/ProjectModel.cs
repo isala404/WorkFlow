@@ -48,7 +48,7 @@ namespace WorkFlow.Server.Models
 
             List<ProjectDto> projects = new();
             
-            var userProjects = await _context.Projects.Where(project => project.Company.Id == userCompany.CompanyId).ToListAsync();
+            var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company").Where(project => project.Company.Id == userCompany.CompanyId).ToListAsync();
             projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
             
             return projects;
@@ -65,10 +65,23 @@ namespace WorkFlow.Server.Models
             return new ProjectDto(project);
         }
         
+        public async Task<ProjectDto> Get(string uri)
+        {
+            var user = await _utilityService.GetUser();
+            if (user == null) throw new InvalidDataException("Invalid User.");
+
+            var project = await _context.Projects.Include("Company").FirstOrDefaultAsync(project =>
+                project.Uri == uri && (project.Users.Contains(user) ||
+                                       project.Company.Users.FirstOrDefault(u => u.User == user && u.Role == UserRole.Admin) != null)
+                );
+            if(project == null)  throw new InvalidDataException("Invalid Project Uri.");
+            
+            return new ProjectDto(project);
+        }
+        
         public async Task<ProjectDto> Create(ProjectDto project)
         {
             (_, Company company) = await VerifyRequest(project);
-
             var newProject = new Project
             {
                 Id = default,
@@ -78,8 +91,7 @@ namespace WorkFlow.Server.Models
                 Uri = project.Uri,
                 Company = company,
             };
-            
-            var result = await _context.Projects.AddAsync(newProject);
+            var result = _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
             return new ProjectDto(result.Entity);
         }
@@ -102,7 +114,7 @@ namespace WorkFlow.Server.Models
 
         public async Task<bool> Delete(Guid projectId)
         {
-            var project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == projectId);
+            var project = await _context.Projects.Include("Company").FirstOrDefaultAsync(project => project.Id == projectId);
             if(project == null)  throw new InvalidDataException("Invalid projectId.");
             
             await VerifyRequest(new ProjectDto(project));

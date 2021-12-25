@@ -1,5 +1,6 @@
 @page "/{Company}/project/create"
-@inject INavService NavService
+@inject INavService _navService
+@inject IProject _projectService
 
 <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mb-5">
     <h1 class="text-2xl text-center">Create a new Project</h1>
@@ -29,7 +30,7 @@
         <label for="project-uri" class="text-grey-darker inline-block mb-2">Project URI</label>
         <div class="flex flex-wrap items-stretch w-full mb-4 relative">
             <div class="flex -mr-px">
-                <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@NavService.GetCurrentCompany()</span>
+                <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@_navService.GetCurrentCompany().Uri</span>
             </div>
             <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
         </div>
@@ -40,16 +41,18 @@
 @code {
 
     [Parameter]
-    public String Company { get; set; }
+    public String Company { get; set; } = null!;
 
     [Parameter]
-    public String Project { get; set; }
+    public String Project { get; set; } = null!;
 
-    private readonly Project _project = new();
+    private readonly ProjectDto _project = new();
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
-        Console.WriteLine($"Project Created: {_project.Name}, {_project.DueDate}, {_project.Status}, {_project.Uri}");
+        _project.Company = _navService.GetCompanyByUri(Company);
+        await _projectService.Create(_project);
+        _navService.NavigateToProjects(true);
     }
 
 }
