@@ -28,7 +28,7 @@ namespace WorkFlow.Server.Models
             var project = await _context.Projects.FirstOrDefaultAsync(project => project.Uri == ticket.ProjectUri);
             if (project == null) throw new InvalidDataException("Invalid Project.");
 
-            var result = await _context.Tickets.AddAsync(new Ticket
+            var result = _context.Tickets.Add(new Ticket
             {
                 Id = default,
                 Name = ticket.Name,
@@ -56,7 +56,7 @@ namespace WorkFlow.Server.Models
 
         public async Task<TicketDto> GetTicket(Guid ticketId)
         {
-            var ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.Id == ticketId);
+            var ticket = await _context.Tickets.Include("Project").Include("Assignee").FirstOrDefaultAsync(ticket => ticket.Id == ticketId);
             if (ticket == null) throw new InvalidDataException("Invalid Ticket ID.");
             return new TicketDto(ticket);
         }
@@ -66,9 +66,9 @@ namespace WorkFlow.Server.Models
             if (user == null) throw new InvalidDataException("Invalid User.");
 
             List<TicketDto> tickets = new();
-            foreach (var project in user.Projects)
+            foreach (var project in user.Projects!)
             {
-                var userTickets = await _context.Tickets.Where(ticket => ticket.Project == project)
+                var userTickets = await _context.Tickets.Include("Assignee").Where(ticket => ticket.Project == project)
                     .ToListAsync();
                 tickets.AddRange(userTickets.Select(ticket => new TicketDto(ticket)));
             }
@@ -79,7 +79,7 @@ namespace WorkFlow.Server.Models
         public async Task<List<TicketDto>> ListTicketsByProject(Guid projectId)
         {
             List<TicketDto> tickets = new();
-            var projectTickets = await _context.Tickets.Where(ticket => ticket.Project.Id == projectId).ToListAsync();
+            var projectTickets = await _context.Tickets.Include("Project").Include("Assignee").Where(ticket => ticket.Project!.Id == projectId).ToListAsync();
             tickets.AddRange(projectTickets.Select(ticket => new TicketDto(ticket)));
             return tickets;
         }
@@ -87,14 +87,14 @@ namespace WorkFlow.Server.Models
         public async Task<List<TicketDto>> ListTicketsByUser(string userId)
         {
             List<TicketDto> tickets = new();
-            var userTickets = await _context.Tickets.Where(ticket => ticket.Assignee.Id == userId).ToListAsync();
+            var userTickets = await _context.Tickets.Include("Assignee").Where(ticket => ticket.Assignee!.Id == userId).ToListAsync();
             tickets.AddRange(userTickets.Select(ticket => new TicketDto(ticket)));
             return tickets;
         }
 
         public async Task<TicketDto> UpdateTicket(Guid ticketId, TicketDto ticket)
         {
-            var targetTicket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+            var targetTicket = await _context.Tickets.Include("Assignee").FirstOrDefaultAsync(t => t.Id == ticketId);
             if (targetTicket == null) throw new InvalidDataException("Invalid Ticket.");
 
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == ticket.Assignee.Id);

@@ -13,7 +13,7 @@ namespace WorkFlow.Shared.Entities
         [Required]
         public String Uri { get; set; }
 
-        public virtual ICollection<Project> Projects { get; set; }
-        public virtual ICollection<UserCompany> Users { get; set; }
+        public virtual ICollection<Project>? Projects { get; set; }
+        public virtual ICollection<UserCompany>? Users { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 @page "/{CompanyURI}/project/{ProjectURI}"        
-@inject WorkFlow.Shared.Interfaces.ITicket _ticketService
-
+@inject ITicket _ticketService
+@inject IProject _projectService
 <div>
     <div class="flex flex-row-reverse mb-5">
         <a href="@CompanyURI/project/@ProjectURI/ticket/create">
@@ -61,9 +61,14 @@
     private List<TicketDto> CompletedTickets { get; } = new();
 
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        var tickets = await _ticketService.ListTicketsByProject(new Guid());
+        TodoTickets.Clear();
+        InProgressTickets.Clear();
+        CompletedTickets.Clear();
+        
+        var project = await _projectService.Get(ProjectURI);
+        var tickets = await _ticketService.ListTicketsByProject(project.Id);
         foreach (var ticket in tickets)
         {
             switch (ticket.Status)

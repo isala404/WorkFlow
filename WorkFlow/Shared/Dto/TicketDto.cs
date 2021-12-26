@@ -5,7 +5,10 @@ namespace WorkFlow.Shared.Dto
 {
     public class TicketDto
     {
-        public TicketDto(){}
+        public TicketDto()
+        {
+        }
+
         public TicketDto(Ticket ticket)
         {
             Id = ticket.Id;
@@ -13,11 +16,12 @@ namespace WorkFlow.Shared.Dto
             Description = ticket.Description;
             Priority = ticket.Priority;
             Status = ticket.Status;
-            Assignee = new UserDto(ticket.Assignee);
             DueDate = ticket.DueDate;
             EstimatedTime = ticket.EstimatedTime;
-            ProjectUri = ticket.Project.Uri;
+            if (ticket.Project != null) ProjectUri = ticket.Project.Uri;
+            if (ticket.Assignee != null) Assignee = new UserDto(ticket.Assignee);
         }
+
         public Guid? Id { get; set; }
         public String Name { get; set; }
         public String Description { get; set; }

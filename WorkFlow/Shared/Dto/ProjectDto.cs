@@ -5,7 +5,10 @@ namespace WorkFlow.Shared.Dto
 {
     public class ProjectDto
     {
-        public ProjectDto(){}
+        public ProjectDto()
+        {
+        }
+
         public ProjectDto(Project project)
         {
             Id = project.Id;
@@ -13,32 +16,27 @@ namespace WorkFlow.Shared.Dto
             Status = project.Status;
             DueDate = project.DueDate;
             Uri = project.Uri;
-            try
-            {
-                Company = new CompanyDto(project.Company);
-                NumOfUsers = project.Users.Count;
+            if (project.Company != null) Company = new CompanyDto(project.Company);
+            if (project.Users != null) NumOfUsers = project.Users.Count;
 
-                foreach (var ticket in project.Tickets)
+            if (project.Tickets == null) return;
+            foreach (var ticket in project.Tickets)
+            {
+                switch (ticket.Status)
                 {
-                    switch (ticket.Status)
-                    {
-                        case Status.ToDo:
-                            ToDoTickets += 1;
-                            break;
-                        case Status.InProgress:
-                            InProgressTickets += 1;
-                            break;
-                        case Status.Completed:
-                            CompletedTickets += 1;
-                            break;
-                    }
+                    case Status.ToDo:
+                        ToDoTickets += 1;
+                        break;
+                    case Status.InProgress:
+                        InProgressTickets += 1;
+                        break;
+                    case Status.Completed:
+                        CompletedTickets += 1;
+                        break;
                 }
             }
-            catch (Exception)
-            {
-                // Ignore
-            }
         }
+
         public Guid Id { get; set; }
         public String Name { get; set; }
         public Status Status { get; set; } = Status.ToDo;
@@ -49,6 +47,7 @@ namespace WorkFlow.Shared.Dto
         public int ToDoTickets { get; set; } = 0;
         public int InProgressTickets { get; set; } = 0;
         public int CompletedTickets { get; set; } = 0;
+
         public int NumOfUsers { get; set; } = 0;
         // public virtual ICollection<Ticket> Tickets { get; set; }
         // public virtual ICollection<User> Users { get; set; }

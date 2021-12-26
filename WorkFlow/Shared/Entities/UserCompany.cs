@@ -17,8 +17,8 @@ namespace WorkFlow.Shared.Entities
         public UserRole Role { get; set; } = UserRole.User;
         
         [ForeignKey("CompanyId")]
-        public virtual Company Company { get; set; }
+        public virtual Company? Company { get; set; }
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
     }
 }

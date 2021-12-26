@@ -7,15 +7,26 @@ namespace WorkFlow.Shared.Dto
 {
     public class UserDto
     {
-        public UserDto(){}
+        public UserDto()
+        {
+        }
+
         public UserDto(User user)
         {
             Id = user.Id;
             Name = user.Name;
             UserName = user.UserName;
             Email = user.Email;
-            UserCompany = user.Companies;
+            try
+            {
+                UserCompany = user.Companies;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
+
         public String? Id { get; set; }
         public String? Name { get; set; }
         public String UserName { get; set; }
