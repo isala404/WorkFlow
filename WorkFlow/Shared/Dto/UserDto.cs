@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using WorkFlow.Shared.Entities;
 
@@ -7,23 +6,17 @@ namespace WorkFlow.Shared.Dto
 {
     public class UserDto
     {
-        public UserDto()
-        {
-        }
-
+        public UserDto(){}
         public UserDto(User user)
         {
             Id = user.Id;
             Name = user.Name;
             UserName = user.UserName;
             Email = user.Email;
-            try
+            if (user.Companies == null) return;
+            foreach (var userCompany in user.Companies)
             {
-                UserCompany = user.Companies;
-            }
-            catch (Exception)
-            {
-                // ignored
+                UserCompany?.Add(new UserCompanyDto(userCompany));
             }
         }
 
@@ -31,6 +24,7 @@ namespace WorkFlow.Shared.Dto
         public String? Name { get; set; }
         public String UserName { get; set; }
         public String Email { get; set; }
-        public ICollection<UserCompany> UserCompany { get; set; }
+        public String? Password { get; set; }
+        public ICollection<UserCompanyDto>? UserCompany { get; set; } = new List<UserCompanyDto>();
     }
 }

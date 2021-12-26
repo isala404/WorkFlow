@@ -50,7 +50,7 @@ namespace WorkFlow.Client.Services
         public async Task<TicketDto> GetTicket(Guid ticketId)
         {
             var ticket = await _http.GetFromJsonAsync<TicketDto>($"api/ticket/{ticketId}/");
-            if (ticket == null) throw new ApplicationException("Error while creating ticket");
+            if (ticket == null) throw new ApplicationException("Error while getting ticket");
             return ticket;
         }
 

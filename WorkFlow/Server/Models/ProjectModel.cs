@@ -30,7 +30,7 @@ namespace WorkFlow.Server.Models
 
             List<ProjectDto> projects = new();
             
-            var userProjects = await _context.Projects.Where(project => project.Users.Contains(user)).ToListAsync();
+            var userProjects = await _context.Projects.Where(project => project.Users!.Contains(user)).ToListAsync();
             projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
             
             return projects;
@@ -48,7 +48,7 @@ namespace WorkFlow.Server.Models
 
             List<ProjectDto> projects = new();
             
-            var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company").Where(project => project.Company.Id == userCompany.CompanyId).ToListAsync();
+            var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company").Where(project => project.Company!.Id == userCompany.CompanyId).ToListAsync();
             projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
             
             return projects;
@@ -59,7 +59,7 @@ namespace WorkFlow.Server.Models
             var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            var project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == projectId && project.Users.Contains(user));
+            var project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == projectId && project.Users!.Contains(user));
             if(project == null)  throw new InvalidDataException("Invalid ProjectId.");
             
             return new ProjectDto(project);
@@ -71,8 +71,8 @@ namespace WorkFlow.Server.Models
             if (user == null) throw new InvalidDataException("Invalid User.");
 
             var project = await _context.Projects.Include("Company").FirstOrDefaultAsync(project =>
-                project.Uri == uri && (project.Users.Contains(user) ||
-                                       project.Company.Users.FirstOrDefault(u => u.User == user && u.Role == UserRole.Admin) != null)
+                project.Uri == uri && (project.Users!.Contains(user) ||
+                                       project.Company!.Users!.FirstOrDefault(u => u.User == user && u.Role == UserRole.Admin) != null)
                 );
             if(project == null)  throw new InvalidDataException("Invalid Project Uri.");
             
@@ -134,7 +134,7 @@ namespace WorkFlow.Server.Models
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
             if(user == null)  throw new InvalidDataException("Invalid UserId.");
             
-            if (project.Users.Contains(user))
+            if (project.Users!.Contains(user))
             {
                 project.Users.Remove(user);
             }

@@ -17,6 +17,31 @@ namespace WorkFlow.Client.Services
             _http = http;
         }
 
+        public async Task<UserDto> Get()
+        {
+            var user = await _http.GetFromJsonAsync<UserDto>($"api/user/");
+            if (user == null) throw new ApplicationException("Error while getting ticket");
+            return user;
+        }
+
+        public async Task<UserDto> Update(UserDto user)
+        {
+            var response = await _http.PutAsJsonAsync($"api/user/", user);
+            if (!response.IsSuccessStatusCode) throw new ApplicationException($"Operation Failed, Reason: {response.ReasonPhrase}");
+            
+            var updatedUser = await response.Content.ReadFromJsonAsync<UserDto>();
+            if (updatedUser == null) throw new ApplicationException("Error while updating project");
+            
+            return updatedUser;
+        }
+
+        public async Task<bool> Delete()
+        {
+            var response = await _http.DeleteAsync($"api/user/");
+            if (!response.IsSuccessStatusCode) throw new ApplicationException($"Operation Failed, Reason: {response.ReasonPhrase}");
+            return await response.Content.ReadFromJsonAsync<bool>();
+        }
+
         public async Task<UserDto?> GetUser(string id)
         {
             return await _http.GetFromJsonAsync<UserDto?>($"api/user/{id}/");

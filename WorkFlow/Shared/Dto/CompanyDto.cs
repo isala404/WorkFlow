@@ -33,10 +33,14 @@ namespace WorkFlow.Shared.Dto
             UserId = userCompany.UserId;
             CompanyId = userCompany.CompanyId;
             Role = userCompany.Role;
+            // if (userCompany.User != null) User = new UserDto(userCompany.User);
+            if (userCompany.Company != null) Company = new CompanyDto(userCompany.Company);
         }
         
         public String UserId { get; set; }
         public Guid CompanyId { get; set; }
         public UserRole Role { get; set; }
+        // public UserDto User { get; set; }
+        public CompanyDto Company { get; set; }
     }
 }

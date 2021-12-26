@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
@@ -20,21 +22,29 @@ namespace WorkFlow.Server.Controllers
             UserModel = userModel;
         }
 
-        // GET: api/<UserController>
+        // GET: api/user
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await UserModel.GetUsersByProject("sdfsd"));
+            try
+            {
+                var user = await UserModel.Get();
+                return Ok(user);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
         
-        // GET: api/<UserController>/Project/{projectUri}
+        // GET: api/user/Project/{projectUri}
         [HttpGet("project/{projectUri}")]
         public async Task<IActionResult> GetUsersByProject(String projectUri)
         {
             return Ok(await UserModel.GetUsersByProject(projectUri));
         }
 
-        // GET api/<UserController>/5
+        // GET api/user/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(String id)
         {
@@ -43,25 +53,41 @@ namespace WorkFlow.Server.Controllers
             return Ok(user);
         }
 
-        // POST api/<UserController>
+        // POST api/user
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Ticket ticket)
         {
             throw new NotImplementedException();
         }
 
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] Ticket ticket)
+        // PUT api/user
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UserDto userDto)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var user = await UserModel.Update(userDto);
+                return Ok(user);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        // DELETE api/user
+        [HttpDelete]
+        public async Task<IActionResult> Delete()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var deleted = await UserModel.Delete();
+                return Ok(deleted);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }
