@@ -32,11 +32,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: true
           allow-initial-development-versions: true
+          prepend: true
           changelog-file: CHANGELOG.md
       - name: Update CHANGELOG.md
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add CHANGELOG.md
-          git commit -m "docs: update the changelog"
+          git commit -m "docs: Update the changelog"
           git push origin
