@@ -1,3 +1,19 @@
+## 0.1.1 (2021-12-27)
+
+#### Bug Fixes
+
+* Fixed few issues with the CI (ac055ded)
+
+#### Documentation
+
+* Fixed a typo in CHANGELOG.md (29c0ac3c)
+* update the changelog (a054a150)
+
+#### CI
+
+* Enabled prepend on semantic-release (4ea7cb37)
+
+
 ## 0.1.0 (2021-12-27)
 
 #### Feature
