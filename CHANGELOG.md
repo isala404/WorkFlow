@@ -1,7 +1,3 @@
-#### Documentation
-
-* Update the changelog (a054a150)
-
 ## 0.1.0 (2021-12-27)
 
 #### Feature
