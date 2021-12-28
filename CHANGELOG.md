@@ -1,3 +1,20 @@
+## 0.2.0 (2021-12-28)
+
+#### Feature
+
+* Created a CSS Loader Animation (81df90af)
+
+#### Bug Fixes
+
+* Setup login redirects (13aa9e22)
+* Made NavBar icon dynamic (dde1ba95)
+* Handled for users with 0 companies (e11539f2)
+
+#### Documentation
+
+* Update the changelog (3530c2ac)
+
+
 ## 0.1.1 (2021-12-27)
 
 #### Bug Fixes
