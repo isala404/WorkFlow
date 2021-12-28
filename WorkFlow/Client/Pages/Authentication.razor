@@ -1,7 +1,23 @@
 ﻿@page "/authentication/{action}"
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-<RemoteAuthenticatorView Action="@Action" />
+@attribute [AllowAnonymous]
+@inject NavigationManager _navigationManager
+
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogin" />
 
 @code{
     [Parameter] public string? Action { get; set; }
+
+    private void OnLogin(RemoteAuthenticationState state)
+    {
+        Console.WriteLine($"Return URL - {_navigationManager.ToBaseRelativePath(state.ReturnUrl)}");
+        
+        if (_navigationManager.ToBaseRelativePath(state.ReturnUrl).StartsWith("authentication"))
+        {
+            _navigationManager.NavigateTo("", true);   
+        }
+        else
+        {
+            _navigationManager.NavigateTo(state.ReturnUrl, true);
+        }
+    }
 }

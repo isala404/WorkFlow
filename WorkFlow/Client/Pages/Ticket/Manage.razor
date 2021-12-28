@@ -1,109 +1,116 @@
 @page "/{Company}/project/{project}/ticket/{ticket}/manage"
-@inject WorkFlow.Shared.Interfaces.ITicket TicketService
-@inject WorkFlow.Client.Services.INavService NavService
-@inject IUser UserService
+@inject ITicket _ticketService
+@inject INavService _navService
+@inject IUser _userService
 
-<div class="flex flex-col lg:w-2/4 m-auto">
-    <div class="flex flex-grow flex-col bg-gray-100 p-5 mt-20">
-        <h1 class="text-2xl text-center">Update @_ticket.Name ticket</h1>
-        <EditForm Model="@_ticket" OnValidSubmit="@HandleValidSubmit">
-            <div class="mb-2">
-                <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
-                <input @bind="_ticket.Name" type="text" id="name" name="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Ticket Name" required/>
-            </div>
-            <div class="mb-2">
-                <label for="description" class="text-grey-darker inline-block mb-2">Description</label>
-                <textarea @bind="_ticket.Description" id="description" name="description" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Ticket description" required></textarea>
-            </div>
-            <div class="mb-2">
-                <label for="priority" class="text-grey-darker inline-block mb-2">Priority</label>
-                <InputSelect @bind-Value="_ticket.Priority" id="priority" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
-                    <option value="High">
-                        High
-                    </option>
-                    <option value="Medium">
-                        Medium
-                    </option>
-                    <option value="Low">
-                        Low
-                    </option>
-                </InputSelect>
-            </div>
-            <div class="mb-2">
-                <label for="assignee" class="text-grey-darker inline-block mb-2">Assignee</label>
-                <select @onchange="OnAssigneeChanged" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
-                    <option value="">Select User</option>
-                    @foreach (var user in _users)
-                    {
-                        if (_ticket.Assignee.Id == user.Id)
-                        {
-                            <option selected="selected" value="@user.Id">@(user.Name ?? user.UserName)</option>
-                        }
-                        else
-                        {
-                            <option value="@user.Id">@(user.Name ?? user.UserName)</option>
-                        }
-                    }
-                </select>
-            </div>
-            <div class="flex flex-row justify-between mb-2">
-                <div class="w-full mr-3">
-                    <label for="due-date" class="text-grey-darker inline-block mb-2">Due Date</label>
-                    <input @bind="_ticket.DueDate" type="text" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
+@if (_ticket == null || _users == null)
+{
+    <Loader/>
+}
+else
+{
+    <div class="flex flex-col lg:w-2/4 m-auto">
+        <div class="flex flex-grow flex-col bg-gray-100 p-5 mt-20">
+            <h1 class="text-2xl text-center">Update @_ticket.Name ticket</h1>
+            <EditForm Model="@_ticket" OnValidSubmit="@HandleValidSubmit">
+                <div class="mb-2">
+                    <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
+                    <input @bind="_ticket.Name" type="text" id="name" name="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Ticket Name" required/>
                 </div>
-                <div class="w-full ml-3">
-                    <label for="eta" class="text-grey-darker inline-block mb-2">Estimated time</label>
-                    <input @bind="_ticket.EstimatedTime" type="text" id="eta" name="eta" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="15 hours" required/>
+                <div class="mb-2">
+                    <label for="description" class="text-grey-darker inline-block mb-2">Description</label>
+                    <textarea @bind="_ticket.Description" id="description" name="description" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Ticket description" required></textarea>
                 </div>
-            </div>
-            <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Update Ticket</button>
-        </EditForm>
+                <div class="mb-2">
+                    <label for="priority" class="text-grey-darker inline-block mb-2">Priority</label>
+                    <InputSelect @bind-Value="_ticket.Priority" id="priority" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
+                        <option value="High">
+                            High
+                        </option>
+                        <option value="Medium">
+                            Medium
+                        </option>
+                        <option value="Low">
+                            Low
+                        </option>
+                    </InputSelect>
+                </div>
+                <div class="mb-2">
+                    <label for="assignee" class="text-grey-darker inline-block mb-2">Assignee</label>
+                    <select @onchange="OnAssigneeChanged" id="assignee" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="assignee" required>
+                        <option value="">Select User</option>
+                        @foreach (var user in _users)
+                        {
+                            if (_ticket.Assignee.Id == user.Id)
+                            {
+                                <option selected="selected" value="@user.Id">@(user.Name ?? user.UserName)</option>
+                            }
+                            else
+                            {
+                                <option value="@user.Id">@(user.Name ?? user.UserName)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="flex flex-row justify-between mb-2">
+                    <div class="w-full mr-3">
+                        <label for="due-date" class="text-grey-darker inline-block mb-2">Due Date</label>
+                        <input @bind="_ticket.DueDate" type="text" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
+                    </div>
+                    <div class="w-full ml-3">
+                        <label for="eta" class="text-grey-darker inline-block mb-2">Estimated time</label>
+                        <input @bind="_ticket.EstimatedTime" type="text" id="eta" name="eta" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="15 hours" required/>
+                    </div>
+                </div>
+                <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Update Ticket</button>
+            </EditForm>
+        </div>
+        <button @onclick="DeleteTicket" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Ticket</button>
     </div>
-    <button @onclick="DeleteTicket" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Ticket</button>
-</div>
+}
 
 @code {
 
     [Parameter]
-    public String Company { get; set; }
+    public String Company { get; set; } = null!;
 
     [Parameter]
-    public String Project { get; set; }
+    public String Project { get; set; } = null!;
 
     [Parameter]
-    public String Ticket { get; set; }
+    public String Ticket { get; set; } = null!;
 
-    private TicketDto _ticket = new();
+    private TicketDto? _ticket;
 
-    private List<UserDto> _users = new();
+    private List<UserDto>? _users;
 
     private void OnAssigneeChanged(ChangeEventArgs e)
     {
-        foreach (var user in _users.Where(user => (string?) e.Value == user.Id))
+        foreach (var user in _users!.Where(user => (string?) e.Value == user.Id))
         {
-            _ticket.Assignee = user;
+            _ticket!.Assignee = user;
             return;
         }
     }
 
     private async void HandleValidSubmit()
     {
-        _ticket.ProjectUri = Project;
-        await TicketService.UpdateTicket(Guid.Parse(Ticket), _ticket);
-        NavService.Reload();
+        _ticket!.ProjectUri = Project;
+        await _ticketService.UpdateTicket(Guid.Parse(Ticket), _ticket);
+        _navService.Reload();
     }
 
 
     private async void DeleteTicket()
     {
-        await TicketService.DeleteTicket(Guid.Parse(Ticket));
-        // NavService.NavigateToProject();
+        await _ticketService.DeleteTicket(Guid.Parse(Ticket));
+    // NavService.NavigateToProject();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        _users = await UserService.GetUsersByProject(Project);
-        _ticket = await TicketService.GetTicket(Guid.Parse(Ticket));
+        _users = await _userService.GetUsersByProject(Project);
+        _ticket = await _ticketService.GetTicket(Guid.Parse(Ticket));
     }
 
 }

@@ -2,9 +2,11 @@
 @inject IUser _userService
 @inject SignOutSessionStateManager _signOutManager
 @inject NavigationManager _navigationManager
+@inject INavService _navService
+
 @if (_user == null)
 {
-    <h1>Loading...</h1>
+    <Loader />
 }
 else
 {
@@ -63,9 +65,9 @@ else
     
     private async void HandleValidSubmit()
     {
-    // _ticket.ProjectUri = Project;
         _user = await _userService.Update(_user!);
-        StateHasChanged();
+        _navService.Reload();
+        
     }
 
     private async void DeleteUser()

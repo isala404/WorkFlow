@@ -17,15 +17,13 @@
     {
         if (e.Value != null) CurrentCompany = e.Value.ToString()!;
 
-        var inHomePage = _navigationManager.ToBaseRelativePath(_navigationManager.Uri) != "";
-        
+        var inHomePage = _navService.CurrentUrl() != "";
         _navService.SetCurrentCompany(CurrentCompany, inHomePage);
     }
 
     private void UpdateUi()
     {
         CurrentCompany = _navService.GetCurrentCompany().Uri;
-        Console.WriteLine("LOL 2");
         StateHasChanged();
     }
 
@@ -39,5 +37,5 @@
     {
         _navService.OnChange -= UpdateUi;
     }
-    
+
 }
