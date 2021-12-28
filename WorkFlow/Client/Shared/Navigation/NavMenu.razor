@@ -1,6 +1,7 @@
 ﻿@inject NavigationManager _navigationManager
 @inject INavService _navService
 @implements IDisposable
+@inject SignOutSessionStateManager _signOutManager
 
 <nav class="bg-white dark:bg-gray-800 shadow ">
     <div class="max-w-7xl mx-auto px-8">
@@ -25,7 +26,7 @@
                         <div class="relative inline-block text-left">
                             <div>
                                 <button @onclick="ToggleProfileOptions" type="button" class="flex items-center justify-center w-full rounded-md  px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-50 hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-gray-500" id="options-menu">
-                                    <img src="https://avatars.dicebear.com/api/bottts/isala.svg" alt="profile-pic" height="40" width="40"/>
+                                    <img src="https://avatars.dicebear.com/api/bottts/@(_navService.CurrentUser!.UserName).svg" alt="profile-pic" height="40" width="40"/>
                                 </button>
                             </div>
                             @if (_profileOptions)
@@ -46,7 +47,7 @@
                                                 </span>
                                             </span>
                                         </a>
-                                        <a href="#" class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
+                                        <a href="#" @onclick="Logout" class="block block px-4 py-2 text-md text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-100 dark:hover:text-white dark:hover:bg-gray-600" role="menuitem">
                                             <span class="flex flex-col">
                                                 <span>
                                                     Logout
@@ -102,6 +103,12 @@
     public void Dispose()
     {
         _navService.OnChange -= StateHasChanged;
+    }
+
+    public async void Logout()
+    {
+        await _signOutManager.SetSignOutState();
+        _navigationManager.NavigateTo("authentication/logout");
     }
 
 }

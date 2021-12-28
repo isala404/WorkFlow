@@ -36,8 +36,8 @@ else
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        if(_navService.CurrentURL() == "user/settings") return;
-        if (_navService.Fetched && _navService.CompanyList.Count == 1 && _navService.CurrentURL() != "create/company")
+        if(_navService.CurrentUrl() == "user/settings") return;
+        if (_navService.Fetched && _navService.CompanyList.Count == 1 && _navService.CurrentUrl() != "create/company")
         {
             _navigationManager.NavigateTo("/create/company");
         }

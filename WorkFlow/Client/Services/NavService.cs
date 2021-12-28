@@ -11,9 +11,11 @@ namespace WorkFlow.Client.Services
     public class NavService : INavService
     {
         private readonly ICompany _companyService;
+        private readonly IUser _userService;
         private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
         [Inject] public NavigationManager? NavigationManager { get; set; }
         public event Action OnChange;
+        public UserDto? CurrentUser { get; set; }
         public bool Fetched { get; set; } = false;
 
         public NavRoutes[] NavOptions { get; set; } =
@@ -27,9 +29,10 @@ namespace WorkFlow.Client.Services
         private CompanyDto _currentCompany;
 
 
-        public NavService(ICompany companyService)
+        public NavService(ICompany companyService, IUser userService)
         {
             _companyService = companyService;
+            _userService = userService;
             CompanyList.Push(new CompanyDto { Name = "Create New Company", Uri = "create/company" });
             FetchCompanies();
         }
@@ -42,6 +45,8 @@ namespace WorkFlow.Client.Services
             }
             _currentCompany = CompanyList.Peek();
             RestoreLastCompany();
+
+            CurrentUser = await _userService.Get();
             Fetched = true;
             OnChange.Invoke();
         }
@@ -77,7 +82,7 @@ namespace WorkFlow.Client.Services
                 NavigationManager.NavigateTo(newLocation, true);
         }
 
-        public string CurrentURL()
+        public string CurrentUrl()
         {
             return NavigationManager!.ToBaseRelativePath(NavigationManager.Uri);
         }
@@ -99,7 +104,7 @@ namespace WorkFlow.Client.Services
 
         public void RestoreLastCompany()
         {
-            var currentPath = CurrentURL();
+            var currentPath = CurrentUrl();
             if (currentPath == "create/company")
             {
                 _currentCompany = CompanyList.Last();

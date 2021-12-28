@@ -17,7 +17,7 @@
     {
         if (e.Value != null) CurrentCompany = e.Value.ToString()!;
 
-        var inHomePage = _navService.CurrentURL() != "";
+        var inHomePage = _navService.CurrentUrl() != "";
         _navService.SetCurrentCompany(CurrentCompany, inHomePage);
     }
 

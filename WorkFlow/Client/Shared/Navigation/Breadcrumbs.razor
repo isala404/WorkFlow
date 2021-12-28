@@ -27,7 +27,7 @@
         var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
         var subPaths = currentPath.Skip(1);
 
-        if (_navService.CurrentURL() == "user/settings")
+        if (_navService.CurrentUrl() == "user/settings")
             _urLs.Add(new Breadcrumb {Name = "User Settings", Url = "/"});
         else
             _urLs.Add(new Breadcrumb {Name = _navService.GetCurrentCompany().Name, Url = "/"});
