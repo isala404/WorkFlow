@@ -22,11 +22,16 @@
 
     private NavRoutes[] Options { get; set; } = Array.Empty<NavRoutes>();
 
+    private NavRoutes[] OrgOptions { get; set; } =
+        {
+            new() {Name = "Home", Href = "/"},
+            new() {Name = "Projects", Href = "/project"},
+            new() {Name = "Reports", Href = "/report"},
+        };
 
     private void UpdateUi()
     {
-        Options = _navService.NavOptions;
-    // var location = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+        Options = OrgOptions;
 
         for (var i = 0; i < Options.Length; i++)
         {

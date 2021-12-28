@@ -7,16 +7,13 @@ namespace WorkFlow.Client.Services
 {
     public interface INavService
     {
-        public NavigationManager? NavigationManager { get; set; }
         public event Action OnChange;
-        public UserDto? CurrentUser  { get; set; }
-        public bool Fetched { get; set; }
-        public Stack<CompanyDto> CompanyList { get; init; }
-        public NavRoutes[] NavOptions { get; set; }
+        public UserDto? CurrentUser  { get; }
+        public bool Fetched { get; }
+        public Stack<CompanyDto> CompanyList { get; }
         public CompanyDto GetCurrentCompany();
         public String TitleCase(string text);
         public void SetCurrentCompany(string newCompanyUri, bool reload);
-        public void RestoreLastCompany();
         public string CurrentUrl();
         public CompanyDto GetCompanyByUri(string uri);
         public void NavigateToProjects(bool reload);

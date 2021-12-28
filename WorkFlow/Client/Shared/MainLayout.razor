@@ -6,25 +6,30 @@
 
 @if (!_navService.Fetched)
 {
-    <Loader />
+    <Loader/>
 }
 else
 {
-    <header>
-        <NavMenu />
-    </header>
-    <div class="container mx-auto px-5">
-        <Breadcrumbs />
+    if (_navService.CurrentUser != null)
+    {
+        <header>
+            <NavMenu/>
+        </header>
+        <div class="container mx-auto px-5">
+            <Breadcrumbs/>
+            @Body
+        </div>
+    }
+    else
+    {
         @Body
-    </div>
+    }
 }
 
 @code
 {
-
     protected override void OnInitialized()
     {
-        _navService.NavigationManager = _navigationManager;
         _navService.OnChange += StateHasChanged;
     }
 
@@ -36,7 +41,7 @@ else
     protected override void OnAfterRender(bool firstRender)
     {
         base.OnAfterRender(firstRender);
-        if(_navService.CurrentUrl() == "user/settings") return;
+        if (_navService.CurrentUrl() == "user/settings") return;
         if (_navService.Fetched && _navService.CompanyList.Count == 1 && _navService.CurrentUrl() != "create/company")
         {
             _navigationManager.NavigateTo("/create/company");
