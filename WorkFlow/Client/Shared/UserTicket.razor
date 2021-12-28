@@ -34,7 +34,7 @@
     [Parameter]
     public bool HideColour { get; set; } = false;
 
-    private Dictionary<Status, string> _statusColorMap = new Dictionary<Status, string>()
+    private Dictionary<Status, string> _statusColorMap = new()
     {
         {Status.ToDo, "bg-gray-400"},
         {Status.InProgress, "bg-yellow-100"},
@@ -42,7 +42,7 @@
         //{"none", "bg-gray-50"},
     };
 
-    private Dictionary<Priority, string> _priorityColorMap = new Dictionary<Priority, string>()
+    private Dictionary<Priority, string> _priorityColorMap = new()
     {
         {Priority.Low, "#f50000"},
         {Priority.Medium, "#ffcc00"},

@@ -14,6 +14,7 @@ namespace WorkFlow.Client.Services
         private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
         [Inject] public NavigationManager? NavigationManager { get; set; }
         public event Action OnChange;
+        public bool Fetched { get; set; } = false;
 
         public NavRoutes[] NavOptions { get; set; } =
         {
@@ -29,7 +30,7 @@ namespace WorkFlow.Client.Services
         public NavService(ICompany companyService)
         {
             _companyService = companyService;
-            CompanyList.Push(new CompanyDto { Name = "Create New Company", Uri = "new" });
+            CompanyList.Push(new CompanyDto { Name = "Create New Company", Uri = "create/company" });
             FetchCompanies();
         }
 
@@ -39,11 +40,9 @@ namespace WorkFlow.Client.Services
             {
                 CompanyList.Push(company);
             }
-            if (CompanyList.Count > 1)
-            {
-                _currentCompany = CompanyList.Peek();
-            }
+            _currentCompany = CompanyList.Peek();
             RestoreLastCompany();
+            Fetched = true;
             OnChange.Invoke();
         }
 
@@ -54,16 +53,14 @@ namespace WorkFlow.Client.Services
 
         public void SetCurrentCompany(string newCompanyUri, bool reload)
         {
-            if (NavigationManager == null)
-                return;
-
-            if (newCompanyUri == "new")
+            if (newCompanyUri == "create/company")
             {
-                NavigationManager.NavigateTo("/create/company");
+                _currentCompany = CompanyList.Last();
+                NavigationManager!.NavigateTo("/create/company");
                 return;
             }
             
-            var newLocation = NavigationManager.Uri.Replace(_currentCompany.Uri, newCompanyUri);
+            var newLocation = NavigationManager!.Uri.Replace(_currentCompany.Uri, newCompanyUri);
 
             try
             {
@@ -74,11 +71,15 @@ namespace WorkFlow.Client.Services
                 NavigateToHome(false);
             }
             
-            //Task.Run(() => ProtectedLocalStorage.SetAsync("CurrentCompany", _currentCompany)).Wait();
             OnChange.Invoke();
             
             if (reload)
                 NavigationManager.NavigateTo(newLocation, true);
+        }
+
+        public string CurrentURL()
+        {
+            return NavigationManager!.ToBaseRelativePath(NavigationManager.Uri);
         }
 
         public CompanyDto GetCompanyByUri(string uri)
@@ -98,10 +99,13 @@ namespace WorkFlow.Client.Services
 
         public void RestoreLastCompany()
         {
-            if (NavigationManager == null)
+            var currentPath = CurrentURL();
+            if (currentPath == "create/company")
+            {
+                _currentCompany = CompanyList.Last();
                 return;
-
-            var currentPath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+            }
+            
             var firstSubPath = currentPath.Split("/").First();
             
             if (string.IsNullOrEmpty(firstSubPath) || firstSubPath.Equals("user")) return;

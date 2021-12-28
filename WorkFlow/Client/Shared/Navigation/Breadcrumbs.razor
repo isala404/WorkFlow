@@ -18,7 +18,7 @@
 </div>
 
 @code {
-    
+
     private List<Breadcrumb> _urLs = new();
 
     private void UpdateUi()
@@ -27,16 +27,23 @@
         var currentPath = _navigationManager.ToBaseRelativePath(_navigationManager.Uri).Split("/");
         var subPaths = currentPath.Skip(1);
 
-        _urLs.Add(new Breadcrumb {Name = _navService.GetCurrentCompany().Name, Url = "/"});
-        
-        var url = "/" +  _navService.GetCurrentCompany().Uri;
-        foreach (var path in subPaths)
+        if (_navService.CurrentURL() == "user/settings")
+            _urLs.Add(new Breadcrumb {Name = "User Settings", Url = "/"});
+        else
+            _urLs.Add(new Breadcrumb {Name = _navService.GetCurrentCompany().Name, Url = "/"});
+
+        if (_navService.GetCurrentCompany().Uri != "create/company")
         {
-            if (path == "")
-                continue;
-            url += "/" + path;
-            _urLs.Add(new Breadcrumb {Name = _navService.TitleCase(path), Url = url});
+            var url = "/" + _navService.GetCurrentCompany().Uri;
+            foreach (var path in subPaths)
+            {
+                if (path == "")
+                    continue;
+                url += "/" + path;
+                _urLs.Add(new Breadcrumb {Name = _navService.TitleCase(path), Url = url});
+            }
         }
+
         StateHasChanged();
     }
 
@@ -57,5 +64,5 @@
         _navService.OnChange -= UpdateUi;
         _navigationManager.LocationChanged -= UpdateUi;
     }
-    
+
 }

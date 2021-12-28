@@ -4,7 +4,7 @@
 @inject ICompany _companyService
 @implements IDisposable
 
-@if (_navService.CompanyList.Count <= 1)
+@if (!_navService.Fetched)
 {
     <Loader />
 }
@@ -31,5 +31,15 @@ else
     public void Dispose()
     {
         _navService.OnChange -= StateHasChanged;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if(_navService.CurrentURL() == "user/settings") return;
+        if (_navService.Fetched && _navService.CompanyList.Count == 1 && _navService.CurrentURL() != "create/company")
+        {
+            _navigationManager.NavigateTo("/create/company");
+        }
     }
 }

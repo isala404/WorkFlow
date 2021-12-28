@@ -9,12 +9,14 @@ namespace WorkFlow.Client.Services
     {
         public NavigationManager? NavigationManager { get; set; }
         public event Action OnChange;
+        public bool Fetched { get; set; }
         public Stack<CompanyDto> CompanyList { get; init; }
         public NavRoutes[] NavOptions { get; set; }
         public CompanyDto GetCurrentCompany();
         public String TitleCase(string text);
         public void SetCurrentCompany(string newCompanyUri, bool reload);
         public void RestoreLastCompany();
+        public string CurrentURL();
         public CompanyDto GetCompanyByUri(string uri);
         public void NavigateToProjects(bool reload);
         public void NavigateToHome(bool reload);

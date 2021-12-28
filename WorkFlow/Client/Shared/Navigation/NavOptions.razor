@@ -26,16 +26,23 @@
     private void UpdateUi()
     {
         Options = _navService.NavOptions;
-        // var location = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
+    // var location = _navigationManager.ToBaseRelativePath(_navigationManager.Uri);
 
         for (var i = 0; i < Options.Length; i++)
         {
-            Options[i].HrefWithCompany = Options[i].Href != "/" ? $"/{_navService.GetCurrentCompany().Uri}{Options[i].Href}" : "/";
+            if (_navService.GetCurrentCompany().Uri == "create/company")
+            {
+                Options[i].HrefWithCompany = "#";
+            }
+            else
+            {
+                Options[i].HrefWithCompany = Options[i].Href != "/" ? $"/{_navService.GetCurrentCompany().Uri}{Options[i].Href}" : "/";
+            }
 
-            // if (location.EndsWith(Options[i].Href) || location.Split("/")[2] == Options[i].Href.Split("/")[1])
-            //     Options[i].Selected = true;
-            // else
-            //     Options[i].Selected = false;
+    // if (location.EndsWith(Options[i].Href) || location.Split("/")[2] == Options[i].Href.Split("/")[1])
+    //     Options[i].Selected = true;
+    // else
+    //     Options[i].Selected = false;
         }
         StateHasChanged();
     }
