@@ -6,7 +6,7 @@
 
 @if (_user == null)
 {
-    <Loader />
+    <Loader/>
 }
 else
 {
@@ -33,7 +33,7 @@ else
                             </div>
                             <div class="mb-6">
                                 <label for="password" class="text-sm font-medium text-gray-900 block mb-2">Password</label>
-                                <input @bind="_user.Password" type="password" id="password" placeholder="Enter the new password (optional)" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5" />
+                                <input @bind="_user.Password" type="password" id="password" placeholder="Enter the new password (optional)" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full lg:w-80 p-2.5"/>
                             </div>
                         </div>
                     </div>
@@ -58,24 +58,54 @@ else
 
     private UserDto? _user;
 
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
+
     protected override async Task OnInitializedAsync()
     {
-        _user = await _userService.Get();
+        try
+        {
+            _user = await _userService.Get();
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
-    
+
     private async void HandleValidSubmit()
     {
-        _user = await _userService.Update(_user!);
-        _navService.Reload();
-        
+        try
+        {
+            _user = await _userService.Update(_user!);
+            Toast?.AddNotification("Success", $"User ({_user.Name}) was updated", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
     private async void DeleteUser()
     {
-        var deleted = await _userService.Delete();
-        if (!deleted) return;
-        await _signOutManager.SetSignOutState();
-        _navigationManager.NavigateTo("authentication/logout");
+        try
+        {
+            var deleted = await _userService.Delete();
+            if (deleted)
+            {
+                await _signOutManager.SetSignOutState();
+                _navigationManager.NavigateTo("authentication/logout");
+            }
+            else
+            {
+                Toast?.AddNotification("Error", $"User ({_user!.Name}) was not deleted, Try Again!", "red");
+            }
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
 

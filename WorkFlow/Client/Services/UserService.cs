@@ -62,20 +62,5 @@ namespace WorkFlow.Client.Services
             var users = await _http.GetFromJsonAsync<List<UserDto>>($"api/user/project/{projectUri}");
             return users ?? new List<UserDto>();
         }
-
-        public async Task<List<UserDto>> GetUsersByCompany(string companyUri)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> InviteUserToProject(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> InviteUserToCompany(Guid id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

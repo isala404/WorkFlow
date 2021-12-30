@@ -17,7 +17,9 @@ else
         </header>
         <div class="container mx-auto px-5">
             <Breadcrumbs/>
-            @Body
+            <Toast>
+                @Body
+            </Toast>
         </div>
     }
     else
@@ -28,6 +30,7 @@ else
 
 @code
 {
+
     protected override void OnInitialized()
     {
         _navService.OnChange += StateHasChanged;

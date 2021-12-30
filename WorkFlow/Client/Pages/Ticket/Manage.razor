@@ -80,6 +80,9 @@ else
     [Parameter]
     public String Ticket { get; set; } = null!;
 
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
     private TicketDto? _ticket;
 
     private List<UserDto>? _users;
@@ -96,21 +99,41 @@ else
     private async void HandleValidSubmit()
     {
         _ticket!.ProjectUri = Project;
-        await _ticketService.UpdateTicket(Guid.Parse(Ticket), _ticket);
+        await _ticketService.Update(Guid.Parse(Ticket), _ticket);
         _navService.Reload();
     }
 
-
     private async void DeleteTicket()
     {
-        await _ticketService.DeleteTicket(Guid.Parse(Ticket));
-    // NavService.NavigateToProject();
+        try
+        {
+            var deleted = await _ticketService.Delete(_ticket!.Id);
+            if (deleted)
+            {
+                Toast?.AddNotification("Success", $"Ticket ({_ticket!.Name}) was deleted", "blue");
+            }
+            else
+            {
+                Toast?.AddNotification("Error", $"Ticket ({_ticket!.Name}) was not deleted, Try Again!", "red");
+            }
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        _users = await _userService.GetUsersByProject(Project);
-        _ticket = await _ticketService.GetTicket(Guid.Parse(Ticket));
+        try
+        {
+            _users = await _userService.GetUsersByProject(Project);
+            _ticket = await _ticketService.Get(Guid.Parse(Ticket));
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
 }

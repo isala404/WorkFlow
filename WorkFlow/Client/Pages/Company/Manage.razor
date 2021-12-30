@@ -4,7 +4,7 @@
 
 @if (_company == null)
 {
-    <Loader />
+    <Loader/>
 }
 else
 {
@@ -52,18 +52,37 @@ else
     [Parameter]
     public String Company { get; set; } = null!;
 
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
     private CompanyDto? _company;
 
     protected override async Task OnInitializedAsync()
     {
-        var companyId = _navService.GetCompanyByUri(Company).Id;
-        _company = await _companyService.Get(companyId);
+        try
+        {
+            var companyId = _navService.GetCompanyByUri(Company).Id;
+            _company = await _companyService.Get(companyId);
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
     private async void HandleValidSubmit()
     {
         var companyId = _navService.GetCompanyByUri(Company).Id;
-        _company = await _companyService.Update(companyId, _company!);
+        try
+        {
+            _company = await _companyService.Update(companyId, _company!);
+            Toast?.AddNotification("Success", $"Company ({_company.Name}) was updated", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
         _navService.SetCurrentCompany(_company.Uri, true);
     }
 
@@ -77,10 +96,22 @@ else
     private async void DeleteCompany()
     {
         var companyId = _navService.GetCompanyByUri(Company).Id;
-        var deleted = await _companyService.Delete(companyId);
-        if (deleted)
+
+        try
         {
-            _navService.NavigateToHome(true);
+            var deleted = await _companyService.Delete(companyId);
+            if (deleted)
+            {
+                Toast?.AddNotification("Success", $"Company ({_company!.Name}) was deleted", "blue");
+            }
+            else
+            {
+                Toast?.AddNotification("Error", $"Company ({_company!.Name}) was not deleted, Try Again!", "red");
+            }
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
         }
     }
 

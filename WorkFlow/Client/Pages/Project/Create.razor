@@ -46,12 +46,25 @@
     [Parameter]
     public String Project { get; set; } = null!;
 
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+    
     private readonly ProjectDto _project = new();
 
     private async void HandleValidSubmit()
     {
         _project.Company = _navService.GetCompanyByUri(Company);
-        await _projectService.Create(_project);
+        try
+        {
+            var project = await _projectService.Create(_project);
+            Toast?.AddNotification("Success", $"New Project ({project.Name}) was created", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
+
         _navService.NavigateToProjects(true);
     }
 

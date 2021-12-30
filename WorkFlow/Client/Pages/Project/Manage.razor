@@ -4,7 +4,7 @@
 
 @if (_project == null)
 {
-    <Loader />
+    <Loader/>
 }
 else
 {
@@ -69,18 +69,37 @@ else
     [Parameter]
     public String Project { get; set; } = null!;
 
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
     private ProjectDto? _project;
 
 
     protected override async Task OnInitializedAsync()
     {
-        _project = await _projectService.Get(Project);
+        try
+        {
+            _project = await _projectService.Get(Project);
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
 
     private async void HandleValidSubmit()
     {
-        _project = await _projectService.Update(_project!.Id, _project!);
+        try
+        {
+            _project = await _projectService.Update(_project!.Id, _project!);
+            Toast?.AddNotification("Success", $"Project ({_project.Name}) was updated", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
         StateHasChanged();
     }
 
@@ -93,10 +112,23 @@ else
 
     private async void DeleteProject()
     {
-        var deleted = await _projectService.Delete(_project!.Id);
-        if (deleted)
+        try
         {
-            _navService.NavigateToProjects(true);
+            var deleted = await _projectService.Delete(_project!.Id);
+            if (deleted)
+            {
+                Toast?.AddNotification("Success", $"Project ({_project!.Name}) was deleted", "blue");
+                _navService.NavigateToProjects(true);
+            }
+            else
+            {
+                Toast?.AddNotification("Error", $"Project ({_project!.Name}) was not deleted, Try Again!", "red");
+            }
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
         }
     }
+
 }
