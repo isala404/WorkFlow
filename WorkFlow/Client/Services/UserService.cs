@@ -8,10 +8,11 @@ using WorkFlow.Shared.Interfaces;
 
 namespace WorkFlow.Client.Services
 {
-    public class UserService: IUser
+    public class UserService : IUser
     {
         private readonly HttpClient _http;
-        
+        private const string EntityName = "user";
+
         public UserService(HttpClient http)
         {
             _http = http;
@@ -20,25 +21,34 @@ namespace WorkFlow.Client.Services
         public async Task<UserDto> Get()
         {
             var user = await _http.GetFromJsonAsync<UserDto>($"api/user/");
-            if (user == null) throw new ApplicationException("Error while getting ticket");
+            if (user == null) throw new ApplicationException($"Error while getting {EntityName}");
+            return user;
+        }
+        
+        public async Task<UserDto> Get(string id)
+        {
+            var user = await _http.GetFromJsonAsync<UserDto?>($"api/user/{id}/");
+            if (user == null) throw new ApplicationException($"Error while getting {EntityName}");
             return user;
         }
 
         public async Task<UserDto> Update(UserDto user)
         {
             var response = await _http.PutAsJsonAsync($"api/user/", user);
-            if (!response.IsSuccessStatusCode) throw new ApplicationException($"Operation Failed, Reason: {response.ReasonPhrase}");
-            
+            if (!response.IsSuccessStatusCode)
+                throw new ApplicationException($"Error while updating ${EntityName}, Reason: {response.ReasonPhrase}");
+
             var updatedUser = await response.Content.ReadFromJsonAsync<UserDto>();
-            if (updatedUser == null) throw new ApplicationException("Error while updating project");
-            
+            if (updatedUser == null) throw new ApplicationException($"Error while updating ${EntityName}");
+
             return updatedUser;
         }
 
         public async Task<bool> Delete()
         {
             var response = await _http.DeleteAsync($"api/user/");
-            if (!response.IsSuccessStatusCode) throw new ApplicationException($"Operation Failed, Reason: {response.ReasonPhrase}");
+            if (!response.IsSuccessStatusCode)
+                throw new ApplicationException($"Error while deleting ${EntityName}, Reason: {response.ReasonPhrase}");
             return await response.Content.ReadFromJsonAsync<bool>();
         }
 

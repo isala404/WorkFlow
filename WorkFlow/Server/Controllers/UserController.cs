@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WorkFlow.Shared.Dto;
-using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -36,28 +35,21 @@ namespace WorkFlow.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
-        
-        // GET: api/user/Project/{projectUri}
-        [HttpGet("project/{projectUri}")]
-        public async Task<IActionResult> GetUsersByProject(String projectUri)
-        {
-            return Ok(await UserModel.GetUsersByProject(projectUri));
-        }
 
         // GET api/user/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(String id)
         {
-            var user = await UserModel.GetUser(id);
+            var user = await UserModel.Get(id);
             if (user == null) NotFound("Invalid User Id");
             return Ok(user);
         }
 
-        // POST api/user
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Ticket ticket)
+        // GET: api/user/Project/{projectUri}
+        [HttpGet("project/{projectUri}")]
+        public async Task<IActionResult> GetUsersByProject(String projectUri)
         {
-            throw new NotImplementedException();
+            return Ok(await UserModel.GetUsersByProject(projectUri));
         }
 
         // PUT api/user
