@@ -1,6 +1,7 @@
 @page "/{Company}/manage"
 @inject ICompany _companyService
 @inject INavService _navService
+@inject IUser _userService
 
 @if (_company == null)
 {
@@ -28,8 +29,8 @@ else
         </div>
         <div class="flex flex-grow flex-col bg-gray-100 p-5 w-full m-auto mt-10">
             <h1 class="text-2xl">Manage Users</h1>
-            <EditForm Model="@_inviteUser" OnValidSubmit="@SentInviteToUser" class="flex ml-auto -mt-8 mr-2 mb-3">
-                <input @bind="_inviteUser.Email" type="email" class="border-grey-light rounded rounded-lg px-3 w-48 mr-3" placeholder="user@example.com" required/>
+            <EditForm Model="@_userInvite" OnValidSubmit="@SentInviteToUser" class="flex ml-auto -mt-8 mr-2 mb-3">
+                <input @bind="_userInvite.Email" type="email" class="border-grey-light rounded rounded-lg px-3 w-48 mr-3" placeholder="user@example.com" required/>
                 <button class="bg-blue-300 hover:bg-blue-400 font-semibold py-0 px-4 rounded inline-flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 m-0" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
@@ -38,10 +39,10 @@ else
                     <span>Invite</span>
                 </button>
             </EditForm>
-            <CompanyUser Name="John Doe" Role="@UserRole.Admin"/>
-            <CompanyUser Name="Jane Doe" Role="@UserRole.User"/>
-            <CompanyUser Name="John Smith" Role="@UserRole.Admin"/>
-            <CompanyUser Name="Jane Smith" Role="@UserRole.User"/>
+            @foreach (var user in _company.Users)
+            {
+                <CompanyUser User="@user.User" Role="@user.Role" CompanyId="@_company.Id" />
+            }
         </div>
         <button @onclick="DeleteCompany" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Company</button>
     </div>
@@ -86,11 +87,21 @@ else
         _navService.SetCurrentCompany(_company.Uri, true);
     }
 
-    private readonly InviteUser _inviteUser = new();
+    private readonly UserInvite _userInvite = new();
 
-    private void SentInviteToUser()
+    private async void SentInviteToUser()
     {
-        Console.WriteLine($"Invited User: {_inviteUser.Email}");
+        try
+        {
+            _userInvite.CompanyId = _company!.Id;
+            var userCompany = await _userService.SetUserCompany(_userInvite);
+            Toast?.AddNotification("Success", $"User ({userCompany.User.Name}) was added to {_company.Name}", "green");
+            _navService.Reload();
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
     private async void DeleteCompany()

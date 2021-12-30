@@ -52,6 +52,28 @@ namespace WorkFlow.Client.Services
             return await response.Content.ReadFromJsonAsync<bool>();
         }
 
+        public async Task<UserCompanyDto> SetUserCompany(UserInvite userInvite)
+        {
+            var response = await _http.PutAsJsonAsync($"api/user/company/", userInvite);
+            if (!response.IsSuccessStatusCode)
+                throw new ApplicationException($"Error while updating User Company, Reason: {response.ReasonPhrase}");
+
+            var updateUserCompany = await response.Content.ReadFromJsonAsync<UserCompanyDto>();
+            if (updateUserCompany == null) throw new ApplicationException($"Error while updating User Company");
+
+            return updateUserCompany;
+        }
+
+        public Task<bool> AddToProject(string companyId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveFromProject(string companyId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<UserDto?> GetUser(string id)
         {
             return await _http.GetFromJsonAsync<UserDto?>($"api/user/{id}/");

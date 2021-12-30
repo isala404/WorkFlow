@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace WorkFlow.Server.Models
             return new UserDto(user);
         }
 
-        public async Task<UserDto?> Get(string id)
+        public async Task<UserDto> Get(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
             return user == null ? null : new UserDto(user);
@@ -66,9 +67,63 @@ namespace WorkFlow.Server.Models
             return true;
         }
 
+        public async Task<UserCompanyDto> SetUserCompany(UserInvite userInvite)
+        {
+            var currentUser = await _utilityService.GetUser();
+            if (currentUser == null) throw new InvalidDataException("Invalid User.");
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userInvite.Email);
+            if (user == null) throw new InvalidDataException("User not found.");
+            
+            var currentUserCompany = await _context.UserCompany.FirstOrDefaultAsync(u =>
+                u.UserId == currentUser.Id && u.CompanyId == userInvite.CompanyId && u.Role == UserRole.Admin);
+            if (currentUserCompany == null) throw new UnauthorizedAccessException("User does not have required permission");
+
+            var userCompany =  await _context.UserCompany.FirstOrDefaultAsync(u =>
+                u.CompanyId == userInvite.CompanyId && u.UserId == user.Id);
+
+            if (userCompany == null && userInvite.Role != null)
+            {
+                var newUserCompany = new UserCompany
+                {
+                    UserId = user.Id,
+                    CompanyId = userInvite.CompanyId,
+                    Role = (UserRole) userInvite.Role
+                };
+
+                var result = await _context.UserCompany.AddAsync(newUserCompany);
+                await _context.SaveChangesAsync();
+                return new UserCompanyDto(result.Entity);
+            }
+
+            if (userCompany == null) throw new InvalidDataException("UserCompany not found.");
+            
+            if (userInvite.Role == null)
+            {
+                _context.UserCompany.Remove(userCompany);
+            }
+            else
+            {
+                userCompany.Role = (UserRole) userInvite.Role;
+            }
+            
+            await _context.SaveChangesAsync();
+            return new UserCompanyDto(userCompany);
+        }
+
+        public Task<bool> AddToProject(string companyId, string userId)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Task<bool> RemoveFromProject(string companyId, string userId)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task<List<UserDto>> GetUsersByProject(string projectUri)
         {
-            return await _context.Users.Select(user => new UserDto(user)).ToListAsync();
+            return await _context.Users.Select(user => new UserDto(user, true)).ToListAsync();
         }
     }
 }

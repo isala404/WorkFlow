@@ -46,8 +46,8 @@ else
         </div>
         <div class="flex flex-grow flex-col bg-gray-100 p-5 w-full m-auto mt-10">
             <h1 class="text-2xl">Manage Users</h1>
-            <EditForm Model="@_inviteUser" OnValidSubmit="@SentInviteToUser" class="flex ml-auto -mt-8 mr-2 mb-3">
-                <input @bind="_inviteUser.Email" type="email" class="border-grey-light rounded rounded-lg px-3 w-48 mr-3" placeholder="user@example.com" required/>
+            <EditForm Model="@_userInvite" OnValidSubmit="@SentInviteToUser" class="flex ml-auto -mt-8 mr-2 mb-3">
+                <input @bind="_userInvite.Email" type="email" class="border-grey-light rounded rounded-lg px-3 w-48 mr-3" placeholder="user@example.com" required/>
                 <button type="submit" class="bg-blue-300 hover:bg-blue-400 font-semibold py-0 px-4 rounded inline-flex items-center">
                     <span>Add</span>
                 </button>
@@ -103,11 +103,11 @@ else
         StateHasChanged();
     }
 
-    private readonly InviteUser _inviteUser = new();
+    private readonly UserInvite _userInvite = new();
 
     private void SentInviteToUser()
     {
-        Console.WriteLine($"Invited User: {_inviteUser.Email}");
+        Console.WriteLine($"Invited User: {_userInvite.Email}");
     }
 
     private async void DeleteProject()

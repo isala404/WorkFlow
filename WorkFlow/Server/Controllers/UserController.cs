@@ -81,5 +81,20 @@ namespace WorkFlow.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
+        
+        // PUT api/user
+        [HttpPut("company")]
+        public async Task<IActionResult> Put([FromBody] UserInvite userInvite)
+        {
+            try
+            {
+                var userCompany = await UserModel.SetUserCompany(userInvite);
+                return Ok(userCompany);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
     }
 }

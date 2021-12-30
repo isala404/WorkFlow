@@ -38,7 +38,7 @@ namespace WorkFlow.Server.Models
 
         public async Task<CompanyDto> Get(Guid companyId)
         {
-            (_, Company company) = await VerifyRequest(companyId);
+            (_, Company company) = await VerifyRequest(companyId, true, true);
 
             return new CompanyDto(company);
         }
@@ -99,11 +99,11 @@ namespace WorkFlow.Server.Models
 
             if (userCompany != null)
             {
-                company.Users.Remove(userCompany);
+                company.Users!.Remove(userCompany);
             }
             else
             {
-                company.Users.Add(new UserCompany
+                company.Users!.Add(new UserCompany
                     {UserId = userCompanyDto.UserId, CompanyId = companyId, Role = userCompanyDto.Role});
             }
 
@@ -112,12 +112,15 @@ namespace WorkFlow.Server.Models
             return new CompanyDto(company);
         }
 
-        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, bool admin = true)
+        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, bool admin = true, bool includeUsers = false)
         {
             var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
-
-            var company = await _context.Companies.FirstOrDefaultAsync(company => company.Id == companyId);
+            Company? company;
+            if (includeUsers)
+                company = await _context.Companies.Include("Users.User").FirstOrDefaultAsync(c => c.Id == companyId);
+            else
+                company = await _context.Companies.FirstOrDefaultAsync(c => c.Id == companyId);
             if (company == null) throw new InvalidDataException("Invalid Company.");
 
             var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
