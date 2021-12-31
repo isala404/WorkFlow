@@ -32,6 +32,13 @@ namespace WorkFlow.Client.Services
             return user;
         }
 
+        public async Task<List<UserDto>> GetUsersByCompany(Guid companyId)
+        {
+            var users = await _http.GetFromJsonAsync<List<UserDto>>($"api/user/company/{companyId}/");
+            if (users == null) throw new ApplicationException($"Error while getting {EntityName}");
+            return users;
+        }
+
         public async Task<UserDto> Update(UserDto user)
         {
             var response = await _http.PutAsJsonAsync($"api/user/", user);
@@ -64,9 +71,16 @@ namespace WorkFlow.Client.Services
             return updateUserCompany;
         }
 
-        public Task<bool> AddToProject(string companyId, string userId)
+        public async Task<UserDto> ModifyProject(Guid projectId, String userId)
         {
-            throw new NotImplementedException();
+            var response = await _http.PutAsJsonAsync($"api/user/project/",  new Tuple<Guid, string>(projectId, userId));
+            if (!response.IsSuccessStatusCode)
+                throw new ApplicationException($"Error while updating User Project, Reason: {response.ReasonPhrase}");
+
+            var user = await response.Content.ReadFromJsonAsync<UserDto>();
+            if (user == null) throw new ApplicationException($"Error while updating User Project");
+
+            return user;
         }
 
         public Task<bool> RemoveFromProject(string companyId, string userId)
@@ -82,7 +96,8 @@ namespace WorkFlow.Client.Services
         public async Task<List<UserDto>> GetUsersByProject(string projectUri)
         {
             var users = await _http.GetFromJsonAsync<List<UserDto>>($"api/user/project/{projectUri}");
-            return users ?? new List<UserDto>();
+            if (users == null) throw new ApplicationException($"Error while getting {EntityName}");
+            return users;
         }
     }
 }

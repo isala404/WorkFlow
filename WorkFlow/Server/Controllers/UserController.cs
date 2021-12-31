@@ -41,7 +41,6 @@ namespace WorkFlow.Server.Controllers
         public async Task<IActionResult> Get(String id)
         {
             var user = await UserModel.Get(id);
-            if (user == null) NotFound("Invalid User Id");
             return Ok(user);
         }
 
@@ -50,6 +49,20 @@ namespace WorkFlow.Server.Controllers
         public async Task<IActionResult> GetUsersByProject(String projectUri)
         {
             return Ok(await UserModel.GetUsersByProject(projectUri));
+        }
+        
+        // GET: api/user/Project/{projectUri}
+        [HttpGet("company/{companyId:guid}")]
+        public async Task<IActionResult> GetUsersByCompany(Guid companyId)
+        {
+            try
+            {
+                return Ok(await UserModel.GetUsersByCompany(companyId));
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         // PUT api/user
@@ -82,13 +95,29 @@ namespace WorkFlow.Server.Controllers
             }
         }
         
-        // PUT api/user
+        // PUT api/user/company
         [HttpPut("company")]
-        public async Task<IActionResult> Put([FromBody] UserInvite userInvite)
+        public async Task<IActionResult> ModifyCompany([FromBody] UserInvite userInvite)
         {
             try
             {
                 var userCompany = await UserModel.SetUserCompany(userInvite);
+                return Ok(userCompany);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
+        // PUT api/user/project
+        [HttpPut("project")]
+        public async Task<IActionResult> ModifyProject([FromBody] Tuple<Guid, string> userProject)
+        {
+            (Guid projectId, string userId) = userProject;
+            try
+            {
+                var userCompany = await UserModel.ModifyProject(projectId, userId);
                 return Ok(userCompany);
             }
             catch (InvalidDataException e)

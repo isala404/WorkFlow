@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using WorkFlow.Shared.Entities;
 
 namespace WorkFlow.Shared.Dto
 {
-    public class ProjectDto
+    public sealed class ProjectDto
     {
         public ProjectDto()
         {
@@ -17,7 +19,11 @@ namespace WorkFlow.Shared.Dto
             DueDate = project.DueDate;
             Uri = project.Uri;
             if (project.Company != null) Company = new CompanyDto(project.Company);
-            if (project.Users != null) NumOfUsers = project.Users.Count;
+            if (project.Users != null)
+            {
+                NumOfUsers = project.Users.Count;
+                Users = project.Users.Select(u => new UserDto(u)).ToList();
+            }
 
             if (project.Tickets == null) return;
             foreach (var ticket in project.Tickets)
@@ -50,6 +56,6 @@ namespace WorkFlow.Shared.Dto
 
         public int NumOfUsers { get; set; } = 0;
         // public virtual ICollection<Ticket> Tickets { get; set; }
-        // public virtual ICollection<User> Users { get; set; }
+        public ICollection<UserDto>? Users { get; set; }
     }
 }

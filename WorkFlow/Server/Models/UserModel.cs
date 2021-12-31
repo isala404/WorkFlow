@@ -36,7 +36,17 @@ namespace WorkFlow.Server.Models
         public async Task<UserDto> Get(string id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
-            return user == null ? null : new UserDto(user);
+            if (user == null) throw new InvalidDataException("User not found.");
+            return new UserDto(user);
+        }
+
+        public async Task<List<UserDto>> GetUsersByCompany(Guid companyId)
+        {
+            var currentUser = await _utilityService.GetUser();
+            if (currentUser == null) throw new InvalidDataException("Invalid User.");
+            var companies = await _context.Companies.Include("Users.User").FirstOrDefaultAsync(c => c.Id == companyId);
+            if (companies == null) throw new InvalidDataException("Invalid CompanyID.");
+            return companies.Users!.Select(user => new UserDto(user.User!)).ToList();
         }
 
         public async Task<UserDto> Update(UserDto user)
@@ -111,19 +121,29 @@ namespace WorkFlow.Server.Models
             return new UserCompanyDto(userCompany);
         }
 
-        public Task<bool> AddToProject(string companyId, string userId)
+        public async Task<UserDto> ModifyProject(Guid projectId, String userId)
         {
-            throw new System.NotImplementedException();
-        }
+            var currentUser = await _utilityService.GetUser();
+            if (currentUser == null) throw new InvalidDataException("Invalid User.");
+            var project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Id == projectId);
+            if (project == null) throw new InvalidDataException("Invalid ProjectId.");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) throw new InvalidDataException("Invalid UserId.");
 
-        public Task<bool> RemoveFromProject(string companyId, string userId)
-        {
-            throw new System.NotImplementedException();
-        }
+            if (project.Users!.Contains(user))
+                project.Users!.Remove(user);                
+            else
+                project.Users!.Add(user);   
 
+            await _context.SaveChangesAsync();
+            return new UserDto(user);
+        }
+        
         public async Task<List<UserDto>> GetUsersByProject(string projectUri)
         {
-            return await _context.Users.Select(user => new UserDto(user, true)).ToListAsync();
+            var project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Uri == projectUri);
+            if (project == null) throw new InvalidDataException("Invalid Project.");
+            return project.Users!.Select(user => new UserDto(user)).ToList();
         }
     }
 }

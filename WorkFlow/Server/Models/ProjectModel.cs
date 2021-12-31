@@ -44,14 +44,21 @@ namespace WorkFlow.Server.Models
                 userCompany.UserId == user.Id && userCompany.CompanyId == companyId);
             if (userCompany == null) throw new InvalidDataException("Invalid Company.");
 
-            if (userCompany.Role != UserRole.Admin)
-                throw new UnauthorizedAccessException("User does not have required permission");
-
             List<ProjectDto> projects = new();
 
-            var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company")
-                .Where(project => project.Company!.Id == userCompany.CompanyId).ToListAsync();
-            projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
+            if (userCompany.Role == UserRole.Admin)
+            {
+                var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company")
+                    .Where(project => project.Company!.Id == userCompany.CompanyId).ToListAsync();
+                projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
+            }
+            else
+            {
+                var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company")
+                    .Where(project => project.Company!.Id == userCompany.CompanyId && project.Users!.Contains(user)).ToListAsync();
+                projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
+            }
+
 
             return projects;
         }
@@ -74,7 +81,7 @@ namespace WorkFlow.Server.Models
             var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            var project = await _context.Projects.Include("Company").FirstOrDefaultAsync(project =>
+            var project = await _context.Projects.Include("Company").Include("Users").FirstOrDefaultAsync(project =>
                 project.Uri == uri && (project.Users!.Contains(user) ||
                                        project.Company!.Users!.FirstOrDefault(u =>
                                            u.User == user && u.Role == UserRole.Admin) != null)
