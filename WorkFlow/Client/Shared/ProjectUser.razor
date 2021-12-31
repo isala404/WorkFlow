@@ -1,15 +1,35 @@
-    <div class="w-100 m-2 p-2 border border-black bg-white">
-        @Name
-        <button @onclick="RemoveUser" class="bg-red-500 text-white rounded-full h-6 px-3 float-right ml-3">Remove</button>
-    </div>
+@inject IProject _projectService
+@inject IUser _userService
+@inject INavService _navService
+
+<div class="w-100 m-2 p-2 border border-black bg-white">
+    @User.Name
+    <button @onclick="RemoveUser" class="bg-red-500 text-white rounded-full h-6 px-3 float-right ml-3">Remove</button>
+</div>
 
 @code {
+
     [Parameter]
-    public string Name { get; set; }
+    public UserDto User { get; set; } = null!;    
     
-        
-    private void RemoveUser()
+    [Parameter]
+    public ProjectDto Project { get; set; } = null!;    
+
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+    
+    private async void RemoveUser()
     {
-        Console.WriteLine($"User removed from project: {Name}");
+        try
+        {
+            var user = await _userService.ModifyProject(Project.Id, User.Id!);
+            Toast?.AddNotification("Success", $"User ({user.Name}) was removed to the project {Project.Name}", "yellow");
+            _navService.Reload();
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
+
 }

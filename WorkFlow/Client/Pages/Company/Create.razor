@@ -1,7 +1,7 @@
 @page "/create/company"
 @inject ICompany _companyService
 @inject INavService _navService
-@attribute [Authorize]
+
 <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mb-5">
     <h1 class="text-2xl text-center">Create a new company</h1>
     <EditForm Model="@_company" OnValidSubmit="@HandleValidSubmit">
@@ -21,14 +21,27 @@
 </div>
 
 @code {
+
     [Parameter]
     public String Company { get; set; } = null!;
+
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
 
     private readonly CompanyDto _company = new();
 
     private async void HandleValidSubmit()
     {
-        await _companyService.Create(_company);
+        try
+        {
+            var company = await _companyService.Create(_company);
+            Toast?.AddNotification("Success", $"New Company ({company.Name}) was created", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
         _navService.NavigateToHome(true);
     }
 

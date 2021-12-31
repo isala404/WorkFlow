@@ -10,7 +10,10 @@ namespace WorkFlow.Shared.Entities
         [Key]
         public Guid UserCompanyId { get; set; }
         
+        [Required]
         public String UserId { get; set; }
+        
+        [Required]
         public Guid CompanyId { get; set; }
         
         [Required]
@@ -18,6 +21,7 @@ namespace WorkFlow.Shared.Entities
         
         [ForeignKey("CompanyId")]
         public virtual Company? Company { get; set; }
+        
         [ForeignKey("UserId")]
         public virtual User? User { get; set; }
     }

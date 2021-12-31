@@ -22,7 +22,7 @@ namespace WorkFlow.Shared.Dto
             if (ticket.Assignee != null) Assignee = new UserDto(ticket.Assignee);
         }
 
-        public Guid? Id { get; set; }
+        public Guid Id { get; set; }
         public String Name { get; set; }
         public String Description { get; set; }
         public Priority Priority { get; set; }

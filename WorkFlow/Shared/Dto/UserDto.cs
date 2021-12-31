@@ -7,12 +7,15 @@ namespace WorkFlow.Shared.Dto
     public class UserDto
     {
         public UserDto(){}
-        public UserDto(User user)
+        public UserDto(User user, bool expand = true)
         {
             Id = user.Id;
             Name = user.Name;
             UserName = user.UserName;
             Email = user.Email;
+            
+            if (!expand) return;
+            
             if (user.Companies == null) return;
             foreach (var userCompany in user.Companies)
             {

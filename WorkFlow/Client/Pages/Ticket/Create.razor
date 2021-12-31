@@ -55,12 +55,15 @@
 @code {
 
     [Parameter]
-    public String Company { get; set; }
+    public String Company { get; set; } = null!;
 
     [Parameter]
-    public String Project { get; set; }
+    public String Project { get; set; } = null!;
+    
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
 
-    private TicketDto _ticket = new();
+    private readonly TicketDto _ticket = new();
 
     private List<UserDto> _users = new();
 
@@ -80,8 +83,18 @@
 
     private async void HandleValidSubmit()
     {
+                
         _ticket.ProjectUri = Project;
-        var ticket = await _ticketService.CreateTicket(_ticket);
+        try
+        {
+            var ticket = await _ticketService.Create(_ticket);
+            Toast?.AddNotification("Success", $"New Ticket ({ticket.Name}) was created", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
         _navService.NavigateToProjects(true);
     }
 

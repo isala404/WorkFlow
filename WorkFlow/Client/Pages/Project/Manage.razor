@@ -1,10 +1,11 @@
 @page "/{Company}/project/{project}/manage"
 @inject IProject _projectService
+@inject IUser _userService
 @inject INavService _navService
 
-@if (_project == null)
+@if (_project == null || _users == null)
 {
-    <Loader />
+    <Loader/>
 }
 else
 {
@@ -46,16 +47,22 @@ else
         </div>
         <div class="flex flex-grow flex-col bg-gray-100 p-5 w-full m-auto mt-10">
             <h1 class="text-2xl">Manage Users</h1>
-            <EditForm Model="@_inviteUser" OnValidSubmit="@SentInviteToUser" class="flex ml-auto -mt-8 mr-2 mb-3">
-                <input @bind="_inviteUser.Email" type="email" class="border-grey-light rounded rounded-lg px-3 w-48 mr-3" placeholder="user@example.com" required/>
-                <button type="submit" class="bg-blue-300 hover:bg-blue-400 font-semibold py-0 px-4 rounded inline-flex items-center">
+            <div class="flex ml-auto -mt-8 mr-2 mb-3">
+                <select class="mr-2 w-36" @bind="SelectedUserId">
+                    <option value="">Select new user</option>
+                    @foreach (var user in _users)
+                    {
+                        <option value="@user.Id">@user.Name</option>
+                    }
+                </select>
+                <button onclick="@(() => SentInviteToUser())" class="bg-blue-300 hover:bg-blue-400 font-semibold py-0 px-4 rounded inline-flex items-center">
                     <span>Add</span>
                 </button>
-            </EditForm>
-            <ProjectUser Name="John Doe"/>
-            <ProjectUser Name="Jane Doe"/>
-            <ProjectUser Name="John Smith"/>
-            <ProjectUser Name="Jane Smith"/>
+            </div>
+            @foreach (var user in _project.Users!)
+            {
+                <ProjectUser User="@user" Project="@_project"/>
+            }
         </div>
         <button @onclick="DeleteProject" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Project</button>
     </div>
@@ -69,34 +76,77 @@ else
     [Parameter]
     public String Project { get; set; } = null!;
 
-    private ProjectDto? _project;
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
 
+    private ProjectDto? _project;
+    private List<UserDto>? _users;
+
+    private string? SelectedUserId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        _project = await _projectService.Get(Project);
+        try
+        {
+            _project = await _projectService.Get(Project);
+            _users = await _userService.GetUsersByCompany(_navService.GetCurrentCompany().Id);
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
 
     private async void HandleValidSubmit()
     {
-        _project = await _projectService.Update(_project!.Id, _project!);
+        try
+        {
+            _project = await _projectService.Update(_project!.Id, _project!);
+            Toast?.AddNotification("Success", $"Project ({_project.Name}) was updated", "green");
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
         StateHasChanged();
     }
 
-    private readonly InviteUser _inviteUser = new();
 
-    private void SentInviteToUser()
+    private async void SentInviteToUser()
     {
-        Console.WriteLine($"Invited User: {_inviteUser.Email}");
+        try
+        {
+            var user = await _userService.ModifyProject(_project!.Id, SelectedUserId!);
+            Toast?.AddNotification("Success", $"User ({user.Name}) was added to the project {_project.Name}", "green");
+            _navService.Reload();
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
     private async void DeleteProject()
     {
-        var deleted = await _projectService.Delete(_project!.Id);
-        if (deleted)
+        try
         {
-            _navService.NavigateToProjects(true);
+            var deleted = await _projectService.Delete(_project!.Id);
+            if (deleted)
+            {
+                Toast?.AddNotification("Success", $"Project ({_project!.Name}) was deleted", "blue");
+                _navService.NavigateToProjects(true);
+            }
+            else
+            {
+                Toast?.AddNotification("Error", $"Project ({_project!.Name}) was not deleted, Try Again!", "red");
+            }
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
         }
     }
+
 }

@@ -57,10 +57,21 @@
 
     private List<ProjectDto> _projects = new();
 
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
     private async void UpdateUi()
     {
         var companyId = _navService.GetCompanyByUri(Company).Id;
-        _projects = await _projectService.List(companyId);
+        try
+        {
+            _projects = await _projectService.List(companyId);
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+            return;
+        }
         StateHasChanged();
     }
 

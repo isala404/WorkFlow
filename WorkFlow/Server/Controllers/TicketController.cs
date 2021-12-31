@@ -38,6 +38,21 @@ namespace WorkFlow.Server.Controllers
             }
         }
         
+        // GET api/ticket/{id}
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            try
+            {
+                var tickets = await TicketModel.Get(id);
+                return Ok(tickets);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
         // GET: api/ticket/project/{projectId}
         [HttpGet("project/{projectId:guid}")]
         public async Task<IActionResult> GetByProject(Guid projectId)
@@ -67,29 +82,14 @@ namespace WorkFlow.Server.Controllers
                 return BadRequest(e.Message);
             }
         }
-
-        // GET api/ticket/{id}
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> Get(Guid id)
-        {
-            try
-            {
-                var tickets = await TicketModel.GetTicket(id);
-                return Ok(tickets);
-            }
-            catch (InvalidDataException e)
-            {
-                return BadRequest(e.Message);
-            }
-        }
-
+        
         // POST api/ticket
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] TicketDto ticket)
         {
             try
             {
-                var newTicket = await TicketModel.CreateTicket(ticket);
+                var newTicket = await TicketModel.Create(ticket);
                 return Ok(newTicket);
             }
             catch (InvalidDataException e)
@@ -104,7 +104,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var tickets = await TicketModel.UpdateTicket(id, ticket);
+                var tickets = await TicketModel.Update(id, ticket);
                 return Ok(tickets);
             }
             catch (InvalidDataException e)
@@ -119,7 +119,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var deleted = await TicketModel.DeleteTicket(id);
+                var deleted = await TicketModel.Delete(id);
                 return Ok(deleted);
             }
             catch (InvalidDataException e)

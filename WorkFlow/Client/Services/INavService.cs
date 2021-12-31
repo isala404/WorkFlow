@@ -29,6 +29,18 @@ namespace WorkFlow.Client.Services
         public string HrefWithCompany { get; set; }
         public bool Selected { get; set; }
     }
+    public class Notification : IEquatable<Notification>
+    {
+        public string? Title { get; init; }
+        public string Message { get; init; }
+        public string Color { get; init; }
+        public bool Equals(Notification? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Title == other.Title && Message == other.Message && Color == other.Color;
+        }
+    }
 
     public readonly struct Breadcrumb
     {
