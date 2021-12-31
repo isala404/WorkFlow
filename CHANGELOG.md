@@ -1,3 +1,29 @@
+## 0.3.0 (2021-12-31)
+
+#### Feature
+
+* Add and Remove users from projects (b820b38f)
+* Invite Users to project (06ad5b1f)
+* Added exception handling with toasts (72e5c02b)
+
+#### Bug Fixes
+
+* Added Entity Framework based validation (1fe26c72)
+* Added missing attributes to register page (9901c473)
+
+#### Documentation
+
+* Update the changelog (7e2dca4e)
+
+#### Code Refactoring
+
+* Standardize the Models and Services (32e77222)
+
+#### Chores
+
+* Updated packages to .NET 6.0.1 (32934f56)
+
+
 ## 0.2.0 (2021-12-28)
 
 #### Feature
