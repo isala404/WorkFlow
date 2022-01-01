@@ -17,7 +17,7 @@ namespace WorkFlow.Shared.Dto
             Priority = ticket.Priority;
             Status = ticket.Status;
             DueDate = ticket.DueDate;
-            EstimatedTime = ticket.EstimatedTime;
+            EstimatedTime = ticket.EstimatedTime.Hours;
             if (ticket.Project != null) ProjectUri = ticket.Project.Uri;
             if (ticket.Assignee != null) Assignee = new UserDto(ticket.Assignee);
         }
@@ -29,7 +29,7 @@ namespace WorkFlow.Shared.Dto
         public Status Status { get; set; } = Status.ToDo;
         public UserDto Assignee { get; set; }
         public DateTime DueDate { get; set; } = DateTime.Today;
-        public TimeSpan EstimatedTime { get; set; }
+        public int EstimatedTime { get; set; }
         public String ProjectUri { get; set; }
     }
 }

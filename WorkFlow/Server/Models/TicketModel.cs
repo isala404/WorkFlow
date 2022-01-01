@@ -78,7 +78,7 @@ namespace WorkFlow.Server.Models
                 Status = ticket.Status,
                 Assignee = user,
                 DueDate = ticket.DueDate,
-                EstimatedTime = ticket.EstimatedTime,
+                EstimatedTime = TimeSpan.FromHours(ticket.EstimatedTime),
                 Project = project
             });
             await _context.SaveChangesAsync();
@@ -109,7 +109,7 @@ namespace WorkFlow.Server.Models
             targetTicket.Status = ticket.Status;
             targetTicket.Assignee = user;
             targetTicket.DueDate = ticket.DueDate;
-            targetTicket.EstimatedTime = ticket.EstimatedTime;
+            targetTicket.EstimatedTime = TimeSpan.FromHours(ticket.EstimatedTime);
 
             await _context.SaveChangesAsync();
 

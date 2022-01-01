@@ -18,7 +18,7 @@ namespace WorkFlow.Shared.Entities
         public DateTime DueDate { get; set; }
         
         [Required] 
-        [StringLength(20, MinimumLength = 5, ErrorMessage="Name must be at least 5 and at max 25 characters long")]
+        [StringLength(20, MinimumLength = 5, ErrorMessage="Uri must be at least 5 and at max 25 characters long")]
         public String Uri { get; set; }
         
         [Required] 

@@ -8,7 +8,7 @@
     <EditForm Model="@_ticket" OnValidSubmit="@HandleValidSubmit">
         <div class="mb-2">
             <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
-            <input @bind="_ticket.Name" type="text" id="name" name="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Ticket Name" required/>
+            <input @bind="_ticket.Name" type="text" id="name" name="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="Ticket Name" required maxlength="25" minlength="3"/>
         </div>
         <div class="mb-2">
             <label for="description" class="text-grey-darker inline-block mb-2">Description</label>
@@ -17,14 +17,28 @@
         <div class="mb-2">
             <label for="priority" class="text-grey-darker inline-block mb-2">Priority</label>
             <InputSelect @bind-Value="_ticket.Priority" id="priority" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
-                <option value="High">
+                <option value="@Priority.High">
                     High
                 </option>
-                <option value="Medium">
+                <option value="@Priority.Medium">
                     Medium
                 </option>
-                <option value="Low">
+                <option value="@Priority.Low">
                     Low
+                </option>
+            </InputSelect>
+        </div>
+        <div class="mb-2">
+            <label for="priority" class="text-grey-darker inline-block mb-2">Status</label>
+            <InputSelect @bind-Value="_ticket.Status" id="priority" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
+                <option value="@Status.ToDo">
+                    To-Do
+                </option>
+                <option value="@Status.InProgress">
+                    In Progress
+                </option>
+                <option value="@Status.Completed">
+                    Completed
                 </option>
             </InputSelect>
         </div>
@@ -41,11 +55,16 @@
         <div class="flex flex-row justify-between mb-2">
             <div class="w-full mr-3">
                 <label for="due-date" class="text-grey-darker inline-block mb-2">Due Date</label>
-                <input @bind="_ticket.DueDate" type="text" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
+                <input @bind="_ticket.DueDate" type="datetime-local" id="due-date" name="due-date" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="31/10/2021 13:45" required/>
             </div>
             <div class="w-full ml-3">
                 <label for="eta" class="text-grey-darker inline-block mb-2">Estimated time</label>
-                <input @bind="_ticket.EstimatedTime" type="text" id="eta" name="eta" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5" placeholder="15 hours" required/>
+                <div class="flex flex-wrap items-stretch w-full mb-4 relative">
+                    <input @bind="_ticket.EstimatedTime" type="number" id="eta" name="eta" class="flex-shrink flex-grow leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-r-none px-3 relative" placeholder="15 hours" required max="23" min="0"/>
+                    <div class="flex -mr-px">
+                        <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-l-none border border-l-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">Hours</span>
+                    </div>
+                </div>
             </div>
         </div>
         <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Submit</button>
@@ -59,7 +78,7 @@
 
     [Parameter]
     public String Project { get; set; } = null!;
-    
+
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
@@ -83,7 +102,6 @@
 
     private async void HandleValidSubmit()
     {
-                
         _ticket.ProjectUri = Project;
         try
         {
