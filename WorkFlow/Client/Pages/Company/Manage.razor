@@ -39,9 +39,11 @@ else
                     <span>Invite</span>
                 </button>
             </EditForm>
-            @foreach (var user in _company.Users)
-            {
-                <CompanyUser User="@user.User" Role="@user.Role" CompanyId="@_company.Id" />
+            @if(_company.Users != null){
+                @foreach (var user in _company.Users)
+                {
+                    <CompanyUser User="@user.User" Role="@user.Role" CompanyId="@_company.Id" />
+                }
             }
         </div>
         <button @onclick="DeleteCompany" class="self-end text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mt-5 w-48">Delete Company</button>

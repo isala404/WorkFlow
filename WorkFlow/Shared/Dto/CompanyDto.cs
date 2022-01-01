@@ -27,7 +27,7 @@ namespace WorkFlow.Shared.Dto
         public String Name { get; set; }
         public String Uri { get; set; }
         // public virtual ICollection<Project> Projects { get; set; }
-        public List<UserCompanyDto> Users { get; set; }
+        public List<UserCompanyDto>? Users { get; set; }
     }
 
     public class UserCompanyDto

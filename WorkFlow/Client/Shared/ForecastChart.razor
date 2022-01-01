@@ -1,6 +1,7 @@
 @using ChartJs.Blazor;
 @using ChartJs.Blazor.Common
 @using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
 @using ChartJs.Blazor.Common.Enums
 @using ChartJs.Blazor.LineChart
 
@@ -9,24 +10,24 @@
 @code {
 
     [Parameter]
-    public int[] Data { get; set; }
+    public List<int> Data { get; set; } = null!;
 
     [Parameter]
-    public DateTime[] Labels { get; set; }
+    public List<DateTime> Labels { get; set; } = null!;
 
     [Parameter]
-    public string BackgroundColor { get; set; }
+    public string BackgroundColor { get; set; } = null!;
 
     [Parameter]
-    public string BorderColor { get; set; }
+    public string BorderColor { get; set; } = null!;
 
     [Parameter]
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
     [Parameter]
-    public string Label { get; set; }
+    public string Label { get; set; } = null!;
 
-    private LineConfig _config;
+    private LineConfig _config = null!;
 
     protected override void OnInitialized()
     {
@@ -60,7 +61,7 @@
                             {
                                 LabelString = "Month"
                             }
-                        }
+                        },
                     },
                     YAxes = new List<CartesianAxis>
                     {
@@ -69,6 +70,11 @@
                             ScaleLabel = new ScaleLabel
                             {
                                 LabelString = "Value"
+                            },
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
+                                Max = Data.Last() + 2
                             }
                         }
                     }
@@ -94,6 +100,18 @@
     {
         _config.Data.Labels.Clear();
         _config.Data.Datasets.Clear();
+        _config.Options.Scales.YAxes[0] = new LinearCartesianAxis
+        {
+            ScaleLabel = new ScaleLabel
+            {
+                LabelString = "Value"
+            },
+            Ticks = new LinearCartesianTicks
+            {
+                BeginAtZero = true,
+                Max = Data.Last() + 2
+            }
+        };
         IDataset<int> dataset = new LineDataset<int>(Data)
         {
             Label = Label,

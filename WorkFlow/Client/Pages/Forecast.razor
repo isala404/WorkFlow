@@ -1,4 +1,7 @@
 @page "/{Company}/report"
+@inject INavService _navService
+@inject IReport _reportService
+
 
 <div class="flex flex-col m-auto mb-5">
     <div class="flex flex-row justify-between mb-2 w-96 ml-auto mr-10 xl:mr-48">
@@ -11,13 +14,21 @@
             <input @bind="EndDate" type="date" id="endDate" name="endDate" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full m-0 p-2.5"/>
         </div>
     </div>
-    <div class="w-100 xl:w-3/6 m-auto">
-        <ForecastChart Data="@_projectEstimates" Labels="@_timeSeries" Title="Estimated Number of Projects" Label="Projects" BorderColor="#3e95cd" BackgroundColor="#7bb6dd"/>
-    </div>
-    <div class="w-100 xl:w-3/6 m-auto">
-        <ForecastChart Data="@_peopleEstimates" Labels="@_timeSeries" Title="Estimated Number of People Required" Label="People" BorderColor="#3e95cd" BackgroundColor="#7bb6dd"/>
-    </div>
+    @if (_timeSeries.Count == 0)
+    {
+        <Loader/>
+    }
+    else
+    {
+        <div class="w-100 xl:w-3/6 m-auto">
+            <ForecastChart Data="@_projectEstimates" Labels="@_timeSeries" Title="Estimated Number of Projects" Label="Projects" BorderColor="#3e95cd" BackgroundColor="#7bb6dd"/>
+        </div>
+        <div class="w-100 xl:w-3/6 m-auto">
+            <ForecastChart Data="@_peopleEstimates" Labels="@_timeSeries" Title="Estimated Number of People Required" Label="People" BorderColor="#3e95cd" BackgroundColor="#7bb6dd"/>
+        </div>
+    }
 </div>
+
 
 @code {
 
@@ -27,7 +38,7 @@
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
-    private DateTime _startDate = DateTime.Today.AddDays(-30);
+    private DateTime _startDate = DateTime.Today;
 
     private DateTime StartDate
     {
@@ -35,11 +46,15 @@
         set
         {
             _startDate = value;
+            if (_startDate.CompareTo(_endDate) > 0)
+            {
+                _endDate = _startDate.AddDays(30);
+            }
             FetchNewData();
         }
     }
 
-    private DateTime _endDate = DateTime.Today;
+    private DateTime _endDate = DateTime.Today.AddDays(30);
 
     private DateTime EndDate
     {
@@ -51,25 +66,40 @@
         }
     }
 
-    private readonly int[] _projectEstimates = {86, 114, 106, 106, 107, 111, 133};
-    private readonly int[] _peopleEstimates = {70, 90, 44, 60, 83, 90, 100};
+    private readonly List<int> _projectEstimates = new List<int>();
+    private readonly List<int> _peopleEstimates = new List<int>();
+    private readonly List<DateTime> _timeSeries = new List<DateTime>();
 
-    private readonly DateTime[] _timeSeries =
+    protected override void OnInitialized()
     {
-        DateTime.Parse("11/01/2021"),
-        DateTime.Parse("11/02/2021"),
-        DateTime.Parse("11/03/2021"),
-        DateTime.Parse("11/04/2021"),
-        DateTime.Parse("11/05/2021"),
-        DateTime.Parse("11/06/2021"),
-        DateTime.Parse("11/07/2021"),
-    };
+        FetchNewData();
+    }
 
-    private void FetchNewData()
+    private async void FetchNewData()
     {
-        _timeSeries[0] = StartDate;
-        _timeSeries[^1] = EndDate;
-        StateHasChanged();
+        try
+        {
+            var forecast = await _reportService.Forecast(_startDate, _endDate, _navService.GetCurrentCompany().Id);
+
+            _peopleEstimates.Clear();
+            _projectEstimates.Clear();
+            _timeSeries.Clear();
+
+            var estimate = forecast.CurrentProject + (forecast.Offset * forecast.ProjectGrowthRate);
+
+            for (var i = 1; i < forecast.NumberOfDays + 1; i++)
+            {
+                estimate += forecast.ProjectGrowthRate;
+                _projectEstimates.Add(Convert.ToInt32(estimate));
+                _peopleEstimates.Add((int) Math.Ceiling(Convert.ToInt32(estimate) * forecast.PeoplePerProject));
+                _timeSeries.Add(_startDate.AddDays(i - 1));
+            }
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
     }
 
 }
