@@ -1,3 +1,19 @@
+## 0.4.0 (2022-01-01)
+
+#### Feature
+
+* Created Page for User Report (d6646867)
+* Added data forecasting (661116cf)
+
+#### Bug Fixes
+
+* Fixed few UI related Issues (8431f636)
+
+#### Documentation
+
+* Update the changelog (1a308487)
+
+
 ## 0.3.0 (2021-12-31)
 
 #### Feature
