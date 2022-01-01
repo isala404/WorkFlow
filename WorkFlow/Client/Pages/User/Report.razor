@@ -1,0 +1,76 @@
+﻿@page "/{Company}/user/{UserId}"
+@inject IReport _reportService
+@inject INavService _navService
+
+@if (UserProductivityDto == null)
+{
+    <Loader/>
+}
+else
+{
+    <div class="flex flex-grow flex-col bg-gray-100 p-5 md:w-4/5 xl:w-2/5 m-auto mt-20">
+        <h1 class="text-2xl text-center">User Report</h1>
+        <table class="table-auto mx-auto mt-10">
+            <tbody>
+            <tr class="text-left">
+                <th>Name</th>
+                <td>@UserProductivityDto.Name</td>
+            </tr>
+            <tr class="text-left">
+                <th>Email</th>
+                <td>@UserProductivityDto.Email</td>
+            </tr>
+            <tr class="text-left">
+                <th>Role</th>
+                <td>@UserProductivityDto.UserRole</td>
+            </tr>
+            <tr class="text-left">
+                <th>Number of Projects</th>
+                <td>@UserProductivityDto.NumOfProjects</td>
+            </tr>
+            <tr class="text-left">
+                <th>Number of ToDo tickets</th>
+                <td>@UserProductivityDto.NumOfTodoTickets</td>
+            </tr>
+            <tr class="text-left">
+                <th class="pr-5">Number of In Progress ticket</th>
+                <td>@UserProductivityDto.NumOfInProgressTickets</td>
+            </tr>
+            <tr class="text-left">
+                <th class="pr-5">Number of Completed tickets</th>
+                <td>@UserProductivityDto.NumOfCompletedTickets</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public String Company { get; set; } = null!;
+
+    
+    [Parameter]
+    public String UserId { get; set; } = null!;
+
+    [CascadingParameter]
+    public Toast? Toast { get; set; }
+
+    private UserProductivityDto? UserProductivityDto { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            UserProductivityDto = await _reportService.UserProductivity(UserId, _navService.GetCurrentCompany().Id);
+        }
+        catch (Exception e)
+        {
+            Toast?.Exception(e);
+        }
+    }
+
+}

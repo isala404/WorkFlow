@@ -22,5 +22,12 @@ namespace WorkFlow.Client.Services
             if (forecast == null) throw new ApplicationException($"Error while getting forecast report");
             return forecast;
         }
+
+        public async Task<UserProductivityDto> UserProductivity(string userId, Guid companyId)
+        {
+            var userReport = await _http.GetFromJsonAsync<UserProductivityDto>($"api/report/user?userId={userId}&companyId={companyId}");
+            if (userReport == null) throw new ApplicationException($"Error while getting user report");
+            return userReport;
+        }
     }
 }

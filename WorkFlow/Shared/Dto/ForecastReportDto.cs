@@ -5,10 +5,10 @@ namespace WorkFlow.Shared.Dto
     public class ForecastReportDto
     {
         public ForecastReportDto(){}
-        public int CurrentProject { get; set; }
-        public int NumberOfDays { get; set; }
-        public int Offset { get; set; }
-        public double ProjectGrowthRate { get; set; }
-        public double PeoplePerProject { get; set; }
+        public Int32 CurrentProject { get; set; }
+        public Int32 NumberOfDays { get; set; }
+        public Int32 Offset { get; set; }
+        public Double ProjectGrowthRate { get; set; }
+        public Double PeoplePerProject { get; set; }
     }
 }

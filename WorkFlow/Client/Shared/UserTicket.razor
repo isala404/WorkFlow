@@ -1,3 +1,5 @@
+@inject INavService _navService
+
 <div class="inline-block whitespace-normal w-96 p-4 border-2 border-black m-2 @(HideColour ? "bg-gray-50" : _statusColorMap[ticket.Status] )">
     <span class="float-right">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="@_priorityColorMap[@ticket.Priority]" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,8 +23,10 @@
             @ticket.EstimatedTime.Hours Hours
         </div>
         <div class="flex ml-auto">
+            <a href="@_navService.GetCurrentCompany().Uri/user/@ticket.Assignee.Id/">
             <img src="https://avatars.dicebear.com/api/bottts/@(ticket.Assignee.UserName).svg" alt="profile-pic" height="24" width="24"/>
             @ticket.Assignee.Name
+            </a>
         </div>
     </div>
 </div>

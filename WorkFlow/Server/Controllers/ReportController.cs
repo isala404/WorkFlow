@@ -22,7 +22,8 @@ namespace WorkFlow.Server.Controllers
 
         // GET: api/report/forecast
         [HttpGet("forecast")]
-        public async Task<IActionResult> Get([FromQuery(Name = "startDate")] String startDate, [FromQuery(Name = "endDate")] String endDate, [FromQuery(Name = "companyId")] Guid companyId)
+        public async Task<IActionResult> Forecast([FromQuery(Name = "startDate")] String startDate,
+            [FromQuery(Name = "endDate")] String endDate, [FromQuery(Name = "companyId")] Guid companyId)
         {
             try
             {
@@ -41,7 +42,27 @@ namespace WorkFlow.Server.Controllers
                     _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, e)
                 };
             }
-            
+        }
+        
+        // GET: api/report/user
+        [HttpGet("user")]
+        public async Task<IActionResult> UserProductivity([FromQuery(Name = "userId")] String userId, [FromQuery(Name = "companyId")] Guid companyId)
+        {
+            try
+            {
+                var userProductivity = await ReportModel.UserProductivity(userId, companyId);
+                return Ok(userProductivity);
+            }
+            catch (Exception e)
+            {
+                return e switch
+                {
+                    InvalidDataException => BadRequest(e.Message),
+                    FormatException => BadRequest(e.Message),
+                    UnauthorizedAccessException => Unauthorized(e.Message),
+                    _ => e is DbUpdateException ? BadRequest(e.Message) : StatusCode(500, e)
+                };
+            }
         }
     }
 }
