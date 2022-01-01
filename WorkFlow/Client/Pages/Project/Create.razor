@@ -7,7 +7,7 @@
     <EditForm Model="@_project" OnValidSubmit="@HandleValidSubmit">
         <div class="mb-2">
             <label for="name" class="text-grey-darker inline-block mb-2">Name</label>
-            <input @bind="_project.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required/>
+            <input @bind="_project.Name" type="text" id="name" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="My Project" required maxlength="25" minlength="3"/>
         </div>
         <div class="mb-2">
             <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
@@ -32,7 +32,7 @@
             <div class="flex -mr-px">
                 <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@_navService.GetCurrentCompany().Uri</span>
             </div>
-            <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project"/>
+            <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project" required maxlength="20" minlength="5"/>
         </div>
         <button type="submit" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full">Submit</button>
     </EditForm>

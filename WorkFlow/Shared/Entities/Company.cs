@@ -17,8 +17,8 @@ namespace WorkFlow.Shared.Entities
         [StringLength(20, MinimumLength = 5, ErrorMessage="Name must be at least 5 and at max 25 characters long")]
         public String Uri { get; set; }
 
-        public virtual ICollection<Project>? Projects { get; set; }
-        
-        public virtual ICollection<UserCompany>? Users { get; set; }
+        public virtual ICollection<Project>? Projects { get; set; } = new List<Project>();
+
+        public virtual ICollection<UserCompany>? Users { get; set; } = new List<UserCompany>();
     }
 }
