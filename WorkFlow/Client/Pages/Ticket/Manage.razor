@@ -127,6 +127,7 @@ else
             if (deleted)
             {
                 Toast?.AddNotification("Success", $"Ticket ({_ticket!.Name}) was deleted");
+                _navService.NavigateToProjects(true);
             }
             else
             {

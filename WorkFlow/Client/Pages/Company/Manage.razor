@@ -114,6 +114,7 @@ else
             if (deleted)
             {
                 Toast?.AddNotification("Success", $"Company ({_company!.Name}) was deleted");
+                _navService.NavigateToHome(true);
             }
             else
             {

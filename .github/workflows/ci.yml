@@ -30,8 +30,8 @@ jobs:
         uses: go-semantic-release/action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: true
-          allow-initial-development-versions: true
+          prerelease: false
+          allow-initial-development-versions: false
           prepend: true
           changelog-file: CHANGELOG.md
       - name: Update CHANGELOG.md
