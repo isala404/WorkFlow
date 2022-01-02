@@ -62,6 +62,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if(!_navService.IsAdmin(true)) return;
         try
         {
             var companyId = _navService.GetCompanyByUri(Company).Id;
@@ -127,5 +128,4 @@ else
             Toast?.Exception(e);
         }
     }
-
 }

@@ -4,6 +4,7 @@
 
 @foreach (var option in Options)
 {
+    if (option.AdminOnly && !_navService.IsAdmin()) return;
     if (option.Selected)
     {
         <a class="text-black-900 block px-3 py-2 rounded-md text-base font-medium" href="@option.HrefWithCompany">
@@ -26,7 +27,7 @@
         {
             new() {Name = "Home", Href = "/"},
             new() {Name = "Projects", Href = "/project"},
-            new() {Name = "Reports", Href = "/report"},
+            new() {Name = "Reports", Href = "/report", AdminOnly = true},
         };
 
     private void UpdateUi()

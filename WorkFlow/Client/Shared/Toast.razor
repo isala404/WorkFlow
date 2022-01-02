@@ -1,5 +1,6 @@
 ﻿@using System.Diagnostics
 @inject Blazored.LocalStorage.ILocalStorageService _localStorage
+@inject INavService _navService
 
 <CascadingValue Value=this>
     <div class="absolute md:top-20 md:right-10">
@@ -34,6 +35,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _navService.Toast = this;
         if (!await _localStorage.ContainKeyAsync("notifications"))
         {
             await _localStorage.SetItemAsync("notifications", _notifications);

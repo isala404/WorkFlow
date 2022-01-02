@@ -4,29 +4,29 @@
 @inject ICompany _companyService
 @implements IDisposable
 
-@if (!_navService.Fetched)
-{
-    <Loader/>
-}
-else
-{
-    if (_navService.CurrentUser != null)
+<Toast>
+    @if (!_navService.Fetched)
     {
-        <header>
-            <NavMenu/>
-        </header>
-        <div class="container mx-auto px-5">
-            <Breadcrumbs/>
-            <Toast>
-                @Body
-            </Toast>
-        </div>
+        <Loader/>
     }
     else
     {
-        @Body
+        if (_navService.CurrentUser != null)
+        {
+            <header>
+                <NavMenu/>
+            </header>
+            <div class="container mx-auto px-5">
+                <Breadcrumbs/>
+                @Body
+            </div>
+        }
+        else
+        {
+            @Body
+        }
     }
-}
+</Toast>
 
 @code
 {

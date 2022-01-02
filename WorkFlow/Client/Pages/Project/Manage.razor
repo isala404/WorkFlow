@@ -86,6 +86,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if(!_navService.IsAdmin(true)) return;
         try
         {
             _project = await _projectService.Get(Project);

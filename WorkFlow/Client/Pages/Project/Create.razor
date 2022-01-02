@@ -68,4 +68,9 @@
         _navService.NavigateToProjects(true);
     }
 
+    protected override void OnInitialized()
+    {
+        if(!_navService.IsAdmin(true)) return;
+    }
+
 }

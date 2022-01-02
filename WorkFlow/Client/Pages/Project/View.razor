@@ -6,12 +6,15 @@
 
 <div>
     <div class="flex flex-row-reverse mb-5">
-        <a href="@CompanyUri/project/@ProjectUri/ticket/create">
-            <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
-        </a>
-        <a href="@CompanyUri/project/@ProjectUri/manage">
-            <button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Manage Project</button>
-        </a>
+        @if (_navService.IsAdmin())
+        {
+            <a href="@CompanyUri/project/@ProjectUri/ticket/create">
+                <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
+            </a>
+            <a href="@CompanyUri/project/@ProjectUri/manage">
+                <button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Manage Project</button>
+            </a>
+        }
     </div>
 
     <div class="flex flex-wrap justify-around justify-items-stretch h-4/5 mb-5" style="min-height: 80vh;">

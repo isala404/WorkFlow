@@ -5,9 +5,12 @@
 
 <div class="container">
     <h1 class="inline text-4xl mt-8">Projects</h1>
-    <a href="@Company/project/create">
-        <button class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-md rounded-lg focus:border-4 border-blue-300 float-right">Create Project</button>
-    </a>
+    @if (_navService.IsAdmin())
+    {
+        <a href="@Company/project/create">
+            <button class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-md rounded-lg focus:border-4 border-blue-300 float-right">Create Project</button>
+        </a>
+    }
     <table class="table-auto border mt-10 xl:text-lg container">
         <thead class="border bg-gray-50 ">
         <tr class="border">

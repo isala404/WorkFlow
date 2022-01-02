@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Components.Authorization;
+using WorkFlow.Client.Shared;
 using WorkFlow.Shared.Dto;
+using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
 namespace WorkFlow.Client.Services
@@ -17,6 +19,7 @@ namespace WorkFlow.Client.Services
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private NavigationManager NavigationManager { get; }
         public event Action OnChange;
+        public Toast? Toast { get; set; }
         public Stack<CompanyDto> CompanyList { get; init; } = new();
         public bool Fetched { get; set; }
         private CompanyDto _currentCompany;
@@ -64,6 +67,21 @@ namespace WorkFlow.Client.Services
         public CompanyDto GetCurrentCompany()
         {
             return _currentCompany;
+        }
+
+        public bool IsAdmin(bool redirect = false)
+        {
+            var isAdmin = CurrentUser != null &&
+                          (from userCompany in CurrentUser.UserCompany!
+                              where userCompany.CompanyId == _currentCompany.Id
+                              select userCompany.Role == UserRole.Admin).FirstOrDefault();
+            if (!isAdmin && redirect)
+            {
+                Toast?.AddNotification("Unauthorized", "To access that page Admin role is required", "yellow");
+                NavigateToHome(false);
+            }
+
+            return isAdmin;
         }
 
         public void SetCurrentCompany(string newCompanyUri, bool reload)

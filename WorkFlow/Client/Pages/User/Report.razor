@@ -63,6 +63,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        if(!_navService.IsAdmin(true)) return;
         try
         {
             UserProductivityDto = await _reportService.UserProductivity(UserId, _navService.GetCurrentCompany().Id);

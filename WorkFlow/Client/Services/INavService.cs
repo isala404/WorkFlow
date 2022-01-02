@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
+using WorkFlow.Client.Shared;
 using WorkFlow.Shared.Dto;
 
 namespace WorkFlow.Client.Services
@@ -8,10 +9,12 @@ namespace WorkFlow.Client.Services
     public interface INavService
     {
         public event Action OnChange;
+        public Toast? Toast { get; set; }
         public UserDto? CurrentUser  { get; }
         public bool Fetched { get; }
         public Stack<CompanyDto> CompanyList { get; }
         public CompanyDto GetCurrentCompany();
+        public bool IsAdmin(bool redirect = false);
         public String TitleCase(string text);
         public void SetCurrentCompany(string newCompanyUri, bool reload);
         public string CurrentUrl();
@@ -28,6 +31,7 @@ namespace WorkFlow.Client.Services
         public string Href { get; init; }
         public string HrefWithCompany { get; set; }
         public bool Selected { get; set; }
+        public bool AdminOnly { get; set; }
     }
     public class Notification : IEquatable<Notification>
     {
