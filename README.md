@@ -21,7 +21,7 @@ dotnet run "WorkFlow.Server.csproj"
 
 ### Preview
 ```bash
-docker run --rm -p 5021:443 -p 7021:80 ghcr.io/mrsupiri/workflow:latest
+docker run -it -p 5021:443 -p 7021:80 ghcr.io/mrsupiri/workflow:latest
 ```
 
 ### Screenshots
