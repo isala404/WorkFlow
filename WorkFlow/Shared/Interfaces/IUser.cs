@@ -14,6 +14,7 @@ namespace WorkFlow.Shared.Interfaces
         public Task<UserDto> Update(UserDto user);
         public Task<bool> Delete();
         public Task<UserCompanyDto> SetUserCompany(UserInvite userInvite);
+        public Task<CompanyDto> LeaveCompany(Guid companyId);
         public Task<UserDto> ModifyProject(Guid projectId, String userId);
     }
 }

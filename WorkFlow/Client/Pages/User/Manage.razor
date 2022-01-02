@@ -47,7 +47,7 @@ else
                 <h2 class="text-xl ml-8">Companies</h2>
                 @foreach (var userCompany in _user.UserCompany!)
                 {
-                    <CompanyEdit company="@userCompany.Company"/>
+                    <CompanyEdit UserCompany="@userCompany"/>
                 }
             </div>
         </div>

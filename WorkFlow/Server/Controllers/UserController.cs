@@ -110,6 +110,21 @@ namespace WorkFlow.Server.Controllers
             }
         }
         
+        // PUT api/user/company
+        [HttpPost("company")]
+        public async Task<IActionResult> LeaveCompany([FromBody] Guid companyId)
+        {
+            try
+            {
+                var company = await UserModel.LeaveCompany(companyId);
+                return Ok(company);
+            }
+            catch (InvalidDataException e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        
         // PUT api/user/project
         [HttpPut("project")]
         public async Task<IActionResult> ModifyProject([FromBody] Tuple<Guid, string> userProject)

@@ -71,6 +71,18 @@ namespace WorkFlow.Client.Services
             return updateUserCompany;
         }
 
+        public async Task<CompanyDto> LeaveCompany(Guid companyId)
+        {
+            var response = await _http.PostAsJsonAsync("api/user/company/", companyId);
+            if (!response.IsSuccessStatusCode)
+                throw new ApplicationException($"Error while leaving company, Reason: {response.ReasonPhrase}");
+
+            var company = await response.Content.ReadFromJsonAsync<CompanyDto>();
+            if (company == null) throw new ApplicationException($"Could not retrieved the ${EntityName}");
+
+            return company;
+        }
+
         public async Task<UserDto> ModifyProject(Guid projectId, String userId)
         {
             var response = await _http.PutAsJsonAsync($"api/user/project/",  new Tuple<Guid, string>(projectId, userId));
