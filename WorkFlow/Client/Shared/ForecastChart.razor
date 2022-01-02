@@ -89,7 +89,7 @@
             BorderColor = BorderColor,
         };
 
-        foreach (var label in Labels)
+        foreach (DateTime label in Labels)
         {
             _config.Data.Labels.Add(label.ToShortDateString());
         }
@@ -119,7 +119,7 @@
             BorderColor = BorderColor,
         };
 
-        foreach (var label in Labels)
+        foreach (DateTime label in Labels)
         {
             _config.Data.Labels.Add(label.ToString("dd-MM-yyyy"));
         }

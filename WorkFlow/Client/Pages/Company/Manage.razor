@@ -1,4 +1,4 @@
-@page "/{Company}/manage"
+@page "/{CompanyUri}/manage"
 @inject ICompany _companyService
 @inject INavService _navService
 @inject IUser _userService
@@ -39,10 +39,11 @@ else
                     <span>Invite</span>
                 </button>
             </EditForm>
-            @if(_company.Users != null){
+            @if (_company.Users != null)
+            {
                 @foreach (var user in _company.Users)
                 {
-                    <CompanyUser User="@user.User" Role="@user.Role" CompanyId="@_company.Id" />
+                    <CompanyUser User="@user.User" Role="@user.Role" CompanyId="@_company.Id"/>
                 }
             }
         </div>
@@ -53,18 +54,18 @@ else
 @code {
 
     [Parameter]
-    public String Company { get; set; } = null!;
+    public String CompanyUri { get; set; } = null!;
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
     private CompanyDto? _company;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
+        if (!_navService.IsAdmin(true)) return;
         try
         {
-            var companyId = _navService.GetCompanyByUri(Company).Id;
+            Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
             _company = await _companyService.Get(companyId);
         }
         catch (Exception e)
@@ -73,9 +74,8 @@ else
         }
     }
 
-    private async void HandleValidSubmit()
-    {
-        var companyId = _navService.GetCompanyByUri(Company).Id;
+    private async void HandleValidSubmit() {
+        Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
         try
         {
             _company = await _companyService.Update(companyId, _company!);
@@ -89,14 +89,13 @@ else
         _navService.SetCurrentCompany(_company.Uri, true);
     }
 
-    private readonly UserInvite _userInvite = new();
+    private readonly UserInvite _userInvite = new UserInvite();
 
-    private async void SentInviteToUser()
-    {
+    private async void SentInviteToUser() {
         try
         {
             _userInvite.CompanyId = _company!.Id;
-            var userCompany = await _userService.SetUserCompany(_userInvite);
+            UserCompanyDto userCompany = await _userService.SetUserCompany(_userInvite);
             Toast?.AddNotification("Success", $"User ({userCompany.User.Name}) was added to {_company.Name}", "green");
             _navService.Reload();
         }
@@ -106,16 +105,16 @@ else
         }
     }
 
-    private async void DeleteCompany()
-    {
-        var companyId = _navService.GetCompanyByUri(Company).Id;
+    private async void DeleteCompany() {
+        Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
 
         try
         {
-            var deleted = await _companyService.Delete(companyId);
+            Boolean deleted = await _companyService.Delete(companyId);
             if (deleted)
             {
-                Toast?.AddNotification("Success", $"Company ({_company!.Name}) was deleted", "blue");
+                Toast?.AddNotification("Success", $"Company ({_company!.Name}) was deleted");
+                _navService.NavigateToHome(true);
             }
             else
             {

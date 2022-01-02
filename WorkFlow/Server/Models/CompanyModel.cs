@@ -1,60 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WorkFlow.Server.Data;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Models
-{
-    public class CompanyModel : ICompany
-    {
+namespace WorkFlow.Server.Models {
+    /// <summary>
+    /// Handle all Company related database operations
+    /// </summary>
+    public class CompanyModel : ICompany {
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
 
-        public CompanyModel(ApplicationDbContext context, IUtility utilityService)
-        {
+        public CompanyModel(ApplicationDbContext context, IUtility utilityService) {
             _context = context;
             _utilityService = utilityService;
         }
 
-        public async Task<List<CompanyDto>> List()
-        {
-            var user = await _utilityService.GetUser();
+        /// <summary>
+        /// Return list of companies related to the user
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        public async Task<List<CompanyDto>> List() {
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            List<CompanyDto> companies = new();
+            List<CompanyDto> companies = new List<CompanyDto>();
 
-            var userCompanies = await _context.UserCompany.Include(u => u.Company)
+            List<UserCompany> userCompanies = await _context.UserCompany.Include(u => u.Company)
                 .Where(userCompany => userCompany.User!.Id == user.Id).ToListAsync();
             companies.AddRange(userCompanies.Select(userCompany => new CompanyDto(userCompany.Company!)));
 
             return companies;
         }
 
-        public async Task<CompanyDto> Get(Guid companyId)
-        {
+        /// <summary>
+        /// Get Company data by id
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        public async Task<CompanyDto> Get(Guid companyId) {
             (_, Company company) = await VerifyRequest(companyId, true, true);
 
             return new CompanyDto(company);
         }
 
-        public async Task<CompanyDto> Create(CompanyDto company)
-        {
-            var user = await _utilityService.GetUser();
+        /// <summary>
+        /// Create a new company
+        /// </summary>
+        /// <param name="company"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        public async Task<CompanyDto> Create(CompanyDto company) {
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            var newCompany = new Company
+            Company newCompany = new Company
             {
                 Name = company.Name,
                 Uri = company.Uri,
                 Users = new List<UserCompany>
                 {
-                    new()
+                    new UserCompany
                     {
                         User = user,
                         Role = UserRole.Admin
@@ -62,13 +76,18 @@ namespace WorkFlow.Server.Models
                 }
             };
 
-            var result = await _context.Companies.AddAsync(newCompany);
+            EntityEntry<Company> result = await _context.Companies.AddAsync(newCompany);
             await _context.SaveChangesAsync();
             return new CompanyDto(result.Entity);
         }
 
-        public async Task<CompanyDto> Update(Guid companyId, CompanyDto company)
-        {
+        /// <summary>
+        /// Update the company data
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="company"></param>
+        /// <returns></returns>
+        public async Task<CompanyDto> Update(Guid companyId, CompanyDto company) {
             (_, Company targetCompany) = await VerifyRequest(companyId);
 
             targetCompany.Name = company.Name;
@@ -78,8 +97,12 @@ namespace WorkFlow.Server.Models
             return new CompanyDto(targetCompany);
         }
 
-        public async Task<bool> Delete(Guid companyId)
-        {
+        /// <summary>
+        /// Delete a company by ID
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        public async Task<Boolean> Delete(Guid companyId) {
             (_, Company company) = await VerifyRequest(companyId);
 
             _context.Companies.Remove(company);
@@ -87,34 +110,45 @@ namespace WorkFlow.Server.Models
             return true;
         }
 
-        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto userCompanyDto)
-        {
+        /// <summary>
+        /// Add or Remove a user from company (Deprecated, use  UserModel.ModifyCompany())
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="userCompanyDto"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        [Obsolete("Please use the UserModel.ModifyCompany()")]
+        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto userCompanyDto) {
             (_, Company company) = await VerifyRequest(companyId);
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userCompanyDto.UserId);
+            User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userCompanyDto.UserId);
             if (user == null) throw new InvalidDataException("Invalid UserId.");
 
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(uc =>
+            UserCompany? userCompany = await _context.UserCompany.FirstOrDefaultAsync(uc =>
                 uc.UserId == userCompanyDto.UserId && uc.CompanyId == companyId);
 
             if (userCompany != null)
-            {
                 company.Users!.Remove(userCompany);
-            }
             else
-            {
                 company.Users!.Add(new UserCompany
                     {UserId = userCompanyDto.UserId, CompanyId = companyId, Role = userCompanyDto.Role});
-            }
 
             await _context.SaveChangesAsync();
 
             return new CompanyDto(company);
         }
 
-        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, bool admin = true, bool includeUsers = false)
-        {
-            var user = await _utilityService.GetUser();
+        /// <summary>
+        /// Verify the incoming request is valid and has permission to do the required operation
+        /// </summary>
+        /// <param name="companyId">Company that's intended to be interacted with</param>
+        /// <param name="admin">Admin only Method</param>
+        /// <param name="includeUsers">Database query should include join to user table</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        /// <exception cref="UnauthorizedAccessException">Raised if the request is only allowed for admins (HTTP 401)</exception>
+        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, Boolean admin = true, Boolean includeUsers = false) {
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
             Company? company;
             if (includeUsers)
@@ -123,7 +157,7 @@ namespace WorkFlow.Server.Models
                 company = await _context.Companies.FirstOrDefaultAsync(c => c.Id == companyId);
             if (company == null) throw new InvalidDataException("Invalid Company.");
 
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
+            UserCompany? userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
                 userCompany.Company == company && userCompany.User == user);
 
             if (userCompany == null) throw new UnauthorizedAccessException("User does not have required permission");

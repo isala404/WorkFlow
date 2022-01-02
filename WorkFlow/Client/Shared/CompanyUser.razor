@@ -20,20 +20,24 @@
     public UserDto User { get; set; } = null!;
 
     [Parameter]
-    public UserRole Role { get; set; } 
-    
+    public UserRole Role { get; set; }
+
     [Parameter]
     public Guid CompanyId { get; set; }
-    
-    
+
+
     [CascadingParameter]
     public Toast? Toast { get; set; }
-    
-    private async void RoleChanged(ChangeEventArgs e)
-    {
+
+    private async void RoleChanged(ChangeEventArgs e) {
         try
         {
-            var userCompany = await _userService.SetUserCompany(new UserInvite{CompanyId = CompanyId, Email = User.Email, Role = MapRole(e.Value!.ToString())});
+            UserCompanyDto userCompany = await _userService.SetUserCompany(new UserInvite
+            {
+                CompanyId = CompanyId,
+                Email = User.Email,
+                Role = MapRole(e.Value!.ToString())
+            });
             Toast?.AddNotification("Success", $"User ({userCompany.User.Name}) role was set to {e.Value}", "green");
         }
         catch (Exception err)
@@ -42,16 +46,19 @@
         }
     }
 
-    private UserRole MapRole(string? role)
-    {
+    private UserRole MapRole(String? role) {
         return role == "Admin" ? UserRole.Admin : UserRole.User;
     }
-    
-    private async void RemoveUser()
-    {
+
+    private async void RemoveUser() {
         try
         {
-            var userCompany = await _userService.SetUserCompany(new UserInvite{CompanyId = CompanyId, Email = User.Email, Role = null});
+            UserCompanyDto userCompany = await _userService.SetUserCompany(new UserInvite
+            {
+                CompanyId = CompanyId,
+                Email = User.Email,
+                Role = null
+            });
             Toast?.AddNotification("Success", $"User ({userCompany.User.Name}) was removed from the company", "yellow");
             _navService.Reload();
         }

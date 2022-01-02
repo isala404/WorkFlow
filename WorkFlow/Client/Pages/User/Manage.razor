@@ -47,7 +47,7 @@ else
                 <h2 class="text-xl ml-8">Companies</h2>
                 @foreach (var userCompany in _user.UserCompany!)
                 {
-                    <CompanyEdit company="@userCompany.Company"/>
+                    <CompanyEdit UserCompany="@userCompany"/>
                 }
             </div>
         </div>
@@ -62,8 +62,7 @@ else
     public Toast? Toast { get; set; }
 
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         try
         {
             _user = await _userService.Get();
@@ -74,8 +73,7 @@ else
         }
     }
 
-    private async void HandleValidSubmit()
-    {
+    private async void HandleValidSubmit() {
         try
         {
             _user = await _userService.Update(_user!);
@@ -87,11 +85,10 @@ else
         }
     }
 
-    private async void DeleteUser()
-    {
+    private async void DeleteUser() {
         try
         {
-            var deleted = await _userService.Delete();
+            Boolean deleted = await _userService.Delete();
             if (deleted)
             {
                 await _signOutManager.SetSignOutState();

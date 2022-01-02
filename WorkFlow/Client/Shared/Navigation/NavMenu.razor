@@ -82,31 +82,26 @@
 
 @code {
 
-    private bool _profileOptions = false;
-    private bool _showMobileNavLinks = false;
+    private Boolean _profileOptions = false;
+    private Boolean _showMobileNavLinks = false;
 
-    private void ToggleProfileOptions()
-    {
+    private void ToggleProfileOptions() {
         _profileOptions = !_profileOptions;
     }
 
-    private void ToggleMobileNav()
-    {
+    private void ToggleMobileNav() {
         _showMobileNavLinks = !_showMobileNavLinks;
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         _navService.OnChange += StateHasChanged;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= StateHasChanged;
     }
 
-    public async void Logout()
-    {
+    public async void Logout() {
         await _signOutManager.SetSignOutState();
         _navigationManager.NavigateTo("authentication/logout");
     }

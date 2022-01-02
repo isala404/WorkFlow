@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -9,14 +11,23 @@ using WorkFlow.Server.Data;
 using WorkFlow.Server.Models;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+String? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (File.Exists("workflow.db"))
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite($"Data Source=workflow.db"));
+}
+else
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
+}
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
@@ -26,7 +37,8 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
-    .AddApiAuthorization<User, ApplicationDbContext>();  
+    .AddDeveloperSigningCredential()
+    .AddApiAuthorization<User, ApplicationDbContext>();
 
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();
@@ -41,8 +53,7 @@ builder.Services.AddScoped<ICompany, CompanyModel>();
 builder.Services.AddScoped<IProject, ProjectModel>();
 builder.Services.AddScoped<IReport, ReportModel>();
 
-var app = builder.Build();
-
+WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -53,7 +64,7 @@ else
 {
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    // app.UseHsts();
 }
 
 app.UseHttpsRedirection();

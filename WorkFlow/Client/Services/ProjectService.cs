@@ -6,87 +6,126 @@ using System.Threading.Tasks;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Client.Services
-{
-    public class ProjectService : IProject
-    {
+namespace WorkFlow.Client.Services {
+    public class ProjectService : IProject {
+        private const String EntityName = "project";
         private readonly HttpClient _http;
-        private const string EntityName = "project";
 
-        public ProjectService(HttpClient http)
-        {
+        public ProjectService(HttpClient http) {
             _http = http;
         }
 
-        public async Task<List<ProjectDto>> List()
-        {
-            var projects = await _http.GetFromJsonAsync<List<ProjectDto>>("api/project/");
+        /// <summary>
+        /// Get Current user's projects
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<List<ProjectDto>> List() {
+            List<ProjectDto>? projects = await _http.GetFromJsonAsync<List<ProjectDto>>("api/project/");
             if (projects == null) throw new ApplicationException("Error while getting projects");
             return projects;
         }
 
-        public async Task<List<ProjectDto>> List(Guid companyId)
-        {
-            var projects = await _http.GetFromJsonAsync<List<ProjectDto>>($"api/project/company/{companyId}/");
+        /// <summary>
+        /// Get projects of the given company
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<List<ProjectDto>> List(Guid companyId) {
+            List<ProjectDto>? projects = await _http.GetFromJsonAsync<List<ProjectDto>>($"api/project/company/{companyId}/");
             if (projects == null) throw new ApplicationException("Error while getting projects");
             return projects;
         }
 
-        public async Task<ProjectDto> Get(Guid projectId)
-        {
-            var project = await _http.GetFromJsonAsync<ProjectDto>($"api/project/{projectId}/");
+        /// <summary>
+        /// Get Project by ID
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<ProjectDto> Get(Guid projectId) {
+            ProjectDto? project = await _http.GetFromJsonAsync<ProjectDto>($"api/project/{projectId}/");
             if (project == null) throw new ApplicationException($"Error while getting {EntityName}");
             return project;
         }
 
-        public async Task<ProjectDto> Get(string uri)
-        {
-            var project = await _http.GetFromJsonAsync<ProjectDto>($"api/project/{uri}/");
-            if (project == null) throw new ApplicationException($"Error while creating {EntityName}");
+        /// <summary>
+        /// Get Project by it's URI
+        /// </summary>
+        /// <param name="companyUri"></param>
+        /// <param name="projectUri"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<ProjectDto> Get(String companyUri, String projectUri) {
+            ProjectDto? project = await _http.GetFromJsonAsync<ProjectDto>($"api/project/{companyUri}/{projectUri}/");
+            if (project == null) throw new ApplicationException($"Error while getting {EntityName}");
             return project;
         }
 
-        public async Task<ProjectDto> Create(ProjectDto project)
-        {
-            var response = await _http.PostAsJsonAsync("api/project/", project);
+        /// <summary>
+        /// Create a new Project
+        /// </summary>
+        /// <param name="project"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<ProjectDto> Create(ProjectDto project) {
+            HttpResponseMessage response = await _http.PostAsJsonAsync("api/project/", project);
             // TODO: Handle for constrain violations
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException($"Error while creating {EntityName}, Reason: {response.ReasonPhrase}");
 
-            var newProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
+            ProjectDto? newProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
             if (newProject == null) throw new ApplicationException($"Could not retrieved the created ${EntityName}");
 
             return newProject;
         }
 
-        public async Task<ProjectDto> Update(Guid projectId, ProjectDto project)
-        {
-            var response = await _http.PutAsJsonAsync($"api/project/{projectId}/", project);
+        /// <summary>
+        /// Update a existing project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="project"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<ProjectDto> Update(Guid projectId, ProjectDto project) {
+            HttpResponseMessage response = await _http.PutAsJsonAsync($"api/project/{projectId}/", project);
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException($"Error while updating ${EntityName}, Reason: {response.ReasonPhrase}");
 
-            var updatedProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
+            ProjectDto? updatedProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
             if (updatedProject == null) throw new ApplicationException($"Error while updating ${EntityName}");
 
             return updatedProject;
         }
 
-        public async Task<bool> Delete(Guid projectId)
-        {
-            var response = await _http.DeleteAsync($"api/project/{projectId}/");
+        /// <summary>
+        /// Delete a project from database
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<Boolean> Delete(Guid projectId) {
+            HttpResponseMessage response = await _http.DeleteAsync($"api/project/{projectId}/");
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException($"Error while deleting ${EntityName}, Reason: {response.ReasonPhrase}");
-            return await response.Content.ReadFromJsonAsync<bool>();
+            return await response.Content.ReadFromJsonAsync<Boolean>();
         }
 
-        public async Task<ProjectDto> ModifyUser(Guid projectId, UserDto user)
-        {
-            var response = await _http.PostAsJsonAsync($"api/project/user/{projectId}/", user);
+        /// <summary>
+        /// Add or Remove a user from the project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
+        public async Task<ProjectDto> ModifyUser(Guid projectId, UserDto user) {
+            HttpResponseMessage response = await _http.PostAsJsonAsync($"api/project/user/{projectId}/", user);
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException(
-                    $"Error while modifying ${EntityName} users, Reason: {response.ReasonPhrase}");
+                $"Error while modifying ${EntityName} users, Reason: {response.ReasonPhrase}");
 
-            var updatedProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
+            ProjectDto? updatedProject = await response.Content.ReadFromJsonAsync<ProjectDto>();
             if (updatedProject == null) throw new ApplicationException($"Error while modifying ${EntityName} users");
 
             return updatedProject;

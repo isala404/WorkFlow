@@ -1,9 +1,7 @@
-﻿namespace WorkFlow.Shared.Entities
-{
-    public enum Priority
-    {
+﻿namespace WorkFlow.Shared.Entities {
+    public enum Priority {
         Low,
         Medium,
-        High,
+        High
     }
 }

@@ -1,13 +1,16 @@
-@page "/{Company}/project"
+@page "/{CompanyUri}/project"
 @inject IProject _projectService
 @inject INavService _navService
 @implements IDisposable
 
 <div class="container">
     <h1 class="inline text-4xl mt-8">Projects</h1>
-    <a href="@Company/project/create">
-        <button class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-md rounded-lg focus:border-4 border-blue-300 float-right">Create Project</button>
-    </a>
+    @if (_navService.IsAdmin())
+    {
+        <a href="@CompanyUri/project/create">
+            <button class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-md rounded-lg focus:border-4 border-blue-300 float-right">Create Project</button>
+        </a>
+    }
     <table class="table-auto border mt-10 xl:text-lg container">
         <thead class="border bg-gray-50 ">
         <tr class="border">
@@ -23,7 +26,7 @@
         </tr>
         </thead>
         <tbody>
-        
+
         @foreach (var project in _projects)
         {
             <tr>
@@ -36,7 +39,7 @@
                 <td class="border px-4 py-1">@project.NumOfUsers</td>
                 <td class="border px-4 py-1">@project.Status</td>
                 <td class="border px-4 py-1">
-                    <a href="@Company/project/@project.Uri">
+                    <a href="@CompanyUri/project/@project.Uri">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
                             <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
@@ -45,7 +48,7 @@
                 </td>
             </tr>
         }
-        
+
         </tbody>
     </table>
 </div>
@@ -53,16 +56,15 @@
 @code {
 
     [Parameter]
-    public String Company { get; set; } = null!;
+    public String CompanyUri { get; set; } = null!;
 
-    private List<ProjectDto> _projects = new();
+    private List<ProjectDto> _projects = new List<ProjectDto>();
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
-    private async void UpdateUi()
-    {
-        var companyId = _navService.GetCompanyByUri(Company).Id;
+    private async void UpdateUi() {
+        Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
         try
         {
             _projects = await _projectService.List(companyId);
@@ -75,14 +77,12 @@
         StateHasChanged();
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         UpdateUi();
         _navService.OnChange += UpdateUi;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= UpdateUi;
     }
-} 
+}

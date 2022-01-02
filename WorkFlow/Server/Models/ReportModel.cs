@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,82 +9,93 @@ using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Models
-{
-    public class ReportModel : IReport
-    {
+namespace WorkFlow.Server.Models {
+    public class ReportModel : IReport {
+        private const Int32 SampleWindow = 30;
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
-        private const int SampleWindow = 30;
 
-        public ReportModel(ApplicationDbContext context, IUtility utilityService)
-        {
+        public ReportModel(ApplicationDbContext context, IUtility utilityService) {
             _context = context;
             _utilityService = utilityService;
         }
 
-        public async Task<ForecastReportDto> Forecast(DateTime startDate, DateTime endDate, Guid companyId)
-        {
-            var user = await _utilityService.GetUser();
+        /// <summary>
+        /// Calculate Projects Growth Rate and People required Per Project for the given time period in the given company
+        /// </summary>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        /// <exception cref="UnauthorizedAccessException">Raised if the request is not allowed for the current user (HTTP 401)</exception>
+        public async Task<ForecastReportDto> Forecast(DateTime startDate, DateTime endDate, Guid companyId) {
+            // Validate request data
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
-            var userCompany =
+            UserCompany? userCompany =
                 await _context.UserCompany.FirstOrDefaultAsync(uc => uc.CompanyId == companyId && uc.UserId == user.Id);
 
             if (userCompany == null) throw new InvalidDataException("Invalid Company.");
             if (userCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("admin permission required");
 
-            if (startDate.CompareTo(DateTime.Today) < 0 || endDate.CompareTo(startDate) <= 0)
-            {
-                throw new InvalidDataException("invalid date range");
-            }
+            if (startDate.CompareTo(DateTime.Today) < 0 || endDate.CompareTo(startDate) <= 0) throw new InvalidDataException("invalid date range");
 
-            var numOfDays = (endDate - startDate).Days;
-            var offset = (startDate - DateTime.Today).Days;
+            Int32 numOfDays = (endDate - startDate).Days;
+            // Offset is used by frontend to jump the time between today and the first selected date
+            Int32 offset = (startDate - DateTime.Today).Days;
 
-            var projects = await _context.Projects.Include("Users").Where(p =>
+            // Get project that was created in past SampleWindow (30 days)
+            List<Project> projects = await _context.Projects.Include("Users").Where(p =>
                 p.Company!.Id == companyId &&
                 p.CreatedAt.CompareTo(DateTime.Today.AddDays(-SampleWindow)) >= 0 &&
                 p.CreatedAt.CompareTo(DateTime.Now) <= 0
             ).ToListAsync();
 
-            if (projects.Count == 0)
-            {
-                return new ForecastReportDto {NumberOfDays = numOfDays, Offset = offset};
-            }
+            if (projects.Count == 0) return new ForecastReportDto {NumberOfDays = numOfDays, Offset = offset};
 
-            var avgNumberOfUsers = (double) projects.Sum(project => project.Users!.Count) / projects.Count;
+            Double avgNumberOfUsers = (Double)projects.Sum(project => project.Users!.Count) / projects.Count;
 
             return new ForecastReportDto
             {
                 NumberOfDays = numOfDays,
                 CurrentProject = projects.Count,
                 Offset = offset,
-                ProjectGrowthRate = (double) projects.Count / SampleWindow,
+                ProjectGrowthRate = (Double)projects.Count / SampleWindow,
                 PeoplePerProject = avgNumberOfUsers
             };
         }
 
-        public async Task<UserProductivityDto> UserProductivity(string userId, Guid companyId)
-        {
-            var currentUser = await _utilityService.GetUser();
+        /// <summary>
+        /// Create a summery of user's activities for the given company
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        /// <exception cref="UnauthorizedAccessException">Raised if the request is not allowed for the current user (HTTP 401)</exception>
+        public async Task<UserProductivityDto> UserProductivity(String userId, Guid companyId) {
+            // Request Validation
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
-            var currentUserCompany =
+            UserCompany? currentUserCompany =
                 await _context.UserCompany.FirstOrDefaultAsync(uc =>
                     uc.CompanyId == companyId && uc.UserId == currentUser.Id);
 
             if (currentUserCompany == null) throw new InvalidDataException("Invalid Company.");
             if (currentUserCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("admin permission required");
-            
-            var userCompany = await _context.UserCompany.Include("User.Projects").FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CompanyId == companyId);
+
+            // Collect user data
+            UserCompany? userCompany = await _context.UserCompany.Include("User.Projects").FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CompanyId == companyId);
             if (userCompany == null) throw new InvalidDataException("Invalid UserId.");
+            
+            Ticket[] userTickets = await _context.Tickets.Where(t => t.Assignee == userCompany.User).ToArrayAsync();
 
-            var userTickets = await _context.Tickets.Where(t => t.Assignee == userCompany.User).ToArrayAsync();
-
-            var report = new UserProductivityDto
+            UserProductivityDto report = new UserProductivityDto
                 {Name = userCompany.User!.Name!, Email = userCompany.User!.Email, NumOfProjects = userCompany.User!.Projects!.Count, UserRole = userCompany.Role};
 
+            // Aggregate the user ticket data
             foreach (var ticket in userTickets)
-            {
                 switch (ticket.Status)
                 {
                     case Status.ToDo:
@@ -96,7 +108,6 @@ namespace WorkFlow.Server.Models
                         report.NumOfCompletedTickets += 1;
                         break;
                 }
-            }
 
             return report;
         }

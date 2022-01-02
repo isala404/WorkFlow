@@ -4,45 +4,42 @@
 @inject ICompany _companyService
 @implements IDisposable
 
-@if (!_navService.Fetched)
-{
-    <Loader/>
-}
-else
-{
-    if (_navService.CurrentUser != null)
+<Toast>
+    @if (!_navService.Fetched)
     {
-        <header>
-            <NavMenu/>
-        </header>
-        <div class="container mx-auto px-5">
-            <Breadcrumbs/>
-            <Toast>
-                @Body
-            </Toast>
-        </div>
+        <Loader/>
     }
     else
     {
-        @Body
+        if (_navService.CurrentUser != null)
+        {
+            <header>
+                <NavMenu/>
+            </header>
+            <div class="container mx-auto px-5">
+                <Breadcrumbs/>
+                @Body
+            </div>
+        }
+        else
+        {
+            @Body
+        }
     }
-}
+</Toast>
 
 @code
 {
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         _navService.OnChange += StateHasChanged;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= StateHasChanged;
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
+    protected override void OnAfterRender(Boolean firstRender) {
         base.OnAfterRender(firstRender);
         if (_navService.CurrentUrl() == "user/settings") return;
         if (_navService.Fetched && _navService.CompanyList.Count == 1 && _navService.CurrentUrl() != "create/company")
