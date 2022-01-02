@@ -61,8 +61,7 @@ else
 
     private CompanyDto? _company;
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         if (!_navService.IsAdmin(true)) return;
         try
         {
@@ -75,8 +74,7 @@ else
         }
     }
 
-    private async void HandleValidSubmit()
-    {
+    private async void HandleValidSubmit() {
         Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
         try
         {
@@ -93,8 +91,7 @@ else
 
     private readonly UserInvite _userInvite = new UserInvite();
 
-    private async void SentInviteToUser()
-    {
+    private async void SentInviteToUser() {
         try
         {
             _userInvite.CompanyId = _company!.Id;
@@ -108,13 +105,12 @@ else
         }
     }
 
-    private async void DeleteCompany()
-    {
+    private async void DeleteCompany() {
         Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
 
         try
         {
-            bool deleted = await _companyService.Delete(companyId);
+            Boolean deleted = await _companyService.Delete(companyId);
             if (deleted)
             {
                 Toast?.AddNotification("Success", $"Company ({_company!.Name}) was deleted");

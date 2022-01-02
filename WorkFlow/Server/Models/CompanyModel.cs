@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WorkFlow.Server.Data;
@@ -10,21 +10,17 @@ using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Models
-{
-    public class CompanyModel : ICompany
-    {
+namespace WorkFlow.Server.Models {
+    public class CompanyModel : ICompany {
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
 
-        public CompanyModel(ApplicationDbContext context, IUtility utilityService)
-        {
+        public CompanyModel(ApplicationDbContext context, IUtility utilityService) {
             _context = context;
             _utilityService = utilityService;
         }
 
-        public async Task<List<CompanyDto>> List()
-        {
+        public async Task<List<CompanyDto>> List() {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -37,15 +33,13 @@ namespace WorkFlow.Server.Models
             return companies;
         }
 
-        public async Task<CompanyDto> Get(Guid companyId)
-        {
+        public async Task<CompanyDto> Get(Guid companyId) {
             (_, Company company) = await VerifyRequest(companyId, true, true);
 
             return new CompanyDto(company);
         }
 
-        public async Task<CompanyDto> Create(CompanyDto company)
-        {
+        public async Task<CompanyDto> Create(CompanyDto company) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -68,8 +62,7 @@ namespace WorkFlow.Server.Models
             return new CompanyDto(result.Entity);
         }
 
-        public async Task<CompanyDto> Update(Guid companyId, CompanyDto company)
-        {
+        public async Task<CompanyDto> Update(Guid companyId, CompanyDto company) {
             (_, Company targetCompany) = await VerifyRequest(companyId);
 
             targetCompany.Name = company.Name;
@@ -79,8 +72,7 @@ namespace WorkFlow.Server.Models
             return new CompanyDto(targetCompany);
         }
 
-        public async Task<bool> Delete(Guid companyId)
-        {
+        public async Task<Boolean> Delete(Guid companyId) {
             (_, Company company) = await VerifyRequest(companyId);
 
             _context.Companies.Remove(company);
@@ -88,8 +80,7 @@ namespace WorkFlow.Server.Models
             return true;
         }
 
-        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto userCompanyDto)
-        {
+        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto userCompanyDto) {
             (_, Company company) = await VerifyRequest(companyId);
 
             User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userCompanyDto.UserId);
@@ -99,22 +90,17 @@ namespace WorkFlow.Server.Models
                 uc.UserId == userCompanyDto.UserId && uc.CompanyId == companyId);
 
             if (userCompany != null)
-            {
                 company.Users!.Remove(userCompany);
-            }
             else
-            {
                 company.Users!.Add(new UserCompany
                     {UserId = userCompanyDto.UserId, CompanyId = companyId, Role = userCompanyDto.Role});
-            }
 
             await _context.SaveChangesAsync();
 
             return new CompanyDto(company);
         }
 
-        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, bool admin = true, bool includeUsers = false)
-        {
+        private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, Boolean admin = true, Boolean includeUsers = false) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
             Company? company;

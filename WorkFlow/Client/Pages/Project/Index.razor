@@ -26,7 +26,7 @@
         </tr>
         </thead>
         <tbody>
-        
+
         @foreach (var project in _projects)
         {
             <tr>
@@ -48,7 +48,7 @@
                 </td>
             </tr>
         }
-        
+
         </tbody>
     </table>
 </div>
@@ -63,8 +63,7 @@
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
-    private async void UpdateUi()
-    {
+    private async void UpdateUi() {
         Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
         try
         {
@@ -78,14 +77,12 @@
         StateHasChanged();
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         UpdateUi();
         _navService.OnChange += UpdateUi;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= UpdateUi;
     }
-} 
+}

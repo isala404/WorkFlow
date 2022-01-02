@@ -13,28 +13,24 @@
 
     private String CurrentCompany { get; set; } = "";
 
-    private void SetCompany(ChangeEventArgs e)
-    {
+    private void SetCompany(ChangeEventArgs e) {
         if (e.Value != null) CurrentCompany = e.Value.ToString()!;
 
-        bool inHomePage = _navService.CurrentUrl() != "";
+        Boolean inHomePage = _navService.CurrentUrl() != "";
         _navService.SetCurrentCompany(CurrentCompany, inHomePage);
     }
 
-    private void UpdateUi()
-    {
+    private void UpdateUi() {
         CurrentCompany = _navService.GetCurrentCompany().Uri;
         StateHasChanged();
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         CurrentCompany = _navService.GetCurrentCompany().Uri;
         _navService.OnChange += UpdateUi;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= UpdateUi;
     }
 

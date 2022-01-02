@@ -1,34 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using WorkFlow.Client.Shared;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Client.Services
-{
-    public class NavService : INavService
-    {
-        private readonly ICompany _companyService;
-        private readonly IUser _userService;
-        private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
+namespace WorkFlow.Client.Services {
+    public class NavService : INavService {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
-        private NavigationManager NavigationManager { get; }
-        public event Action OnChange;
-        public Toast? Toast { get; set; }
-        public Stack<CompanyDto> CompanyList { get; init; } = new Stack<CompanyDto>();
-        public bool Fetched { get; set; }
+        private readonly ICompany _companyService;
+        private readonly TextInfo _myTi = new CultureInfo("en-US", false).TextInfo;
+        private readonly IUser _userService;
         private CompanyDto _currentCompany;
-        public UserDto? CurrentUser { get; set; }
 
-        public NavService(ICompany companyService, IUser userService, NavigationManager navigationManager,
-            AuthenticationStateProvider authenticationStateProvider)
-        {
+        public NavService(
+            ICompany companyService,
+            IUser userService,
+            NavigationManager navigationManager,
+            AuthenticationStateProvider authenticationStateProvider) {
             _companyService = companyService;
             _userService = userService;
             NavigationManager = navigationManager;
@@ -37,45 +31,27 @@ namespace WorkFlow.Client.Services
             RestoreSession();
         }
 
-        private async void RestoreSession()
-        {
-            AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            ClaimsPrincipal user = authState.User;
-            if (user.Identity is not {IsAuthenticated: true})
-            {
-                Fetched = true;
-                NavigationManager.NavigateTo($"Identity/Account/Login?ReturnUrl=/{Uri.EscapeDataString(CurrentUrl())}",
-                    true);
-                return;
-            }
+        private NavigationManager NavigationManager { get; }
 
-            CompanyList.Push(new CompanyDto {Name = "Create New Company", Uri = "create/company"});
+        public event Action OnChange;
 
-            foreach (var company in await _companyService.List())
-            {
-                CompanyList.Push(company);
-            }
+        public Toast? Toast { get; set; }
 
-            _currentCompany = CompanyList.Peek();
-            RestoreLastCompany();
+        public Stack<CompanyDto> CompanyList { get; init; } = new Stack<CompanyDto>();
 
-            CurrentUser = await _userService.Get();
+        public Boolean Fetched { get; set; }
 
-            Fetched = true;
-            OnChange.Invoke();
-        }
+        public UserDto? CurrentUser { get; set; }
 
-        public CompanyDto GetCurrentCompany()
-        {
+        public CompanyDto GetCurrentCompany() {
             return _currentCompany;
         }
 
-        public bool IsAdmin(bool redirect = false)
-        {
-            bool isAdmin = CurrentUser != null &&
-                           (from userCompany in CurrentUser.UserCompany!
-                               where userCompany.CompanyId == _currentCompany.Id
-                               select userCompany.Role == UserRole.Admin).FirstOrDefault();
+        public Boolean IsAdmin(Boolean redirect = false) {
+            Boolean isAdmin = CurrentUser != null &&
+                              (from userCompany in CurrentUser.UserCompany!
+                                  where userCompany.CompanyId == _currentCompany.Id
+                                  select userCompany.Role == UserRole.Admin).FirstOrDefault();
             if (!isAdmin && redirect)
             {
                 Toast?.AddNotification("Unauthorized", "To access that page Admin role is required", "yellow");
@@ -85,8 +61,7 @@ namespace WorkFlow.Client.Services
             return isAdmin;
         }
 
-        public void SetCurrentCompany(String newCompanyUri, bool reload)
-        {
+        public void SetCurrentCompany(String newCompanyUri, Boolean reload) {
             if (newCompanyUri == "create/company")
             {
                 _currentCompany = CompanyList.Last();
@@ -111,28 +86,57 @@ namespace WorkFlow.Client.Services
                 NavigationManager.NavigateTo(newLocation, true);
         }
 
-        public String CurrentUrl()
-        {
+        public String CurrentUrl() {
             return NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         }
 
-        public CompanyDto GetCompanyByUri(String uri)
-        {
-            foreach (var companyLink in CompanyList.Where(companyLink => companyLink.Uri == uri))
-            {
-                return companyLink;
-            }
+        public CompanyDto GetCompanyByUri(String uri) {
+            foreach (var companyLink in CompanyList.Where(companyLink => companyLink.Uri == uri)) return companyLink;
 
             throw new NullReferenceException();
         }
 
-        public String TitleCase(String? text)
-        {
+        public String TitleCase(String? text) {
             return text == null ? "" : _myTi.ToTitleCase(text);
         }
 
-        private void RestoreLastCompany()
-        {
+        public void NavigateToProjects(Boolean reload) {
+            NavigationManager.NavigateTo($"{_currentCompany.Uri}/project", reload);
+        }
+
+        public void NavigateToHome(Boolean reload) {
+            NavigationManager.NavigateTo("/", reload);
+        }
+
+        public void Reload() {
+            NavigationManager.NavigateTo(NavigationManager.Uri, true);
+        }
+
+        private async void RestoreSession() {
+            AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            ClaimsPrincipal user = authState.User;
+            if (user.Identity is not {IsAuthenticated: true})
+            {
+                Fetched = true;
+                NavigationManager.NavigateTo($"Identity/Account/Login?ReturnUrl=/{Uri.EscapeDataString(CurrentUrl())}",
+                true);
+                return;
+            }
+
+            CompanyList.Push(new CompanyDto {Name = "Create New Company", Uri = "create/company"});
+
+            foreach (var company in await _companyService.List()) CompanyList.Push(company);
+
+            _currentCompany = CompanyList.Peek();
+            RestoreLastCompany();
+
+            CurrentUser = await _userService.Get();
+
+            Fetched = true;
+            OnChange.Invoke();
+        }
+
+        private void RestoreLastCompany() {
             String currentPath = CurrentUrl();
             if (currentPath == "create/company")
             {
@@ -152,21 +156,6 @@ namespace WorkFlow.Client.Services
             {
                 // ignored
             }
-        }
-
-        public void NavigateToProjects(bool reload)
-        {
-            NavigationManager.NavigateTo($"{_currentCompany.Uri}/project", reload);
-        }
-
-        public void NavigateToHome(bool reload)
-        {
-            NavigationManager.NavigateTo("/", reload);
-        }
-
-        public void Reload()
-        {
-            NavigationManager.NavigateTo(NavigationManager.Uri, true);
         }
     }
 }

@@ -1,8 +1,6 @@
-﻿namespace WorkFlow.Shared.Entities
-{
+﻿namespace WorkFlow.Shared.Entities {
 
-    public enum Status
-    {
+    public enum Status {
         ToDo,
         InProgress,
         Completed

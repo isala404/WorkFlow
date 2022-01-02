@@ -31,18 +31,15 @@
 @code
 {
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         _navService.OnChange += StateHasChanged;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= StateHasChanged;
     }
 
-    protected override void OnAfterRender(bool firstRender)
-    {
+    protected override void OnAfterRender(Boolean firstRender) {
         base.OnAfterRender(firstRender);
         if (_navService.CurrentUrl() == "user/settings") return;
         if (_navService.Fetched && _navService.CompanyList.Count == 1 && _navService.CurrentUrl() != "create/company")

@@ -19,9 +19,8 @@
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
-    
-    private async void LeaveCompany()
-    {
+
+    private async void LeaveCompany() {
         try
         {
             CompanyDto company = await _userService.LeaveCompany(UserCompany.CompanyId);

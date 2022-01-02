@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using WorkFlow.Shared.Entities;
 
-namespace WorkFlow.Shared.Dto
-{
-    public sealed class ProjectDto
-    {
-        public ProjectDto()
-        {
+namespace WorkFlow.Shared.Dto {
+    public sealed class ProjectDto {
+        public ProjectDto() {
         }
 
-        public ProjectDto(Project project)
-        {
+        public ProjectDto(Project project) {
             Id = project.Id;
             Name = project.Name;
             Status = project.Status;
@@ -27,7 +23,6 @@ namespace WorkFlow.Shared.Dto
 
             if (project.Tickets == null) return;
             foreach (var ticket in project.Tickets)
-            {
                 switch (ticket.Status)
                 {
                     case Status.ToDo:
@@ -40,21 +35,28 @@ namespace WorkFlow.Shared.Dto
                         CompletedTickets += 1;
                         break;
                 }
-            }
         }
 
         public Guid Id { get; set; }
+
         public String Name { get; set; }
+
         public Status Status { get; set; } = Status.ToDo;
+
         public DateTime DueDate { get; set; } = DateTime.Today;
+
         public String Uri { get; set; }
+
         public CompanyDto Company { get; set; }
 
-        public int ToDoTickets { get; set; } = 0;
-        public int InProgressTickets { get; set; } = 0;
-        public int CompletedTickets { get; set; } = 0;
+        public Int32 ToDoTickets { get; set; }
 
-        public int NumOfUsers { get; set; } = 0;
+        public Int32 InProgressTickets { get; set; }
+
+        public Int32 CompletedTickets { get; set; }
+
+        public Int32 NumOfUsers { get; set; }
+
         // public virtual ICollection<Ticket> Tickets { get; set; }
         public ICollection<UserDto>? Users { get; set; }
     }

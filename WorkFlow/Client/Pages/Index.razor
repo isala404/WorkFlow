@@ -39,20 +39,22 @@
 </div>
 
 @code {
-    private List<TicketDto> TodayTickets { get; set; } = new List<TicketDto>();
-    private List<TicketDto> OverdueTickets { get; set; } = new List<TicketDto>();
-    private List<TicketDto> TodoTickets { get; set; } = new List<TicketDto>();
+
+    private List<TicketDto> TodayTickets { get; } = new List<TicketDto>();
+
+    private List<TicketDto> OverdueTickets { get; } = new List<TicketDto>();
+
+    private List<TicketDto> TodoTickets { get; } = new List<TicketDto>();
 
 
-    protected override async Task OnInitializedAsync()
-    {
-        var tickets = await _ticketService.List();
+    protected override async Task OnInitializedAsync() {
+        List<TicketDto>? tickets = await _ticketService.List();
 
         foreach (var ticket in tickets)
         {
             if (ticket.Status == Status.Completed) continue;
 
-            int result = DateTime.Compare(ticket.DueDate, DateTime.Today);
+            Int32 result = DateTime.Compare(ticket.DueDate, DateTime.Today);
 
             switch (result)
             {

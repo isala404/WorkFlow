@@ -1,7 +1,5 @@
-﻿namespace WorkFlow.Shared.Entities
-{
-    public enum UserRole
-    {
+﻿namespace WorkFlow.Shared.Entities {
+    public enum UserRole {
         User,
         Admin
     }

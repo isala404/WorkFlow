@@ -9,22 +9,18 @@ using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Models
-{
-    public class ReportModel : IReport
-    {
+namespace WorkFlow.Server.Models {
+    public class ReportModel : IReport {
+        private const Int32 SampleWindow = 30;
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
-        private const int SampleWindow = 30;
 
-        public ReportModel(ApplicationDbContext context, IUtility utilityService)
-        {
+        public ReportModel(ApplicationDbContext context, IUtility utilityService) {
             _context = context;
             _utilityService = utilityService;
         }
 
-        public async Task<ForecastReportDto> Forecast(DateTime startDate, DateTime endDate, Guid companyId)
-        {
+        public async Task<ForecastReportDto> Forecast(DateTime startDate, DateTime endDate, Guid companyId) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
             UserCompany? userCompany =
@@ -33,13 +29,10 @@ namespace WorkFlow.Server.Models
             if (userCompany == null) throw new InvalidDataException("Invalid Company.");
             if (userCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("admin permission required");
 
-            if (startDate.CompareTo(DateTime.Today) < 0 || endDate.CompareTo(startDate) <= 0)
-            {
-                throw new InvalidDataException("invalid date range");
-            }
+            if (startDate.CompareTo(DateTime.Today) < 0 || endDate.CompareTo(startDate) <= 0) throw new InvalidDataException("invalid date range");
 
-            int numOfDays = (endDate - startDate).Days;
-            int offset = (startDate - DateTime.Today).Days;
+            Int32 numOfDays = (endDate - startDate).Days;
+            Int32 offset = (startDate - DateTime.Today).Days;
 
             List<Project> projects = await _context.Projects.Include("Users").Where(p =>
                 p.Company!.Id == companyId &&
@@ -47,25 +40,21 @@ namespace WorkFlow.Server.Models
                 p.CreatedAt.CompareTo(DateTime.Now) <= 0
             ).ToListAsync();
 
-            if (projects.Count == 0)
-            {
-                return new ForecastReportDto {NumberOfDays = numOfDays, Offset = offset};
-            }
+            if (projects.Count == 0) return new ForecastReportDto {NumberOfDays = numOfDays, Offset = offset};
 
-            double avgNumberOfUsers = (double) projects.Sum(project => project.Users!.Count) / projects.Count;
+            Double avgNumberOfUsers = (Double)projects.Sum(project => project.Users!.Count) / projects.Count;
 
             return new ForecastReportDto
             {
                 NumberOfDays = numOfDays,
                 CurrentProject = projects.Count,
                 Offset = offset,
-                ProjectGrowthRate = (double) projects.Count / SampleWindow,
+                ProjectGrowthRate = (Double)projects.Count / SampleWindow,
                 PeoplePerProject = avgNumberOfUsers
             };
         }
 
-        public async Task<UserProductivityDto> UserProductivity(string userId, Guid companyId)
-        {
+        public async Task<UserProductivityDto> UserProductivity(String userId, Guid companyId) {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
             UserCompany? currentUserCompany =
@@ -74,7 +63,7 @@ namespace WorkFlow.Server.Models
 
             if (currentUserCompany == null) throw new InvalidDataException("Invalid Company.");
             if (currentUserCompany.Role != UserRole.Admin) throw new UnauthorizedAccessException("admin permission required");
-            
+
             UserCompany? userCompany = await _context.UserCompany.Include("User.Projects").FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CompanyId == companyId);
             if (userCompany == null) throw new InvalidDataException("Invalid UserId.");
 
@@ -84,7 +73,6 @@ namespace WorkFlow.Server.Models
                 {Name = userCompany.User!.Name!, Email = userCompany.User!.Email, NumOfProjects = userCompany.User!.Projects!.Count, UserRole = userCompany.Role};
 
             foreach (var ticket in userTickets)
-            {
                 switch (ticket.Status)
                 {
                     case Status.ToDo:
@@ -97,7 +85,6 @@ namespace WorkFlow.Server.Models
                         report.NumOfCompletedTickets += 1;
                         break;
                 }
-            }
 
             return report;
         }

@@ -66,11 +66,12 @@
     public Toast? Toast { get; set; }
 
     private List<TicketDto> TodoTickets { get; } = new List<TicketDto>();
+
     private List<TicketDto> InProgressTickets { get; } = new List<TicketDto>();
+
     private List<TicketDto> CompletedTickets { get; } = new List<TicketDto>();
 
-    private async void UpdateUi()
-    {
+    private async void UpdateUi() {
         try
         {
             ProjectDto project;
@@ -80,7 +81,7 @@
             }
             catch (Exception)
             {
-                Toast?.AddNotification("Project not found", $"It looks like the selected project isn't available under this company", "yellow");
+                Toast?.AddNotification("Project not found", "It looks like the selected project isn't available under this company", "yellow");
                 _navService.NavigateToProjects(false);
                 return;
             }
@@ -114,14 +115,12 @@
         }
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         UpdateUi();
         _navService.OnChange += UpdateUi;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= UpdateUi;
     }
 

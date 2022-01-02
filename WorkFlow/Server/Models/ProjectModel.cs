@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WorkFlow.Server.Data;
@@ -10,21 +10,17 @@ using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Models
-{
-    public class ProjectModel : IProject
-    {
+namespace WorkFlow.Server.Models {
+    public class ProjectModel : IProject {
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
 
-        public ProjectModel(ApplicationDbContext context, IUtility utilityService)
-        {
+        public ProjectModel(ApplicationDbContext context, IUtility utilityService) {
             _context = context;
             _utilityService = utilityService;
         }
 
-        public async Task<List<ProjectDto>> List()
-        {
+        public async Task<List<ProjectDto>> List() {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -36,8 +32,7 @@ namespace WorkFlow.Server.Models
             return projects;
         }
 
-        public async Task<List<ProjectDto>> List(Guid companyId)
-        {
+        public async Task<List<ProjectDto>> List(Guid companyId) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -65,8 +60,7 @@ namespace WorkFlow.Server.Models
             return projects;
         }
 
-        public async Task<ProjectDto> Get(Guid projectId)
-        {
+        public async Task<ProjectDto> Get(Guid projectId) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -78,8 +72,7 @@ namespace WorkFlow.Server.Models
             return new ProjectDto(project);
         }
 
-        public async Task<ProjectDto> Get(String companyUri, String projectUri)
-        {
+        public async Task<ProjectDto> Get(String companyUri, String projectUri) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -96,8 +89,7 @@ namespace WorkFlow.Server.Models
             return new ProjectDto(project);
         }
 
-        public async Task<ProjectDto> Create(ProjectDto project)
-        {
+        public async Task<ProjectDto> Create(ProjectDto project) {
             (_, Company company) = await VerifyRequest(project);
             Project newProject = new Project
             {
@@ -106,15 +98,14 @@ namespace WorkFlow.Server.Models
                 Status = project.Status,
                 DueDate = project.DueDate,
                 Uri = project.Uri,
-                Company = company,
+                Company = company
             };
             EntityEntry<Project> result = _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
             return new ProjectDto(result.Entity);
         }
 
-        public async Task<ProjectDto> Update(Guid projectId, ProjectDto project)
-        {
+        public async Task<ProjectDto> Update(Guid projectId, ProjectDto project) {
             await VerifyRequest(project);
 
             Project? targetProject = await _context.Projects.FirstOrDefaultAsync(p => p.Id == projectId);
@@ -129,8 +120,7 @@ namespace WorkFlow.Server.Models
             return new ProjectDto(targetProject);
         }
 
-        public async Task<bool> Delete(Guid projectId)
-        {
+        public async Task<Boolean> Delete(Guid projectId) {
             Project? project = await _context.Projects.Include("Company")
                 .FirstOrDefaultAsync(project => project.Id == projectId);
             if (project == null) throw new InvalidDataException("Invalid projectId.");
@@ -142,8 +132,7 @@ namespace WorkFlow.Server.Models
             return true;
         }
 
-        public async Task<ProjectDto> ModifyUser(Guid projectId, UserDto userDto)
-        {
+        public async Task<ProjectDto> ModifyUser(Guid projectId, UserDto userDto) {
             Project? project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == projectId);
             if (project == null) throw new InvalidDataException("Invalid projectId.");
 
@@ -153,21 +142,16 @@ namespace WorkFlow.Server.Models
             if (user == null) throw new InvalidDataException("Invalid UserId.");
 
             if (project.Users!.Contains(user))
-            {
                 project.Users.Remove(user);
-            }
             else
-            {
                 project.Users.Add(user);
-            }
 
             await _context.SaveChangesAsync();
 
             return new ProjectDto(project);
         }
 
-        private async Task<Tuple<User, Company>> VerifyRequest(ProjectDto project, bool admin = true)
-        {
+        private async Task<Tuple<User, Company>> VerifyRequest(ProjectDto project, Boolean admin = true) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 

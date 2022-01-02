@@ -1,3 +1,4 @@
+using System;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -9,12 +10,11 @@ using WorkFlow.Server.Data;
 using WorkFlow.Server.Models;
 using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
-using Microsoft.AspNetCore.Identity;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+String? connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -26,7 +26,7 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
-    .AddApiAuthorization<User, ApplicationDbContext>();  
+    .AddApiAuthorization<User, ApplicationDbContext>();
 
 builder.Services.AddAuthentication()
     .AddIdentityServerJwt();
@@ -41,7 +41,7 @@ builder.Services.AddScoped<ICompany, CompanyModel>();
 builder.Services.AddScoped<IProject, ProjectModel>();
 builder.Services.AddScoped<IReport, ReportModel>();
 
-var app = builder.Build();
+WebApplication? app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

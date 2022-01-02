@@ -45,11 +45,10 @@
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
-    
+
     private readonly ProjectDto _project = new ProjectDto();
 
-    private async void HandleValidSubmit()
-    {
+    private async void HandleValidSubmit() {
         _project.Company = _navService.GetCompanyByUri(CompanyUri);
         try
         {
@@ -65,9 +64,8 @@
         _navService.NavigateToProjects(true);
     }
 
-    protected override void OnInitialized()
-    {
-        if(!_navService.IsAdmin(true)) return;
+    protected override void OnInitialized() {
+        if (!_navService.IsAdmin(true)) return;
     }
 
 }

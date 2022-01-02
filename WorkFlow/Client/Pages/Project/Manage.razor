@@ -82,11 +82,10 @@ else
     private ProjectDto? _project;
     private List<UserDto>? _users;
 
-    private string? SelectedUserId { get; set; }
+    private String? SelectedUserId { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if(!_navService.IsAdmin(true)) return;
+    protected override async Task OnInitializedAsync() {
+        if (!_navService.IsAdmin(true)) return;
         try
         {
             _project = await _projectService.Get(CompanyUri, ProjectUri);
@@ -99,8 +98,7 @@ else
     }
 
 
-    private async void HandleValidSubmit()
-    {
+    private async void HandleValidSubmit() {
         try
         {
             _project = await _projectService.Update(_project!.Id, _project!);
@@ -115,8 +113,7 @@ else
     }
 
 
-    private async void SentInviteToUser()
-    {
+    private async void SentInviteToUser() {
         try
         {
             UserDto user = await _userService.ModifyProject(_project!.Id, SelectedUserId!);
@@ -129,14 +126,13 @@ else
         }
     }
 
-    private async void DeleteProject()
-    {
+    private async void DeleteProject() {
         try
         {
-            bool deleted = await _projectService.Delete(_project!.Id);
+            Boolean deleted = await _projectService.Delete(_project!.Id);
             if (deleted)
             {
-                Toast?.AddNotification("Success", $"Project ({_project!.Name}) was deleted", "blue");
+                Toast?.AddNotification("Success", $"Project ({_project!.Name}) was deleted");
                 _navService.NavigateToProjects(true);
             }
             else

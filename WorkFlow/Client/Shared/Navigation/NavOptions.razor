@@ -26,18 +26,27 @@
     private NavRoutes[] OrgOptions { get; set; } =
         {
             new NavRoutes
-            {Name = "Home", Href = "/"},
+            {
+                Name = "Home",
+                Href = "/"
+            },
             new NavRoutes
-            {Name = "Projects", Href = "/project"},
+            {
+                Name = "Projects",
+                Href = "/project"
+            },
             new NavRoutes
-            {Name = "Reports", Href = "/report", AdminOnly = true},
+            {
+                Name = "Reports",
+                Href = "/report",
+                AdminOnly = true
+            }
         };
 
-    private void UpdateUi()
-    {
+    private void UpdateUi() {
         Options = OrgOptions;
 
-        for (int i = 0; i < Options.Length; i++)
+        for (Int32 i = 0; i < Options.Length; i++)
         {
             if (_navService.GetCurrentCompany().Uri == "create/company")
             {
@@ -56,20 +65,17 @@
         StateHasChanged();
     }
 
-    private void UpdateUi(object? sender, LocationChangedEventArgs locationChangedEventArgs)
-    {
+    private void UpdateUi(Object? sender, LocationChangedEventArgs locationChangedEventArgs) {
         UpdateUi();
     }
 
-    protected override void OnInitialized()
-    {
+    protected override void OnInitialized() {
         _navService.OnChange += UpdateUi;
         _navigationManager.LocationChanged += UpdateUi;
         UpdateUi();
     }
 
-    public void Dispose()
-    {
+    public void Dispose() {
         _navService.OnChange -= UpdateUi;
         _navigationManager.LocationChanged -= UpdateUi;
     }

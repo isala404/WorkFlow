@@ -1,16 +1,12 @@
 ﻿using System;
 using WorkFlow.Shared.Entities;
 
-namespace WorkFlow.Shared.Dto
-{
-    public class TicketDto
-    {
-        public TicketDto()
-        {
+namespace WorkFlow.Shared.Dto {
+    public class TicketDto {
+        public TicketDto() {
         }
 
-        public TicketDto(Ticket ticket)
-        {
+        public TicketDto(Ticket ticket) {
             Id = ticket.Id;
             Name = ticket.Name;
             Description = ticket.Description;
@@ -23,13 +19,21 @@ namespace WorkFlow.Shared.Dto
         }
 
         public Guid Id { get; set; }
+
         public String Name { get; set; }
+
         public String Description { get; set; }
+
         public Priority Priority { get; set; }
+
         public Status Status { get; set; } = Status.ToDo;
+
         public UserDto Assignee { get; set; }
+
         public DateTime DueDate { get; set; } = DateTime.Today;
+
         public Int32 EstimatedTime { get; set; }
+
         public String TicketUrl { get; set; }
     }
 }

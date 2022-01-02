@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace WorkFlow.Server.Controllers
-{
-    public class OidcConfigurationController : Controller
-    {
+namespace WorkFlow.Server.Controllers {
+    public class OidcConfigurationController : Controller {
         private readonly ILogger<OidcConfigurationController> _logger;
 
-        public OidcConfigurationController(IClientRequestParametersProvider clientRequestParametersProvider, ILogger<OidcConfigurationController> logger)
-        {
+        public OidcConfigurationController(IClientRequestParametersProvider clientRequestParametersProvider, ILogger<OidcConfigurationController> logger) {
             ClientRequestParametersProvider = clientRequestParametersProvider;
             _logger = logger;
         }
@@ -17,9 +16,8 @@ namespace WorkFlow.Server.Controllers
         public IClientRequestParametersProvider ClientRequestParametersProvider { get; }
 
         [HttpGet("_configuration/{clientId}")]
-        public IActionResult GetClientRequestParameters([FromRoute] string clientId)
-        {
-            var parameters = ClientRequestParametersProvider.GetClientParameters(HttpContext, clientId);
+        public IActionResult GetClientRequestParameters([FromRoute] String clientId) {
+            IDictionary<String, String>? parameters = ClientRequestParametersProvider.GetClientParameters(HttpContext, clientId);
             return Ok(parameters);
         }
     }

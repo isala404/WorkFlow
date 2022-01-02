@@ -2,21 +2,21 @@
 @attribute [AllowAnonymous]
 @inject NavigationManager _navigationManager
 
-<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogin" OnLogOutSucceeded="OnLogOut" />
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="OnLogin" OnLogOutSucceeded="OnLogOut"/>
 
 @code{
-    [Parameter] public string? Action { get; set; }
 
-    protected override void OnInitialized()
-    {
+    [Parameter]
+    public String? Action { get; set; }
+
+    protected override void OnInitialized() {
         if (Action == "logged-out")
         {
             _navigationManager.NavigateTo("/");
         }
     }
 
-    private void OnLogin(RemoteAuthenticationState state)
-    {
+    private void OnLogin(RemoteAuthenticationState state) {
         Console.WriteLine($"Return URL - {_navigationManager.ToBaseRelativePath(state.ReturnUrl)}");
 
         if (_navigationManager.ToBaseRelativePath(state.ReturnUrl).StartsWith("authentication"))
@@ -28,9 +28,8 @@
             _navigationManager.NavigateTo(state.ReturnUrl, true);
         }
     }
-    
-    private void OnLogOut(RemoteAuthenticationState state)
-    {
+
+    private void OnLogOut(RemoteAuthenticationState state) {
         Console.WriteLine($"Return URL - {_navigationManager.ToBaseRelativePath(state.ReturnUrl)}");
         _navigationManager.NavigateTo($"Identity/Account/Login?ReturnUrl=/{Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(state.ReturnUrl))}",
             true);

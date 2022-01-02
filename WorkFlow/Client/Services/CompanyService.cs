@@ -6,34 +6,28 @@ using System.Threading.Tasks;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Client.Services
-{
-    public class CompanyService : ICompany
-    {
+namespace WorkFlow.Client.Services {
+    public class CompanyService : ICompany {
+        private const String EntityName = "company";
         private readonly HttpClient _http;
-        private const string EntityName = "company";
 
-        public CompanyService(HttpClient http)
-        {
+        public CompanyService(HttpClient http) {
             _http = http;
         }
 
-        public async Task<List<CompanyDto>> List()
-        {
+        public async Task<List<CompanyDto>> List() {
             List<CompanyDto>? company = await _http.GetFromJsonAsync<List<CompanyDto>>("api/company/");
             if (company == null) throw new ApplicationException("Error while getting companies");
             return company;
         }
 
-        public async Task<CompanyDto> Get(Guid companyId)
-        {
+        public async Task<CompanyDto> Get(Guid companyId) {
             CompanyDto? company = await _http.GetFromJsonAsync<CompanyDto>($"api/company/{companyId}/");
             if (company == null) throw new ApplicationException($"Error while getting {EntityName}");
             return company;
         }
 
-        public async Task<CompanyDto> Create(CompanyDto company)
-        {
+        public async Task<CompanyDto> Create(CompanyDto company) {
             HttpResponseMessage response = await _http.PostAsJsonAsync("api/company/", company);
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException($"Error while creating {EntityName}, Reason: {response.ReasonPhrase}");
@@ -44,8 +38,7 @@ namespace WorkFlow.Client.Services
             return newCompany;
         }
 
-        public async Task<CompanyDto> Update(Guid companyId, CompanyDto company)
-        {
+        public async Task<CompanyDto> Update(Guid companyId, CompanyDto company) {
             HttpResponseMessage response = await _http.PutAsJsonAsync($"api/company/{companyId}/", company);
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException($"Error while updating ${EntityName}, Reason: {response.ReasonPhrase}");
@@ -56,20 +49,18 @@ namespace WorkFlow.Client.Services
             return updatedCompany;
         }
 
-        public async Task<bool> Delete(Guid companyId)
-        {
+        public async Task<Boolean> Delete(Guid companyId) {
             HttpResponseMessage response = await _http.DeleteAsync($"api/company/{companyId}/");
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException($"Error while deleting ${EntityName}, Reason: {response.ReasonPhrase}");
-            return await response.Content.ReadFromJsonAsync<bool>();
+            return await response.Content.ReadFromJsonAsync<Boolean>();
         }
 
-        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto user)
-        {
+        public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto user) {
             HttpResponseMessage response = await _http.PostAsJsonAsync($"api/company/user/{companyId}/", user);
             if (!response.IsSuccessStatusCode)
                 throw new ApplicationException(
-                    $"Error while modifying ${EntityName} users, Reason: {response.ReasonPhrase}");
+                $"Error while modifying ${EntityName} users, Reason: {response.ReasonPhrase}");
 
             CompanyDto? updatedCompany = await response.Content.ReadFromJsonAsync<CompanyDto>();
             if (updatedCompany == null) throw new ApplicationException($"Error while modifying ${EntityName} users");

@@ -1,54 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Components;
 using WorkFlow.Client.Shared;
 using WorkFlow.Shared.Dto;
 
-namespace WorkFlow.Client.Services
-{
-    public interface INavService
-    {
-        public event Action OnChange;
+namespace WorkFlow.Client.Services {
+    public interface INavService {
         public Toast? Toast { get; set; }
-        public UserDto? CurrentUser  { get; }
-        public bool Fetched { get; }
+
+        public UserDto? CurrentUser { get; }
+
+        public Boolean Fetched { get; }
+
         public Stack<CompanyDto> CompanyList { get; }
+
+        public event Action OnChange;
+
         public CompanyDto GetCurrentCompany();
-        public bool IsAdmin(bool redirect = false);
-        public String TitleCase(string text);
-        public void SetCurrentCompany(string newCompanyUri, bool reload);
-        public string CurrentUrl();
-        public CompanyDto GetCompanyByUri(string uri);
-        public void NavigateToProjects(bool reload);
-        public void NavigateToHome(bool reload);
+        public Boolean IsAdmin(Boolean redirect = false);
+        public String TitleCase(String text);
+        public void SetCurrentCompany(String newCompanyUri, Boolean reload);
+        public String CurrentUrl();
+        public CompanyDto GetCompanyByUri(String uri);
+        public void NavigateToProjects(Boolean reload);
+        public void NavigateToHome(Boolean reload);
         public void Reload();
-        
     }
-    
-    public struct NavRoutes
-    {
-        public string Name { get; init; }
-        public string Href { get; init; }
-        public string HrefWithCompany { get; set; }
-        public bool Selected { get; set; }
-        public bool AdminOnly { get; set; }
+
+    public struct NavRoutes {
+        public String Name { get; init; }
+
+        public String Href { get; init; }
+
+        public String HrefWithCompany { get; set; }
+
+        public Boolean Selected { get; set; }
+
+        public Boolean AdminOnly { get; set; }
     }
-    public class Notification : IEquatable<Notification>
-    {
-        public string? Title { get; init; }
-        public string Message { get; init; }
-        public string Color { get; init; }
-        public bool Equals(Notification? other)
-        {
+
+    public class Notification : IEquatable<Notification> {
+        public String? Title { get; init; }
+
+        public String Message { get; init; }
+
+        public String Color { get; init; }
+
+        public Boolean Equals(Notification? other) {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Title == other.Title && Message == other.Message && Color == other.Color;
         }
     }
 
-    public readonly struct Breadcrumb
-    {
-        public string Name { get; init; }
-        public string Url { get; init; }
+    public readonly struct Breadcrumb {
+        public String Name { get; init; }
+
+        public String Url { get; init; }
     }
 }

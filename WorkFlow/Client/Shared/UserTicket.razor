@@ -1,6 +1,6 @@
 @inject INavService _navService
 
-<div class="inline-block whitespace-normal w-96 p-4 border-2 border-black m-2 @(HideColour ? "bg-gray-50" : _statusColorMap[Ticket.Status] )">
+<div class="inline-block whitespace-normal w-96 p-4 border-2 border-black m-2 @(HideColour ? "bg-gray-50" : _statusColorMap[Ticket.Status])">
     <span class="float-right">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="@(_priorityColorMap[Ticket.Priority])" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/>
@@ -22,34 +22,36 @@
             </svg>
             @Ticket.EstimatedTime Hours
         </div>
-        
-        <a href="@_navService.GetCurrentCompany().Uri/user/@Ticket.Assignee.Id/"  class="flex ml-auto">
+
+        <a href="@_navService.GetCurrentCompany().Uri/user/@Ticket.Assignee.Id/" class="flex ml-auto">
             <img src="https://avatars.dicebear.com/api/bottts/@(Ticket.Assignee.UserName).svg" alt="profile-pic" height="24" width="24"/>
             @Ticket.Assignee.Name
         </a>
-        
+
     </div>
 </div>
 
 @code {
+
     [Parameter]
     public TicketDto Ticket { get; set; } = null!;
 
     [Parameter]
-    public bool HideColour { get; set; } = false;
+    public Boolean HideColour { get; set; } = false;
 
-    private Dictionary<Status, string> _statusColorMap = new Dictionary<Status, string>
+    private Dictionary<Status, String> _statusColorMap = new Dictionary<Status, String>
     {
         {Status.ToDo, "bg-gray-400"},
         {Status.InProgress, "bg-yellow-100"},
-        {Status.Completed, "bg-green-200"},
-        //{"none", "bg-gray-50"},
+        {Status.Completed, "bg-green-200"}
+    //{"none", "bg-gray-50"},
     };
 
-    private Dictionary<Priority, string> _priorityColorMap = new Dictionary<Priority, string>
+    private Dictionary<Priority, String> _priorityColorMap = new Dictionary<Priority, String>
     {
         {Priority.High, "#f50000"},
         {Priority.Medium, "#ffcc00"},
-        {Priority.Low, "#d8d8d8"},
+        {Priority.Low, "#d8d8d8"}
     };
+
 }

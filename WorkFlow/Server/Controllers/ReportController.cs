@@ -2,30 +2,30 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Controllers
-{
-    [Route("api/[controller]")]
+namespace WorkFlow.Server.Controllers {
+    [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     [ApiController]
-    public class ReportController : ControllerBase
-    {
-        [Microsoft.AspNetCore.Components.Inject]
-        protected IReport ReportModel { get; set; }
+    public class ReportController : ControllerBase {
 
-        public ReportController(IReport reportModel)
-        {
+        public ReportController(IReport reportModel) {
             ReportModel = reportModel;
         }
 
+        [Inject]
+        protected IReport ReportModel { get; set; }
+
         // GET: api/report/forecast
         [HttpGet("forecast")]
-        public async Task<IActionResult> Forecast([FromQuery(Name = "startDate")] String startDate,
-            [FromQuery(Name = "endDate")] String endDate, [FromQuery(Name = "companyId")] Guid companyId)
-        {
+        public async Task<IActionResult> Forecast(
+            [FromQuery(Name = "startDate")] String startDate,
+            [FromQuery(Name = "endDate")] String endDate,
+            [FromQuery(Name = "companyId")] Guid companyId) {
             try
             {
                 DateTime startDateParsed = DateTime.ParseExact(startDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
@@ -44,11 +44,10 @@ namespace WorkFlow.Server.Controllers
                 };
             }
         }
-        
+
         // GET: api/report/user
         [HttpGet("user")]
-        public async Task<IActionResult> UserProductivity([FromQuery(Name = "userId")] String userId, [FromQuery(Name = "companyId")] Guid companyId)
-        {
+        public async Task<IActionResult> UserProductivity([FromQuery(Name = "userId")] String userId, [FromQuery(Name = "companyId")] Guid companyId) {
             try
             {
                 UserProductivityDto userProductivity = await ReportModel.UserProductivity(userId, companyId);

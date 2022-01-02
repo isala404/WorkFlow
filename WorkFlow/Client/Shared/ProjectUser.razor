@@ -10,16 +10,15 @@
 @code {
 
     [Parameter]
-    public UserDto User { get; set; } = null!;    
-    
+    public UserDto User { get; set; } = null!;
+
     [Parameter]
-    public ProjectDto Project { get; set; } = null!;    
+    public ProjectDto Project { get; set; } = null!;
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
-    
-    private async void RemoveUser()
-    {
+
+    private async void RemoveUser() {
         try
         {
             UserDto user = await _userService.ModifyProject(Project.Id, User.Id!);

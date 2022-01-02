@@ -1,8 +1,8 @@
-﻿@using System.Diagnostics
-@inject Blazored.LocalStorage.ILocalStorageService _localStorage
+﻿@using Blazored.LocalStorage
+@inject ILocalStorageService _localStorage
 @inject INavService _navService
 
-<CascadingValue Value=this>
+<CascadingValue Value="this">
     <div class="absolute md:top-20 md:right-10">
         @foreach (var notification in _notifications)
         {
@@ -25,16 +25,15 @@
 </CascadingValue>
 
 
-
 @code {
+
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
-    
-    
+
+
     private List<Notification> _notifications = new List<Notification>();
 
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnInitializedAsync() {
         _navService.Toast = this;
         if (!await _localStorage.ContainKeyAsync("notifications"))
         {
@@ -45,26 +44,33 @@
             _notifications = await _localStorage.GetItemAsync<List<Notification>>("notifications");
         }
     }
-    
-    public async void AddNotification(String title, String message, String color = "blue")
-    {
-        _notifications.Add(new Notification {Title = title, Message = message, Color = color});
-        await _localStorage.SetItemAsync("notifications", _notifications);
-        StateHasChanged();
-    }
-    
-    public async void Exception(Exception exception, String title = "Something went wrong")
-    {
-        _notifications.Add(new Notification {Title = title, Message = exception.Message, Color = "red"});
+
+    public async void AddNotification(String title, String message, String color = "blue") {
+        _notifications.Add(new Notification
+        {
+            Title = title,
+            Message = message,
+            Color = color
+        });
         await _localStorage.SetItemAsync("notifications", _notifications);
         StateHasChanged();
     }
 
-    private async void RemoveNotification(Notification notification)
-    {
+    public async void Exception(Exception exception, String title = "Something went wrong") {
+        _notifications.Add(new Notification
+        {
+            Title = title,
+            Message = exception.Message,
+            Color = "red"
+        });
+        await _localStorage.SetItemAsync("notifications", _notifications);
+        StateHasChanged();
+    }
+
+    private async void RemoveNotification(Notification notification) {
         _notifications.Remove(notification);
         await _localStorage.SetItemAsync("notifications", _notifications);
         StateHasChanged();
     }
-    
+
 }

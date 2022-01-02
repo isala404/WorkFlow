@@ -3,37 +3,32 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WorkFlow.Shared.Interfaces;
-using WorkFlow.Shared.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WorkFlow.Server.Data;
 using WorkFlow.Shared.Dto;
+using WorkFlow.Shared.Entities;
+using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Models
-{
-    public class TicketModel : ITicket
-    {
+namespace WorkFlow.Server.Models {
+    public class TicketModel : ITicket {
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
-        public TicketModel(ApplicationDbContext context, IUtility utilityService)
-        {
+        public TicketModel(ApplicationDbContext context, IUtility utilityService) {
             _context = context;
             _utilityService = utilityService;
         }
 
-        public async Task<List<TicketDto>> List()
-        {
+        public async Task<List<TicketDto>> List() {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
-            
+
             List<TicketDto> tickets = await _context.Tickets.Include("Project.Company").Where(t => t.Assignee!.Id == user.Id).Select(t => new TicketDto(t)).ToListAsync();
 
             return tickets;
         }
 
-        public async Task<List<TicketDto>> ListTicketsByProject(Guid projectId)
-        {
+        public async Task<List<TicketDto>> ListTicketsByProject(Guid projectId) {
             List<TicketDto> tickets = new List<TicketDto>();
             List<Ticket> projectTickets = await _context.Tickets.Include("Project").Include("Assignee")
                 .Where(ticket => ticket.Project!.Id == projectId).ToListAsync();
@@ -41,25 +36,22 @@ namespace WorkFlow.Server.Models
             return tickets;
         }
 
-        public async Task<List<TicketDto>> ListTicketsByUser(string userId)
-        {
+        public async Task<List<TicketDto>> ListTicketsByUser(String userId) {
             List<TicketDto> tickets = new List<TicketDto>();
             List<Ticket> userTickets = await _context.Tickets.Include("Assignee").Where(ticket => ticket.Assignee!.Id == userId)
                 .ToListAsync();
             tickets.AddRange(userTickets.Select(ticket => new TicketDto(ticket)));
             return tickets;
         }
-        
-        public async Task<TicketDto> Get(Guid ticketId)
-        {
+
+        public async Task<TicketDto> Get(Guid ticketId) {
             Ticket? ticket = await _context.Tickets.Include("Project").Include("Assignee")
                 .FirstOrDefaultAsync(ticket => ticket.Id == ticketId);
             if (ticket == null) throw new InvalidDataException("Invalid Ticket ID.");
             return new TicketDto(ticket);
         }
 
-        public async Task<TicketDto> Create(TicketDto ticket)
-        {
+        public async Task<TicketDto> Create(TicketDto ticket) {
             User? user = await _context.Users.FirstOrDefaultAsync(user => user.Id == ticket.Assignee.Id);
             if (user == null) throw new InvalidDataException("Invalid User.");
 
@@ -82,8 +74,7 @@ namespace WorkFlow.Server.Models
             return new TicketDto(result.Entity);
         }
 
-        public async Task<bool> Delete(Guid ticketId)
-        {
+        public async Task<Boolean> Delete(Guid ticketId) {
             Ticket? ticket = await _context.Tickets.FirstOrDefaultAsync(ticket => ticket.Id == ticketId);
             if (ticket == null) return false;
 
@@ -91,9 +82,8 @@ namespace WorkFlow.Server.Models
             await _context.SaveChangesAsync();
             return true;
         }
-        
-        public async Task<TicketDto> Update(Guid ticketId, TicketDto ticket)
-        {
+
+        public async Task<TicketDto> Update(Guid ticketId, TicketDto ticket) {
             Ticket? targetTicket = await _context.Tickets.Include("Assignee").FirstOrDefaultAsync(t => t.Id == ticketId);
             if (targetTicket == null) throw new InvalidDataException("Invalid Ticket.");
 

@@ -2,29 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
-namespace WorkFlow.Server.Controllers
-{
-    [Route("api/[controller]")]
+namespace WorkFlow.Server.Controllers {
+    [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
     [ApiController]
-    public class CompanyController : ControllerBase
-    {
-        [Microsoft.AspNetCore.Components.Inject]
-        protected ICompany CompanyModel { get; set; }
+    public class CompanyController : ControllerBase {
 
-        public CompanyController(ICompany companyModel)
-        {
+        public CompanyController(ICompany companyModel) {
             CompanyModel = companyModel;
         }
-        
+
+        [Inject]
+        protected ICompany CompanyModel { get; set; }
+
         // GET: api/company
         [HttpGet]
-        public async Task<IActionResult> Get()
-        {
+        public async Task<IActionResult> Get() {
             try
             {
                 List<CompanyDto> companies = await CompanyModel.List();
@@ -38,8 +36,7 @@ namespace WorkFlow.Server.Controllers
 
         // GET: api/company/5
         [HttpGet("{id:guid}", Name = "Get")]
-        public async Task<IActionResult> Get(Guid id)
-        {
+        public async Task<IActionResult> Get(Guid id) {
             try
             {
                 CompanyDto company = await CompanyModel.Get(id);
@@ -53,8 +50,7 @@ namespace WorkFlow.Server.Controllers
 
         // POST: api/company
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CompanyDto company)
-        {
+        public async Task<IActionResult> Post([FromBody] CompanyDto company) {
             try
             {
                 CompanyDto newCompany = await CompanyModel.Create(company);
@@ -68,8 +64,7 @@ namespace WorkFlow.Server.Controllers
 
         // PUT: api/company/5
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> Put(Guid id, [FromBody] CompanyDto company)
-        {
+        public async Task<IActionResult> Put(Guid id, [FromBody] CompanyDto company) {
             try
             {
                 CompanyDto updatedCompany = await CompanyModel.Update(id, company);
@@ -83,8 +78,7 @@ namespace WorkFlow.Server.Controllers
 
         // PATCH: api/company/5
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> Patch(Guid id, [FromBody] UserCompanyDto user)
-        {
+        public async Task<IActionResult> Patch(Guid id, [FromBody] UserCompanyDto user) {
             try
             {
                 CompanyDto company = await CompanyModel.ModifyUser(id, user);
@@ -100,14 +94,13 @@ namespace WorkFlow.Server.Controllers
                 };
             }
         }
-        
+
         // DELETE: api/company/5
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> Delete(Guid id)
-        {
+        public async Task<IActionResult> Delete(Guid id) {
             try
             {
-                bool deleted = await CompanyModel.Delete(id);
+                Boolean deleted = await CompanyModel.Delete(id);
                 return Ok(deleted);
             }
             catch (InvalidDataException e)

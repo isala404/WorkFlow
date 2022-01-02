@@ -52,7 +52,7 @@ else
     [Parameter]
     public String Company { get; set; } = null!;
 
-    
+
     [Parameter]
     public String UserId { get; set; } = null!;
 
@@ -61,9 +61,8 @@ else
 
     private UserProductivityDto? UserProductivityDto { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        if(!_navService.IsAdmin(true)) return;
+    protected override async Task OnInitializedAsync() {
+        if (!_navService.IsAdmin(true)) return;
         try
         {
             UserProductivityDto = await _reportService.UserProductivity(UserId, _navService.GetCurrentCompany().Id);

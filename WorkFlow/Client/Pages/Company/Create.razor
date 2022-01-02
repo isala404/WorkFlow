@@ -27,8 +27,7 @@
 
     private readonly CompanyDto _company = new CompanyDto();
 
-    private async void HandleValidSubmit()
-    {
+    private async void HandleValidSubmit() {
         try
         {
             CompanyDto company = await _companyService.Create(_company);
