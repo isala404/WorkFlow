@@ -1,4 +1,4 @@
-@page "/{Company}/project/{project}/ticket/{ticket}/manage"
+@page "/{CompanyUri}/project/{projectUri}/ticket/{ticketId}/manage"
 @inject ITicket _ticketService
 @inject INavService _navService
 @inject IUser _userService
@@ -91,13 +91,13 @@ else
 @code {
 
     [Parameter]
-    public String Company { get; set; } = null!;
+    public String CompanyUri { get; set; } = null!;
 
     [Parameter]
-    public String Project { get; set; } = null!;
+    public String ProjectUri { get; set; } = null!;
 
     [Parameter]
-    public String Ticket { get; set; } = null!;
+    public String TicketId { get; set; } = null!;
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
@@ -117,8 +117,8 @@ else
 
     private async void HandleValidSubmit()
     {
-        _ticket!.ProjectUri = Project;
-        await _ticketService.Update(Guid.Parse(Ticket), _ticket);
+        _ticket!.TicketUrl = ProjectUri;
+        await _ticketService.Update(Guid.Parse(TicketId), _ticket);
         _navService.Reload();
     }
 
@@ -146,8 +146,8 @@ else
     {
         try
         {
-            _users = await _userService.GetUsersByProject(Project);
-            _ticket = await _ticketService.Get(Guid.Parse(Ticket));
+            _users = await _userService.GetUsersByProject(ProjectUri);
+            _ticket = await _ticketService.Get(Guid.Parse(TicketId));
         }
         catch (Exception e)
         {

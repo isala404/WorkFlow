@@ -6,11 +6,11 @@
 
 <div>
     <div class="flex flex-row-reverse mb-5">
+        <a href="@CompanyUri/project/@ProjectUri/ticket/create">
+            <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
+        </a>
         @if (_navService.IsAdmin())
         {
-            <a href="@CompanyUri/project/@ProjectUri/ticket/create">
-                <button class="p-2 pl-5 pr-5 bg-blue-500 border-blue-300 text-gray-100 text-md rounded-lg focus:border-4 mr-14">Create Ticket</button>
-            </a>
             <a href="@CompanyUri/project/@ProjectUri/manage">
                 <button class="p-2 pl-5 pr-5 bg-yellow-600 border-yellow-300 text-gray-100 text-md rounded-lg focus:border-4 mr-5">Manage Project</button>
             </a>
@@ -73,7 +73,17 @@
     {
         try
         {
-            var project = await _projectService.Get(ProjectUri);
+            ProjectDto project;
+            try
+            {
+                project = await _projectService.Get(CompanyUri, ProjectUri);
+            }
+            catch (Exception)
+            {
+                Toast?.AddNotification("Project not found", $"It looks like the selected project isn't available under this company", "yellow");
+                _navService.NavigateToProjects(false);
+                return;
+            }
             var tickets = await _ticketService.ListTicketsByProject(project.Id);
             TodoTickets.Clear();
             InProgressTickets.Clear();
@@ -113,11 +123,6 @@
     public void Dispose()
     {
         _navService.OnChange -= UpdateUi;
-    }
-
-    protected override void OnParametersSet()
-    {
-        UpdateUi();
     }
 
 }

@@ -39,10 +39,10 @@ namespace WorkFlow.Client.Services
             return project;
         }
 
-        public async Task<ProjectDto> Get(string uri)
+        public async Task<ProjectDto> Get(String companyUri, String projectUri)
         {
-            var project = await _http.GetFromJsonAsync<ProjectDto>($"api/project/{uri}/");
-            if (project == null) throw new ApplicationException($"Error while creating {EntityName}");
+            var project = await _http.GetFromJsonAsync<ProjectDto>($"api/project/{companyUri}/{projectUri}/");
+            if (project == null) throw new ApplicationException($"Error while getting {EntityName}");
             return project;
         }
 

@@ -19,7 +19,7 @@ namespace WorkFlow.Client.Services
             _http = http;
         }
 
-        public async Task<List<TicketDto>> List(User? user = null)
+        public async Task<List<TicketDto>> List()
         {
             var tickets = await _http.GetFromJsonAsync<List<TicketDto>>("api/ticket/");
             if (tickets == null) throw new ApplicationException("Error while getting tickets");

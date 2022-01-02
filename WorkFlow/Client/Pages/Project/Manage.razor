@@ -1,4 +1,4 @@
-@page "/{Company}/project/{project}/manage"
+@page "/{CompanyUri}/project/{ProjectUri}/manage"
 @inject IProject _projectService
 @inject IUser _userService
 @inject INavService _navService
@@ -38,7 +38,7 @@ else
                 <label for="project-uri" class="text-grey-darker inline-block mb-2">Project URI</label>
                 <div class="flex flex-wrap items-stretch w-full mb-4 relative">
                     <div class="flex -mr-px">
-                        <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@_navService.GetCurrentCompany().Uri</span>
+                        <span class="flex items-center leading-normal bg-grey-lighter rounded rounded-r-none border border-r-0 border-grey-light px-3 whitespace-no-wrap text-grey-dark text-sm">https://workflow.isala.me/@_navService.GetCurrentCompany().Uri/project/</span>
                     </div>
                     <input @bind="_project.Uri" type="text" id="project-uri" name="project-uri" class="flex-shrink flex-grow flex-auto leading-normal w-px flex-1 border h-10 border-grey-light rounded rounded-l-none px-3 relative" pattern="[a-z0-9-]+" placeholder="my-project" required maxlength="20" minlength="5"/>
                 </div>
@@ -71,10 +71,10 @@ else
 @code {
 
     [Parameter]
-    public String Company { get; set; } = null!;
+    public String CompanyUri { get; set; } = null!;
 
     [Parameter]
-    public String Project { get; set; } = null!;
+    public String ProjectUri { get; set; } = null!;
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
@@ -89,7 +89,7 @@ else
         if(!_navService.IsAdmin(true)) return;
         try
         {
-            _project = await _projectService.Get(Project);
+            _project = await _projectService.Get(CompanyUri, ProjectUri);
             _users = await _userService.GetUsersByCompany(_navService.GetCurrentCompany().Id);
         }
         catch (Exception e)

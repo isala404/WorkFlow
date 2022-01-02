@@ -55,7 +55,8 @@ namespace WorkFlow.Server.Models
             else
             {
                 var userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company")
-                    .Where(project => project.Company!.Id == userCompany.CompanyId && project.Users!.Contains(user)).ToListAsync();
+                    .Where(project => project.Company!.Id == userCompany.CompanyId && project.Users!.Contains(user))
+                    .ToListAsync();
                 projects.AddRange(userProjects.Select(userProject => new ProjectDto(userProject)));
             }
 
@@ -76,15 +77,18 @@ namespace WorkFlow.Server.Models
             return new ProjectDto(project);
         }
 
-        public async Task<ProjectDto> Get(string uri)
+        public async Task<ProjectDto> Get(String companyUri, String projectUri)
         {
             var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            var project = await _context.Projects.Include("Company").Include("Users").FirstOrDefaultAsync(project =>
-                project.Uri == uri && (project.Users!.Contains(user) ||
-                                       project.Company!.Users!.FirstOrDefault(u =>
-                                           u.User == user && u.Role == UserRole.Admin) != null)
+            var project = await _context.Projects.FirstOrDefaultAsync(p =>
+                p.Uri == projectUri &&
+                p.Company!.Uri == companyUri &&
+                (
+                    p.Users!.Contains(user) ||
+                    p.Company!.Users!.FirstOrDefault(uc => uc.User!.Id == user.Id && uc.Role == UserRole.Admin) != null
+                )
             );
             if (project == null) throw new InvalidDataException("Invalid Project Uri.");
 

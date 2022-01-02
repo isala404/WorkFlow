@@ -14,23 +14,19 @@ namespace WorkFlow.Server.Models
     public class TicketModel : ITicket
     {
         private readonly ApplicationDbContext _context;
-
-        public TicketModel(ApplicationDbContext context)
+        private readonly IUtility _utilityService;
+        public TicketModel(ApplicationDbContext context, IUtility utilityService)
         {
             _context = context;
+            _utilityService = utilityService;
         }
 
-        public async Task<List<TicketDto>> List(User? user = null)
+        public async Task<List<TicketDto>> List()
         {
+            var user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
-
-            List<TicketDto> tickets = new();
-            foreach (var project in user.Projects!)
-            {
-                var userTickets = await _context.Tickets.Include("Assignee").Where(ticket => ticket.Project == project)
-                    .ToListAsync();
-                tickets.AddRange(userTickets.Select(ticket => new TicketDto(ticket)));
-            }
+            
+            var tickets = await _context.Tickets.Include("Project.Company").Where(t => t.Assignee!.Id == user.Id).Select(t => new TicketDto(t)).ToListAsync();
 
             return tickets;
         }
@@ -66,7 +62,7 @@ namespace WorkFlow.Server.Models
             var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == ticket.Assignee.Id);
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            var project = await _context.Projects.FirstOrDefaultAsync(project => project.Uri == ticket.ProjectUri);
+            var project = await _context.Projects.FirstOrDefaultAsync(project => project.Uri == ticket.TicketUrl);
             if (project == null) throw new InvalidDataException("Invalid Project.");
 
             var result = _context.Tickets.Add(new Ticket

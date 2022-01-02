@@ -80,13 +80,13 @@ namespace WorkFlow.Server.Controllers
             }
         }
 
-        // GET: api/project/uri
-        [HttpGet("{uri}")]
-        public async Task<IActionResult> Get(string uri)
+        // GET: api/project/{companyUri}/{projectUri}
+        [HttpGet("{companyUri}/{projectUri}")]
+        public async Task<IActionResult> Get(String companyUri, String projectUri)
         {
             try
             {
-                var project = await ProjectModel.Get(uri);
+                var project = await ProjectModel.Get(companyUri, projectUri);
                 return Ok(project);
             }
             catch (Exception e)

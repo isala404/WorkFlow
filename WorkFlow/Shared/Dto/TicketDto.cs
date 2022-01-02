@@ -18,7 +18,7 @@ namespace WorkFlow.Shared.Dto
             Status = ticket.Status;
             DueDate = ticket.DueDate;
             EstimatedTime = ticket.EstimatedTime.Hours;
-            if (ticket.Project != null) ProjectUri = ticket.Project.Uri;
+            TicketUrl = $"{ticket.Project?.Company?.Uri}/project/{ticket.Project?.Uri}/ticket/{ticket.Id}/manage";
             if (ticket.Assignee != null) Assignee = new UserDto(ticket.Assignee);
         }
 
@@ -29,7 +29,7 @@ namespace WorkFlow.Shared.Dto
         public Status Status { get; set; } = Status.ToDo;
         public UserDto Assignee { get; set; }
         public DateTime DueDate { get; set; } = DateTime.Today;
-        public int EstimatedTime { get; set; }
-        public String ProjectUri { get; set; }
+        public Int32 EstimatedTime { get; set; }
+        public String TicketUrl { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace WorkFlow.Shared.Interfaces
 {
     public interface ITicket
     {
-        Task<List<TicketDto>> List(User? user = null);
+        Task<List<TicketDto>> List();
         Task<List<TicketDto>> ListTicketsByProject(Guid projectId);
         Task<List<TicketDto>> ListTicketsByUser(String userId);
         Task<TicketDto> Get(Guid ticketId);

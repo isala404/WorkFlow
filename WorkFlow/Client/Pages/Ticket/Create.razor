@@ -1,4 +1,4 @@
-@page "/{Company}/project/{project}/ticket/create"
+@page "/{CompanyUri}/project/{ProjectUri}/ticket/create"
 @inject ITicket _ticketService
 @inject IUser _userService
 @inject INavService _navService
@@ -29,8 +29,8 @@
             </InputSelect>
         </div>
         <div class="mb-2">
-            <label for="priority" class="text-grey-darker inline-block mb-2">Status</label>
-            <InputSelect @bind-Value="_ticket.Status" id="priority" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
+            <label for="status" class="text-grey-darker inline-block mb-2">Status</label>
+            <InputSelect @bind-Value="_ticket.Status" id="status" class="border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-white" name="priority" required>
                 <option value="@Status.ToDo">
                     To-Do
                 </option>
@@ -74,10 +74,10 @@
 @code {
 
     [Parameter]
-    public String Company { get; set; } = null!;
+    public String CompanyUri { get; set; } = null!;
 
     [Parameter]
-    public String Project { get; set; } = null!;
+    public String ProjectUri { get; set; } = null!;
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
@@ -88,7 +88,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _users = await _userService.GetUsersByProject(Project);
+        _users = await _userService.GetUsersByProject(ProjectUri);
     }
 
     private void OnAssigneeChanged(ChangeEventArgs e)
@@ -102,7 +102,7 @@
 
     private async void HandleValidSubmit()
     {
-        _ticket.ProjectUri = Project;
+        _ticket.TicketUrl = ProjectUri;
         try
         {
             var ticket = await _ticketService.Create(_ticket);
