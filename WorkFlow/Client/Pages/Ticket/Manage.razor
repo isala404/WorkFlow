@@ -126,7 +126,7 @@ else
     {
         try
         {
-            var deleted = await _ticketService.Delete(_ticket!.Id);
+            bool deleted = await _ticketService.Delete(_ticket!.Id);
             if (deleted)
             {
                 Toast?.AddNotification("Success", $"Ticket ({_ticket!.Name}) was deleted", "blue");

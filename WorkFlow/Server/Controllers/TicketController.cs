@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var tickets = await TicketModel.List();
+                List<TicketDto> tickets = await TicketModel.List();
                 return Ok(tickets);
             }
             catch (InvalidDataException e)
@@ -40,7 +41,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var tickets = await TicketModel.Get(id);
+                TicketDto tickets = await TicketModel.Get(id);
                 return Ok(tickets);
             }
             catch (InvalidDataException e)
@@ -55,7 +56,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var tickets = await TicketModel.ListTicketsByProject(projectId);
+                List<TicketDto> tickets = await TicketModel.ListTicketsByProject(projectId);
                 return Ok(tickets);
             }
             catch (InvalidDataException e)
@@ -70,7 +71,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var tickets = await TicketModel.ListTicketsByUser(userId);
+                List<TicketDto> tickets = await TicketModel.ListTicketsByUser(userId);
                 return Ok(tickets);
             }
             catch (InvalidDataException e)
@@ -85,7 +86,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var newTicket = await TicketModel.Create(ticket);
+                TicketDto newTicket = await TicketModel.Create(ticket);
                 return Ok(newTicket);
             }
             catch (InvalidDataException e)
@@ -100,7 +101,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var tickets = await TicketModel.Update(id, ticket);
+                TicketDto tickets = await TicketModel.Update(id, ticket);
                 return Ok(tickets);
             }
             catch (InvalidDataException e)
@@ -115,7 +116,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var deleted = await TicketModel.Delete(id);
+                bool deleted = await TicketModel.Delete(id);
                 return Ok(deleted);
             }
             catch (InvalidDataException e)

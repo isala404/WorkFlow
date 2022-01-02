@@ -26,8 +26,8 @@ namespace WorkFlow.Server.Models
         public async Task<User?> GetUser()
         {
             if(_httpContextAccessor.HttpContext == null) return null;
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            String? userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             return user;
         }
     }

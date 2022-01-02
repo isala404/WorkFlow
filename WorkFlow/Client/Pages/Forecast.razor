@@ -86,9 +86,9 @@
             _projectEstimates.Clear();
             _timeSeries.Clear();
 
-            var estimate = forecast.CurrentProject + (forecast.Offset * forecast.ProjectGrowthRate);
+            double estimate = forecast.CurrentProject + (forecast.Offset * forecast.ProjectGrowthRate);
 
-            for (var i = 1; i < forecast.NumberOfDays + 1; i++)
+            for (int i = 1; i < forecast.NumberOfDays + 1; i++)
             {
                 estimate += forecast.ProjectGrowthRate;
                 _projectEstimates.Add(Convert.ToInt32(estimate));

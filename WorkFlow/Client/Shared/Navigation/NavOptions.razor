@@ -2,7 +2,7 @@
 @inject INavService _navService
 @implements IDisposable
 
-@foreach (var option in Options)
+@foreach (NavRoutes option in Options)
 {
     if (option.AdminOnly && !_navService.IsAdmin()) return;
     if (option.Selected)
@@ -25,16 +25,19 @@
 
     private NavRoutes[] OrgOptions { get; set; } =
         {
-            new() {Name = "Home", Href = "/"},
-            new() {Name = "Projects", Href = "/project"},
-            new() {Name = "Reports", Href = "/report", AdminOnly = true},
+            new NavRoutes
+            {Name = "Home", Href = "/"},
+            new NavRoutes
+            {Name = "Projects", Href = "/project"},
+            new NavRoutes
+            {Name = "Reports", Href = "/report", AdminOnly = true},
         };
 
     private void UpdateUi()
     {
         Options = OrgOptions;
 
-        for (var i = 0; i < Options.Length; i++)
+        for (int i = 0; i < Options.Length; i++)
         {
             if (_navService.GetCurrentCompany().Uri == "create/company")
             {

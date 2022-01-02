@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var companies = await CompanyModel.List();
+                List<CompanyDto> companies = await CompanyModel.List();
                 return Ok(companies);
             }
             catch (InvalidDataException e)
@@ -41,7 +42,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var company = await CompanyModel.Get(id);
+                CompanyDto company = await CompanyModel.Get(id);
                 return Ok(company);
             }
             catch (InvalidDataException e)
@@ -56,7 +57,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var newCompany = await CompanyModel.Create(company);
+                CompanyDto newCompany = await CompanyModel.Create(company);
                 return Ok(newCompany);
             }
             catch (InvalidDataException e)
@@ -71,7 +72,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var updatedCompany = await CompanyModel.Update(id, company);
+                CompanyDto updatedCompany = await CompanyModel.Update(id, company);
                 return Ok(updatedCompany);
             }
             catch (InvalidDataException e)
@@ -86,7 +87,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var company = await CompanyModel.ModifyUser(id, user);
+                CompanyDto company = await CompanyModel.ModifyUser(id, user);
                 return Ok(company);
             }
             catch (Exception e)
@@ -106,7 +107,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var deleted = await CompanyModel.Delete(id);
+                bool deleted = await CompanyModel.Delete(id);
                 return Ok(deleted);
             }
             catch (InvalidDataException e)

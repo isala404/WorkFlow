@@ -82,9 +82,9 @@
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
-    private readonly TicketDto _ticket = new();
+    private readonly TicketDto _ticket = new TicketDto();
 
-    private List<UserDto> _users = new();
+    private List<UserDto> _users = new List<UserDto>();
 
     protected override async Task OnInitializedAsync()
     {

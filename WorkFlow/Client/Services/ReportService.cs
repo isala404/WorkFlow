@@ -10,7 +10,7 @@ namespace WorkFlow.Client.Services
     public class ReportService: IReport
     {
         private readonly HttpClient _http;
-        private const string EntityName = "company";
+        private const string EntityName = "report";
 
         public ReportService(HttpClient http)
         {
@@ -18,14 +18,14 @@ namespace WorkFlow.Client.Services
         }
         public async Task<ForecastReportDto> Forecast(DateTime startDate, DateTime endDate, Guid companyId)
         {
-            var forecast = await _http.GetFromJsonAsync<ForecastReportDto>($"api/report/forecast?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&companyId={companyId}");
+            ForecastReportDto? forecast = await _http.GetFromJsonAsync<ForecastReportDto>($"api/report/forecast?startDate={startDate:yyyy-MM-dd}&endDate={endDate:yyyy-MM-dd}&companyId={companyId}");
             if (forecast == null) throw new ApplicationException($"Error while getting forecast report");
             return forecast;
         }
 
         public async Task<UserProductivityDto> UserProductivity(string userId, Guid companyId)
         {
-            var userReport = await _http.GetFromJsonAsync<UserProductivityDto>($"api/report/user?userId={userId}&companyId={companyId}");
+            UserProductivityDto? userReport = await _http.GetFromJsonAsync<UserProductivityDto>($"api/report/user?userId={userId}&companyId={companyId}");
             if (userReport == null) throw new ApplicationException($"Error while getting user report");
             return userReport;
         }

@@ -119,7 +119,7 @@ else
     {
         try
         {
-            var user = await _userService.ModifyProject(_project!.Id, SelectedUserId!);
+            UserDto user = await _userService.ModifyProject(_project!.Id, SelectedUserId!);
             Toast?.AddNotification("Success", $"User ({user.Name}) was added to the project {_project.Name}", "green");
             _navService.Reload();
         }
@@ -133,7 +133,7 @@ else
     {
         try
         {
-            var deleted = await _projectService.Delete(_project!.Id);
+            bool deleted = await _projectService.Delete(_project!.Id);
             if (deleted)
             {
                 Toast?.AddNotification("Success", $"Project ({_project!.Name}) was deleted", "blue");

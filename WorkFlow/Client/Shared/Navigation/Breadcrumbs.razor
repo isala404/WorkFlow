@@ -4,7 +4,7 @@
 
 <div class="my-5">
     <ol class="list-reset flex text-grey-dark">
-        @foreach (var url in _urLs)
+        @foreach (Breadcrumb url in _urLs)
         {
             <li>
                 <a href="@url.Url" class="font-bold">@url.Name</a>
@@ -19,7 +19,7 @@
 
 @code {
 
-    private List<Breadcrumb> _urLs = new();
+    private List<Breadcrumb> _urLs = new List<Breadcrumb>();
 
     private void UpdateUi()
     {

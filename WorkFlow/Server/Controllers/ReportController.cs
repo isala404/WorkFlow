@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Interfaces;
 
 namespace WorkFlow.Server.Controllers
@@ -29,7 +30,7 @@ namespace WorkFlow.Server.Controllers
             {
                 DateTime startDateParsed = DateTime.ParseExact(startDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 DateTime endDateParsed = DateTime.ParseExact(endDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-                var forecastReport = await ReportModel.Forecast(startDateParsed, endDateParsed, companyId);
+                ForecastReportDto forecastReport = await ReportModel.Forecast(startDateParsed, endDateParsed, companyId);
                 return Ok(forecastReport);
             }
             catch (Exception e)
@@ -50,7 +51,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var userProductivity = await ReportModel.UserProductivity(userId, companyId);
+                UserProductivityDto userProductivity = await ReportModel.UserProductivity(userId, companyId);
                 return Ok(userProductivity);
             }
             catch (Exception e)

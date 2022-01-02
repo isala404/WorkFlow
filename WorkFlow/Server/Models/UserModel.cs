@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WorkFlow.Server.Data;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
@@ -27,25 +28,25 @@ namespace WorkFlow.Server.Models
 
         public async Task<UserDto> Get()
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
-            var user = await _context.Users.Include("Companies.Company").SingleAsync(u => u.Id == currentUser.Id);
+            User user = await _context.Users.Include("Companies.Company").SingleAsync(u => u.Id == currentUser.Id);
             return new UserDto(user);
         }
 
         public async Task<UserDto> Get(string id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+            User? user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
             if (user == null) throw new InvalidDataException("User not found.");
             return new UserDto(user);
         }
 
         public async Task<List<UserDto>> GetUsersByCompany(Guid companyId)
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
 
-            var companies = await _context.Companies.Include("Users.User").FirstOrDefaultAsync(c => c.Id == companyId);
+            Company? companies = await _context.Companies.Include("Users.User").FirstOrDefaultAsync(c => c.Id == companyId);
             if (companies == null) throw new InvalidDataException("Invalid CompanyID.");
 
             return companies.Users!.Select(user => new UserDto(user.User!)).ToList();
@@ -53,10 +54,10 @@ namespace WorkFlow.Server.Models
 
         public async Task<UserDto> Update(UserDto user)
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
 
-            var targetUser = await _context.Users.Include("Companies.Company").SingleAsync(u => u.Id == currentUser.Id);
+            User targetUser = await _context.Users.Include("Companies.Company").SingleAsync(u => u.Id == currentUser.Id);
             targetUser.Name = user.Name;
             targetUser.UserName = user.UserName;
             targetUser.Email = user.Email;
@@ -72,7 +73,7 @@ namespace WorkFlow.Server.Models
 
         public async Task<bool> Delete()
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
 
             _context.Users.Remove(currentUser);
@@ -82,32 +83,32 @@ namespace WorkFlow.Server.Models
 
         public async Task<UserCompanyDto> SetUserCompany(UserInvite userInvite)
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userInvite.Email);
+            User? user = await _context.Users.FirstOrDefaultAsync(u => u.Email == userInvite.Email);
             if (user == null) throw new InvalidDataException("User not found.");
 
-            var currentUserCompany = await _context.UserCompany.FirstOrDefaultAsync(u =>
+            UserCompany? currentUserCompany = await _context.UserCompany.FirstOrDefaultAsync(u =>
                 u.UserId == currentUser.Id && u.CompanyId == userInvite.CompanyId && u.Role == UserRole.Admin);
             if (currentUserCompany == null)
                 throw new UnauthorizedAccessException("User does not have required permission");
 
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(u =>
+            UserCompany? userCompany = await _context.UserCompany.FirstOrDefaultAsync(u =>
                 u.CompanyId == userInvite.CompanyId && u.UserId == user.Id);
 
             switch (userCompany)
             {
                 case null when userInvite.Role != null:
                 {
-                    var newUserCompany = new UserCompany
+                    UserCompany newUserCompany = new UserCompany
                     {
                         UserId = user.Id,
                         CompanyId = userInvite.CompanyId,
                         Role = (UserRole) userInvite.Role
                     };
 
-                    var result = await _context.UserCompany.AddAsync(newUserCompany);
+                    EntityEntry<UserCompany> result = await _context.UserCompany.AddAsync(newUserCompany);
                     await _context.SaveChangesAsync();
                     return new UserCompanyDto(result.Entity);
                 }
@@ -130,10 +131,10 @@ namespace WorkFlow.Server.Models
 
         public async Task<CompanyDto> LeaveCompany(Guid companyId)
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
 
-            var company = await _context.UserCompany.Include("Company")
+            UserCompany? company = await _context.UserCompany.Include("Company")
                 .FirstOrDefaultAsync(uc => uc.CompanyId == companyId && uc.UserId == currentUser.Id);
             if (company == null) throw new InvalidDataException("Invalid CompanyId.");
 
@@ -144,13 +145,13 @@ namespace WorkFlow.Server.Models
 
         public async Task<UserDto> ModifyProject(Guid projectId, String userId)
         {
-            var currentUser = await _utilityService.GetUser();
+            User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
 
-            var project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Id == projectId);
+            Project? project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Id == projectId);
             if (project == null) throw new InvalidDataException("Invalid ProjectId.");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) throw new InvalidDataException("Invalid UserId.");
 
             if (project.Users!.Contains(user))
@@ -164,7 +165,7 @@ namespace WorkFlow.Server.Models
 
         public async Task<List<UserDto>> GetUsersByProject(string projectUri)
         {
-            var project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Uri == projectUri);
+            Project? project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Uri == projectUri);
             if (project == null) throw new InvalidDataException("Invalid Project.");
             return project.Users!.Select(user => new UserDto(user)).ToList();
         }

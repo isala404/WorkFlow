@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Primitives
 @using WorkFlow.Shared.Entities
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
@@ -6,7 +7,7 @@
 
 @{
     var returnUrl = "/";
-    if (Context.Request.Query.TryGetValue("returnUrl", out var existingUrl)) {
+    if (Context.Request.Query.TryGetValue("returnUrl", out StringValues existingUrl)) {
         returnUrl = existingUrl;
     }
 }

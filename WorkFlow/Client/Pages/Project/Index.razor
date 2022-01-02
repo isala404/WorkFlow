@@ -58,14 +58,14 @@
     [Parameter]
     public String CompanyUri { get; set; } = null!;
 
-    private List<ProjectDto> _projects = new();
+    private List<ProjectDto> _projects = new List<ProjectDto>();
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
     private async void UpdateUi()
     {
-        var companyId = _navService.GetCompanyByUri(CompanyUri).Id;
+        Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
         try
         {
             _projects = await _projectService.List(companyId);

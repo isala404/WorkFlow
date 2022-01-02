@@ -24,7 +24,7 @@
     {
         try
         {
-            var company = await _userService.LeaveCompany(UserCompany.CompanyId);
+            CompanyDto company = await _userService.LeaveCompany(UserCompany.CompanyId);
             Toast?.AddNotification("Success", $"Successfully left the company {company.Name}", "green");
             _navService.Reload();
         }

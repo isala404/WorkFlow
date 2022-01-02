@@ -66,7 +66,7 @@ else
         if (!_navService.IsAdmin(true)) return;
         try
         {
-            var companyId = _navService.GetCompanyByUri(CompanyUri).Id;
+            Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
             _company = await _companyService.Get(companyId);
         }
         catch (Exception e)
@@ -77,7 +77,7 @@ else
 
     private async void HandleValidSubmit()
     {
-        var companyId = _navService.GetCompanyByUri(CompanyUri).Id;
+        Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
         try
         {
             _company = await _companyService.Update(companyId, _company!);
@@ -91,14 +91,14 @@ else
         _navService.SetCurrentCompany(_company.Uri, true);
     }
 
-    private readonly UserInvite _userInvite = new();
+    private readonly UserInvite _userInvite = new UserInvite();
 
     private async void SentInviteToUser()
     {
         try
         {
             _userInvite.CompanyId = _company!.Id;
-            var userCompany = await _userService.SetUserCompany(_userInvite);
+            UserCompanyDto userCompany = await _userService.SetUserCompany(_userInvite);
             Toast?.AddNotification("Success", $"User ({userCompany.User.Name}) was added to {_company.Name}", "green");
             _navService.Reload();
         }
@@ -110,11 +110,11 @@ else
 
     private async void DeleteCompany()
     {
-        var companyId = _navService.GetCompanyByUri(CompanyUri).Id;
+        Guid companyId = _navService.GetCompanyByUri(CompanyUri).Id;
 
         try
         {
-            var deleted = await _companyService.Delete(companyId);
+            bool deleted = await _companyService.Delete(companyId);
             if (deleted)
             {
                 Toast?.AddNotification("Success", $"Company ({_company!.Name}) was deleted");

@@ -27,7 +27,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var user = await UserModel.Get();
+                UserDto user = await UserModel.Get();
                 return Ok(user);
             }
             catch (InvalidDataException e)
@@ -40,7 +40,7 @@ namespace WorkFlow.Server.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(String id)
         {
-            var user = await UserModel.Get(id);
+            UserDto user = await UserModel.Get(id);
             return Ok(user);
         }
 
@@ -71,7 +71,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var user = await UserModel.Update(userDto);
+                UserDto user = await UserModel.Update(userDto);
                 return Ok(user);
             }
             catch (InvalidDataException e)
@@ -86,7 +86,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var deleted = await UserModel.Delete();
+                bool deleted = await UserModel.Delete();
                 return Ok(deleted);
             }
             catch (InvalidDataException e)
@@ -101,7 +101,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var userCompany = await UserModel.SetUserCompany(userInvite);
+                UserCompanyDto userCompany = await UserModel.SetUserCompany(userInvite);
                 return Ok(userCompany);
             }
             catch (InvalidDataException e)
@@ -116,7 +116,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var company = await UserModel.LeaveCompany(companyId);
+                CompanyDto company = await UserModel.LeaveCompany(companyId);
                 return Ok(company);
             }
             catch (InvalidDataException e)
@@ -132,7 +132,7 @@ namespace WorkFlow.Server.Controllers
             (Guid projectId, string userId) = userProject;
             try
             {
-                var userCompany = await UserModel.ModifyProject(projectId, userId);
+                UserDto userCompany = await UserModel.ModifyProject(projectId, userId);
                 return Ok(userCompany);
             }
             catch (InvalidDataException e)

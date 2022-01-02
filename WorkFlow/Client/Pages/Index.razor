@@ -39,9 +39,9 @@
 </div>
 
 @code {
-    private List<TicketDto> TodayTickets { get; set; } = new();
-    private List<TicketDto> OverdueTickets { get; set; } = new();
-    private List<TicketDto> TodoTickets { get; set; } = new();
+    private List<TicketDto> TodayTickets { get; set; } = new List<TicketDto>();
+    private List<TicketDto> OverdueTickets { get; set; } = new List<TicketDto>();
+    private List<TicketDto> TodoTickets { get; set; } = new List<TicketDto>();
 
 
     protected override async Task OnInitializedAsync()
@@ -52,7 +52,7 @@
         {
             if (ticket.Status == Status.Completed) continue;
 
-            var result = DateTime.Compare(ticket.DueDate, DateTime.Today);
+            int result = DateTime.Compare(ticket.DueDate, DateTime.Today);
 
             switch (result)
             {

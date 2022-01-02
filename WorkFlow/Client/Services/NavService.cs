@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Components;
 using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 using WorkFlow.Client.Shared;
 using WorkFlow.Shared.Dto;
@@ -20,7 +21,7 @@ namespace WorkFlow.Client.Services
         private NavigationManager NavigationManager { get; }
         public event Action OnChange;
         public Toast? Toast { get; set; }
-        public Stack<CompanyDto> CompanyList { get; init; } = new();
+        public Stack<CompanyDto> CompanyList { get; init; } = new Stack<CompanyDto>();
         public bool Fetched { get; set; }
         private CompanyDto _currentCompany;
         public UserDto? CurrentUser { get; set; }
@@ -38,8 +39,8 @@ namespace WorkFlow.Client.Services
 
         private async void RestoreSession()
         {
-            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
+            AuthenticationState authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            ClaimsPrincipal user = authState.User;
             if (user.Identity is not {IsAuthenticated: true})
             {
                 Fetched = true;
@@ -71,10 +72,10 @@ namespace WorkFlow.Client.Services
 
         public bool IsAdmin(bool redirect = false)
         {
-            var isAdmin = CurrentUser != null &&
-                          (from userCompany in CurrentUser.UserCompany!
-                              where userCompany.CompanyId == _currentCompany.Id
-                              select userCompany.Role == UserRole.Admin).FirstOrDefault();
+            bool isAdmin = CurrentUser != null &&
+                           (from userCompany in CurrentUser.UserCompany!
+                               where userCompany.CompanyId == _currentCompany.Id
+                               select userCompany.Role == UserRole.Admin).FirstOrDefault();
             if (!isAdmin && redirect)
             {
                 Toast?.AddNotification("Unauthorized", "To access that page Admin role is required", "yellow");
@@ -84,7 +85,7 @@ namespace WorkFlow.Client.Services
             return isAdmin;
         }
 
-        public void SetCurrentCompany(string newCompanyUri, bool reload)
+        public void SetCurrentCompany(String newCompanyUri, bool reload)
         {
             if (newCompanyUri == "create/company")
             {
@@ -93,7 +94,7 @@ namespace WorkFlow.Client.Services
                 return;
             }
 
-            var newLocation = NavigationManager.Uri.Replace(_currentCompany.Uri, newCompanyUri);
+            String newLocation = NavigationManager.Uri.Replace(_currentCompany.Uri, newCompanyUri);
 
             try
             {
@@ -115,7 +116,7 @@ namespace WorkFlow.Client.Services
             return NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         }
 
-        public CompanyDto GetCompanyByUri(string uri)
+        public CompanyDto GetCompanyByUri(String uri)
         {
             foreach (var companyLink in CompanyList.Where(companyLink => companyLink.Uri == uri))
             {
@@ -125,23 +126,23 @@ namespace WorkFlow.Client.Services
             throw new NullReferenceException();
         }
 
-        public String TitleCase(string? text)
+        public String TitleCase(String? text)
         {
             return text == null ? "" : _myTi.ToTitleCase(text);
         }
 
         private void RestoreLastCompany()
         {
-            var currentPath = CurrentUrl();
+            String currentPath = CurrentUrl();
             if (currentPath == "create/company")
             {
                 _currentCompany = CompanyList.Last();
                 return;
             }
 
-            var firstSubPath = currentPath.Split("/").First();
+            String firstSubPath = currentPath.Split("/").First();
 
-            if (string.IsNullOrEmpty(firstSubPath) || firstSubPath.Equals("user")) return;
+            if (String.IsNullOrEmpty(firstSubPath) || firstSubPath.Equals("user")) return;
             try
             {
                 GetCompanyByUri(firstSubPath);

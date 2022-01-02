@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var companies = await ProjectModel.List();
+                List<ProjectDto> companies = await ProjectModel.List();
                 return Ok(companies);
             }
             catch (Exception e)
@@ -46,7 +47,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var companies = await ProjectModel.List(companyId);
+                List<ProjectDto> companies = await ProjectModel.List(companyId);
                 return Ok(companies);
             }
             catch (Exception e)
@@ -66,7 +67,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var project = await ProjectModel.Get(id);
+                ProjectDto project = await ProjectModel.Get(id);
                 return Ok(project);
             }
             catch (Exception e)
@@ -86,7 +87,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var project = await ProjectModel.Get(companyUri, projectUri);
+                ProjectDto project = await ProjectModel.Get(companyUri, projectUri);
                 return Ok(project);
             }
             catch (Exception e)
@@ -106,7 +107,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var newProject = await ProjectModel.Create(project);
+                ProjectDto newProject = await ProjectModel.Create(project);
                 return Ok(newProject);
             }
             catch (Exception e)
@@ -126,7 +127,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var updatedProject = await ProjectModel.Update(id, project);
+                ProjectDto updatedProject = await ProjectModel.Update(id, project);
                 return Ok(updatedProject);
             }
             catch (Exception e)
@@ -146,7 +147,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var project = await ProjectModel.ModifyUser(id, user);
+                ProjectDto project = await ProjectModel.ModifyUser(id, user);
                 return Ok(project);
             }
             catch (Exception e)
@@ -166,7 +167,7 @@ namespace WorkFlow.Server.Controllers
         {
             try
             {
-                var deleted = await ProjectModel.Delete(id);
+                bool deleted = await ProjectModel.Delete(id);
                 return Ok(deleted);
             }
             catch (Exception e)

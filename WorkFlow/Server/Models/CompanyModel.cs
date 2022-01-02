@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using WorkFlow.Server.Data;
 using WorkFlow.Shared.Dto;
 using WorkFlow.Shared.Entities;
@@ -24,12 +25,12 @@ namespace WorkFlow.Server.Models
 
         public async Task<List<CompanyDto>> List()
         {
-            var user = await _utilityService.GetUser();
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            List<CompanyDto> companies = new();
+            List<CompanyDto> companies = new List<CompanyDto>();
 
-            var userCompanies = await _context.UserCompany.Include(u => u.Company)
+            List<UserCompany> userCompanies = await _context.UserCompany.Include(u => u.Company)
                 .Where(userCompany => userCompany.User!.Id == user.Id).ToListAsync();
             companies.AddRange(userCompanies.Select(userCompany => new CompanyDto(userCompany.Company!)));
 
@@ -45,16 +46,16 @@ namespace WorkFlow.Server.Models
 
         public async Task<CompanyDto> Create(CompanyDto company)
         {
-            var user = await _utilityService.GetUser();
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
-            var newCompany = new Company
+            Company newCompany = new Company
             {
                 Name = company.Name,
                 Uri = company.Uri,
                 Users = new List<UserCompany>
                 {
-                    new()
+                    new UserCompany
                     {
                         User = user,
                         Role = UserRole.Admin
@@ -62,7 +63,7 @@ namespace WorkFlow.Server.Models
                 }
             };
 
-            var result = await _context.Companies.AddAsync(newCompany);
+            EntityEntry<Company> result = await _context.Companies.AddAsync(newCompany);
             await _context.SaveChangesAsync();
             return new CompanyDto(result.Entity);
         }
@@ -91,10 +92,10 @@ namespace WorkFlow.Server.Models
         {
             (_, Company company) = await VerifyRequest(companyId);
 
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userCompanyDto.UserId);
+            User? user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userCompanyDto.UserId);
             if (user == null) throw new InvalidDataException("Invalid UserId.");
 
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(uc =>
+            UserCompany? userCompany = await _context.UserCompany.FirstOrDefaultAsync(uc =>
                 uc.UserId == userCompanyDto.UserId && uc.CompanyId == companyId);
 
             if (userCompany != null)
@@ -114,7 +115,7 @@ namespace WorkFlow.Server.Models
 
         private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, bool admin = true, bool includeUsers = false)
         {
-            var user = await _utilityService.GetUser();
+            User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
             Company? company;
             if (includeUsers)
@@ -123,7 +124,7 @@ namespace WorkFlow.Server.Models
                 company = await _context.Companies.FirstOrDefaultAsync(c => c.Id == companyId);
             if (company == null) throw new InvalidDataException("Invalid Company.");
 
-            var userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
+            UserCompany? userCompany = await _context.UserCompany.FirstOrDefaultAsync(userCompany =>
                 userCompany.Company == company && userCompany.User == user);
 
             if (userCompany == null) throw new UnauthorizedAccessException("User does not have required permission");

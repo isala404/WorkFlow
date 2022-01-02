@@ -22,7 +22,7 @@
     {
         try
         {
-            var user = await _userService.ModifyProject(Project.Id, User.Id!);
+            UserDto user = await _userService.ModifyProject(Project.Id, User.Id!);
             Toast?.AddNotification("Success", $"User ({user.Name}) was removed to the project {Project.Name}", "yellow");
             _navService.Reload();
         }

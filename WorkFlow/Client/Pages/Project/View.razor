@@ -65,9 +65,9 @@
     [CascadingParameter]
     public Toast? Toast { get; set; }
 
-    private List<TicketDto> TodoTickets { get; } = new();
-    private List<TicketDto> InProgressTickets { get; } = new();
-    private List<TicketDto> CompletedTickets { get; } = new();
+    private List<TicketDto> TodoTickets { get; } = new List<TicketDto>();
+    private List<TicketDto> InProgressTickets { get; } = new List<TicketDto>();
+    private List<TicketDto> CompletedTickets { get; } = new List<TicketDto>();
 
     private async void UpdateUi()
     {
@@ -84,7 +84,7 @@
                 _navService.NavigateToProjects(false);
                 return;
             }
-            var tickets = await _ticketService.ListTicketsByProject(project.Id);
+            List<TicketDto> tickets = await _ticketService.ListTicketsByProject(project.Id);
             TodoTickets.Clear();
             InProgressTickets.Clear();
             CompletedTickets.Clear();

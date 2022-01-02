@@ -91,7 +91,7 @@ else
     {
         try
         {
-            var deleted = await _userService.Delete();
+            bool deleted = await _userService.Delete();
             if (deleted)
             {
                 await _signOutManager.SetSignOutState();
