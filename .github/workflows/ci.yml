@@ -19,8 +19,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker build -t $IMAGE_NAME:$GITHUB_JOB .
-      - run: docker push $IMAGE_NAME:$GITHUB_JOB
+      - run: docker build -t $IMAGE_NAME:commit-${GITHUB_SHA:0:8} .
+      - run: docker tag $IMAGE_NAME $IMAGE_NAME:latest
+      - run: docker push $IMAGE_NAME --all-tags
   release:
     runs-on: ubuntu-latest
     needs: [ build ]
