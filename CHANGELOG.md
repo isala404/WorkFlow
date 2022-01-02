@@ -1,3 +1,39 @@
+## 1.0.0 (2022-01-02)
+
+#### Feature
+
+* Added option to users to leave company (3fe7a473)
+* Setup Role based UI rendering (7a69edc4)
+
+#### Bug Fixes
+
+* Fixed tickets overview page (b06c4ebb)
+* Logging out issue fixed (97af2b73)
+
+#### Documentation
+
+* Updated the docker command (7e83dc56)
+* Added a README.md (a0aa3ee4)
+* Added doc comments to classes and methods (a01b2220)
+* Update the changelog (d3b94de0)
+
+#### Code Refactoring
+
+* Code CleanUp via Rider (52916507)
+
+#### Styles
+
+* Updated implicit variables to explicit types (035a943b)
+
+#### Build
+
+* Update docker image to run independently (c2d37a78)
+
+#### CI
+
+* Promoted the build to stable v1.0 (97e3dfb7)
+
+
 ## 0.4.0 (2022-01-01)
 
 #### Feature
