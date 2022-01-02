@@ -78,6 +78,7 @@ namespace WorkFlow.Server.Controllers {
 
         // PATCH: api/company/5
         [HttpPatch("{id:guid}")]
+        [Obsolete("Use PUT: api/user/company")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UserCompanyDto user) {
             try
             {

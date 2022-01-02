@@ -20,6 +20,11 @@ namespace WorkFlow.Server.Models {
             _utilityService = utilityService;
         }
 
+        /// <summary>
+        /// Get project for the selected user
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<List<ProjectDto>> List() {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
@@ -32,6 +37,12 @@ namespace WorkFlow.Server.Models {
             return projects;
         }
 
+        /// <summary>
+        /// Get projects by company id
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<List<ProjectDto>> List(Guid companyId) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
@@ -42,6 +53,8 @@ namespace WorkFlow.Server.Models {
 
             List<ProjectDto> projects = new List<ProjectDto>();
 
+            // If the user is admin return all the project
+            // Else return projects only the user is apart of
             if (userCompany.Role == UserRole.Admin)
             {
                 List<Project> userProjects = await _context.Projects.Include("Tickets").Include("Users").Include("Company")
@@ -60,6 +73,12 @@ namespace WorkFlow.Server.Models {
             return projects;
         }
 
+        /// <summary>
+        /// Get project by Id
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<ProjectDto> Get(Guid projectId) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
@@ -72,10 +91,18 @@ namespace WorkFlow.Server.Models {
             return new ProjectDto(project);
         }
 
+        /// <summary>
+        /// Get project by URI (ex - iconicto/chari-lake)
+        /// </summary>
+        /// <param name="companyUri"></param>
+        /// <param name="projectUri"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<ProjectDto> Get(String companyUri, String projectUri) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
 
+            // Select that has correct projectUri and companyUri and check if the user has access to read it  
             Project? project = await _context.Projects.FirstOrDefaultAsync(p =>
                 p.Uri == projectUri &&
                 p.Company!.Uri == companyUri &&
@@ -89,6 +116,11 @@ namespace WorkFlow.Server.Models {
             return new ProjectDto(project);
         }
 
+        /// <summary>
+        /// Create a new project
+        /// </summary>
+        /// <param name="project"></param>
+        /// <returns></returns>
         public async Task<ProjectDto> Create(ProjectDto project) {
             (_, Company company) = await VerifyRequest(project);
             Project newProject = new Project
@@ -105,6 +137,13 @@ namespace WorkFlow.Server.Models {
             return new ProjectDto(result.Entity);
         }
 
+        /// <summary>
+        /// Update existing project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="project"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<ProjectDto> Update(Guid projectId, ProjectDto project) {
             await VerifyRequest(project);
 
@@ -120,6 +159,12 @@ namespace WorkFlow.Server.Models {
             return new ProjectDto(targetProject);
         }
 
+        /// <summary>
+        /// Delete existing project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<Boolean> Delete(Guid projectId) {
             Project? project = await _context.Projects.Include("Company")
                 .FirstOrDefaultAsync(project => project.Id == projectId);
@@ -132,6 +177,14 @@ namespace WorkFlow.Server.Models {
             return true;
         }
 
+        /// <summary>
+        /// Add or Remove a user from project (Deprecated, use  UserModel.ModifyProject())
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="userDto"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        [Obsolete("Please use the UserModel.ModifyProject()")]
         public async Task<ProjectDto> ModifyUser(Guid projectId, UserDto userDto) {
             Project? project = await _context.Projects.FirstOrDefaultAsync(project => project.Id == projectId);
             if (project == null) throw new InvalidDataException("Invalid projectId.");
@@ -151,6 +204,14 @@ namespace WorkFlow.Server.Models {
             return new ProjectDto(project);
         }
 
+        /// <summary>
+        /// Verify the incoming request is valid and has permission to do the required operation
+        /// </summary>
+        /// <param name="project">ProjectDto that's intended to be interacted with</param>
+        /// <param name="admin">Admin only Method</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        /// <exception cref="UnauthorizedAccessException">Raised if the request is only allowed for admins (HTTP 401)</exception>
         private async Task<Tuple<User, Company>> VerifyRequest(ProjectDto project, Boolean admin = true) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");

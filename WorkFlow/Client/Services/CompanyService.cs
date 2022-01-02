@@ -15,18 +15,35 @@ namespace WorkFlow.Client.Services {
             _http = http;
         }
 
+        /// <summary>
+        /// Get list of companies for the current user
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<List<CompanyDto>> List() {
             List<CompanyDto>? company = await _http.GetFromJsonAsync<List<CompanyDto>>("api/company/");
             if (company == null) throw new ApplicationException("Error while getting companies");
             return company;
         }
 
+        /// <summary>
+        /// Get Company by Id
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<CompanyDto> Get(Guid companyId) {
             CompanyDto? company = await _http.GetFromJsonAsync<CompanyDto>($"api/company/{companyId}/");
             if (company == null) throw new ApplicationException($"Error while getting {EntityName}");
             return company;
         }
 
+        /// <summary>
+        /// Create a new company from the given DTO
+        /// </summary>
+        /// <param name="company"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<CompanyDto> Create(CompanyDto company) {
             HttpResponseMessage response = await _http.PostAsJsonAsync("api/company/", company);
             if (!response.IsSuccessStatusCode)
@@ -38,6 +55,13 @@ namespace WorkFlow.Client.Services {
             return newCompany;
         }
 
+        /// <summary>
+        /// Update the selected company
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="company"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<CompanyDto> Update(Guid companyId, CompanyDto company) {
             HttpResponseMessage response = await _http.PutAsJsonAsync($"api/company/{companyId}/", company);
             if (!response.IsSuccessStatusCode)
@@ -49,6 +73,12 @@ namespace WorkFlow.Client.Services {
             return updatedCompany;
         }
 
+        /// <summary>
+        /// Remove the Company from database
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<Boolean> Delete(Guid companyId) {
             HttpResponseMessage response = await _http.DeleteAsync($"api/company/{companyId}/");
             if (!response.IsSuccessStatusCode)
@@ -56,6 +86,13 @@ namespace WorkFlow.Client.Services {
             return await response.Content.ReadFromJsonAsync<Boolean>();
         }
 
+        /// <summary>
+        /// Add or Remove a user from the company
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException"></exception>
         public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto user) {
             HttpResponseMessage response = await _http.PostAsJsonAsync($"api/company/user/{companyId}/", user);
             if (!response.IsSuccessStatusCode)

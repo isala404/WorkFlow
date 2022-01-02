@@ -15,24 +15,47 @@ namespace WorkFlow.Client.Services {
             _http = http;
         }
 
+        /// <summary>
+        /// Get current user data
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<UserDto> Get() {
             UserDto? user = await _http.GetFromJsonAsync<UserDto>("api/user/");
             if (user == null) throw new ApplicationException($"Error while getting {EntityName}");
             return user;
         }
 
+        /// <summary>
+        /// Get a user by user id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<UserDto> Get(String id) {
             UserDto? user = await _http.GetFromJsonAsync<UserDto?>($"api/user/{id}/");
             if (user == null) throw new ApplicationException($"Error while getting {EntityName}");
             return user;
         }
 
+        /// <summary>
+        /// Get Users by company id
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<List<UserDto>> GetUsersByCompany(Guid companyId) {
             List<UserDto>? users = await _http.GetFromJsonAsync<List<UserDto>>($"api/user/company/{companyId}/");
             if (users == null) throw new ApplicationException($"Error while getting {EntityName}");
             return users;
         }
 
+        /// <summary>
+        /// Update an existing user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<UserDto> Update(UserDto user) {
             HttpResponseMessage response = await _http.PutAsJsonAsync("api/user/", user);
             if (!response.IsSuccessStatusCode)
@@ -44,6 +67,11 @@ namespace WorkFlow.Client.Services {
             return updatedUser;
         }
 
+        /// <summary>
+        /// Delete current user's account
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<Boolean> Delete() {
             HttpResponseMessage response = await _http.DeleteAsync("api/user/");
             if (!response.IsSuccessStatusCode)
@@ -51,6 +79,13 @@ namespace WorkFlow.Client.Services {
             return await response.Content.ReadFromJsonAsync<Boolean>();
         }
 
+        /// <summary>
+        /// Add or Remove a user from a company
+        /// Update the user's Role of the company
+        /// </summary>
+        /// <param name="userInvite"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<UserCompanyDto> SetUserCompany(UserInvite userInvite) {
             HttpResponseMessage response = await _http.PutAsJsonAsync("api/user/company/", userInvite);
             if (!response.IsSuccessStatusCode)
@@ -62,6 +97,12 @@ namespace WorkFlow.Client.Services {
             return updateUserCompany;
         }
 
+        /// <summary>
+        /// Remove the current user from the selected company
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<CompanyDto> LeaveCompany(Guid companyId) {
             HttpResponseMessage response = await _http.PostAsJsonAsync("api/user/company/", companyId);
             if (!response.IsSuccessStatusCode)
@@ -73,6 +114,13 @@ namespace WorkFlow.Client.Services {
             return company;
         }
 
+        /// <summary>
+        /// Remove the given user from the given project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<UserDto> ModifyProject(Guid projectId, String userId) {
             HttpResponseMessage response = await _http.PutAsJsonAsync("api/user/project/", new Tuple<Guid, String>(projectId, userId));
             if (!response.IsSuccessStatusCode)
@@ -84,18 +132,16 @@ namespace WorkFlow.Client.Services {
             return user;
         }
 
+        /// <summary>
+        /// Get all project current user is part of 
+        /// </summary>
+        /// <param name="projectUri"></param>
+        /// <returns></returns>
+        /// <exception cref="ApplicationException">Raised if there was issue while getting the requested data</exception>
         public async Task<List<UserDto>> GetUsersByProject(String projectUri) {
             List<UserDto>? users = await _http.GetFromJsonAsync<List<UserDto>>($"api/user/project/{projectUri}");
             if (users == null) throw new ApplicationException($"Error while getting {EntityName}");
             return users;
-        }
-
-        public Task<Boolean> RemoveFromProject(String companyId, String userId) {
-            throw new NotImplementedException();
-        }
-
-        public async Task<UserDto?> GetUser(String id) {
-            return await _http.GetFromJsonAsync<UserDto?>($"api/user/{id}/");
         }
     }
 }

@@ -11,6 +11,9 @@ using WorkFlow.Shared.Entities;
 using WorkFlow.Shared.Interfaces;
 
 namespace WorkFlow.Server.Models {
+    /// <summary>
+    /// Handle all Company related database operations
+    /// </summary>
     public class CompanyModel : ICompany {
         private readonly ApplicationDbContext _context;
         private readonly IUtility _utilityService;
@@ -20,6 +23,11 @@ namespace WorkFlow.Server.Models {
             _utilityService = utilityService;
         }
 
+        /// <summary>
+        /// Return list of companies related to the user
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<List<CompanyDto>> List() {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
@@ -33,12 +41,23 @@ namespace WorkFlow.Server.Models {
             return companies;
         }
 
+        /// <summary>
+        /// Get Company data by id
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
         public async Task<CompanyDto> Get(Guid companyId) {
             (_, Company company) = await VerifyRequest(companyId, true, true);
 
             return new CompanyDto(company);
         }
 
+        /// <summary>
+        /// Create a new company
+        /// </summary>
+        /// <param name="company"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<CompanyDto> Create(CompanyDto company) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");
@@ -62,6 +81,12 @@ namespace WorkFlow.Server.Models {
             return new CompanyDto(result.Entity);
         }
 
+        /// <summary>
+        /// Update the company data
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="company"></param>
+        /// <returns></returns>
         public async Task<CompanyDto> Update(Guid companyId, CompanyDto company) {
             (_, Company targetCompany) = await VerifyRequest(companyId);
 
@@ -72,6 +97,11 @@ namespace WorkFlow.Server.Models {
             return new CompanyDto(targetCompany);
         }
 
+        /// <summary>
+        /// Delete a company by ID
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
         public async Task<Boolean> Delete(Guid companyId) {
             (_, Company company) = await VerifyRequest(companyId);
 
@@ -80,6 +110,14 @@ namespace WorkFlow.Server.Models {
             return true;
         }
 
+        /// <summary>
+        /// Add or Remove a user from company (Deprecated, use  UserModel.ModifyCompany())
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <param name="userCompanyDto"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        [Obsolete("Please use the UserModel.ModifyCompany()")]
         public async Task<CompanyDto> ModifyUser(Guid companyId, UserCompanyDto userCompanyDto) {
             (_, Company company) = await VerifyRequest(companyId);
 
@@ -100,6 +138,15 @@ namespace WorkFlow.Server.Models {
             return new CompanyDto(company);
         }
 
+        /// <summary>
+        /// Verify the incoming request is valid and has permission to do the required operation
+        /// </summary>
+        /// <param name="companyId">Company that's intended to be interacted with</param>
+        /// <param name="admin">Admin only Method</param>
+        /// <param name="includeUsers">Database query should include join to user table</param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        /// <exception cref="UnauthorizedAccessException">Raised if the request is only allowed for admins (HTTP 401)</exception>
         private async Task<Tuple<UserCompany, Company>> VerifyRequest(Guid companyId, Boolean admin = true, Boolean includeUsers = false) {
             User? user = await _utilityService.GetUser();
             if (user == null) throw new InvalidDataException("Invalid User.");

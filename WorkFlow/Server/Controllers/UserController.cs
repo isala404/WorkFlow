@@ -102,7 +102,7 @@ namespace WorkFlow.Server.Controllers {
             }
         }
 
-        // PUT api/user/company
+        // POST api/user/company
         [HttpPost("company")]
         public async Task<IActionResult> LeaveCompany([FromBody] Guid companyId) {
             try

@@ -136,6 +136,7 @@ namespace WorkFlow.Server.Controllers {
 
         // PATCH: api/project/5
         [HttpPatch("{id:guid}")]
+        [Obsolete("Use PUT: api/user/project")]
         public async Task<IActionResult> Patch(Guid id, [FromBody] UserDto user) {
             try
             {

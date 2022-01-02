@@ -23,6 +23,11 @@ namespace WorkFlow.Server.Models {
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Get current user's data
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<UserDto> Get() {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -30,12 +35,24 @@ namespace WorkFlow.Server.Models {
             return new UserDto(user);
         }
 
+        /// <summary>
+        /// Get a user by ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<UserDto> Get(String id) {
             User? user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
             if (user == null) throw new InvalidDataException("User not found.");
             return new UserDto(user);
         }
 
+        /// <summary>
+        /// Get a user of a specific project 
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<List<UserDto>> GetUsersByCompany(Guid companyId) {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -46,6 +63,12 @@ namespace WorkFlow.Server.Models {
             return companies.Users!.Select(user => new UserDto(user.User!)).ToList();
         }
 
+        /// <summary>
+        /// Update current user's data
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<UserDto> Update(UserDto user) {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -61,6 +84,11 @@ namespace WorkFlow.Server.Models {
             return new UserDto(targetUser);
         }
 
+        /// <summary>
+        /// Delete current user's account
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<Boolean> Delete() {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -70,6 +98,15 @@ namespace WorkFlow.Server.Models {
             return true;
         }
 
+        /// <summary>
+        /// Add the user to the company if user and company doesn't have relationship
+        /// Remove user from the company if the select role is NULL
+        /// If not update the role of the user 
+        /// </summary>
+        /// <param name="userInvite"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
+        /// <exception cref="UnauthorizedAccessException">Raised if the request is not allowed for the current user (HTTP 401)</exception>
         public async Task<UserCompanyDto> SetUserCompany(UserInvite userInvite) {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -113,6 +150,12 @@ namespace WorkFlow.Server.Models {
             return new UserCompanyDto(userCompany);
         }
 
+        /// <summary>
+        /// Remove the current user from the selected company
+        /// </summary>
+        /// <param name="companyId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<CompanyDto> LeaveCompany(Guid companyId) {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -126,6 +169,14 @@ namespace WorkFlow.Server.Models {
             return new CompanyDto(company.Company!);
         }
 
+        /// <summary>
+        /// Add the user to the project if user and project doesn't have relationship
+        /// Remove the user from the project if user is already existing in the project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<UserDto> ModifyProject(Guid projectId, String userId) {
             User? currentUser = await _utilityService.GetUser();
             if (currentUser == null) throw new InvalidDataException("Invalid User.");
@@ -145,6 +196,12 @@ namespace WorkFlow.Server.Models {
             return new UserDto(user);
         }
 
+        /// <summary>
+        /// Get Users by a the project URI
+        /// </summary>
+        /// <param name="projectUri"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException">Raised if the request has invalid data (HTTP 400)</exception>
         public async Task<List<UserDto>> GetUsersByProject(String projectUri) {
             Project? project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p => p.Uri == projectUri);
             if (project == null) throw new InvalidDataException("Invalid Project.");

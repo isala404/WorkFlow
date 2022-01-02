@@ -37,7 +37,8 @@
 
     [CascadingParameter]
     public Toast? Toast { get; set; }
-
+    
+    // Getters and Setters for Start and End type with custom logic
     private DateTime _startDate = DateTime.Today;
 
     private DateTime StartDate
@@ -66,6 +67,7 @@
         }
     }
 
+    // Hold the calculated values for the report
     private readonly List<int> _projectEstimates = new List<int>();
     private readonly List<int> _peopleEstimates = new List<int>();
     private readonly List<DateTime> _timeSeries = new List<DateTime>();
@@ -80,20 +82,30 @@
     {
         try
         {
+            // Get the ProjectGrowthRate and PeoplePerProject for the selected Company
             var forecast = await _reportService.Forecast(_startDate, _endDate, _navService.GetCurrentCompany().Id);
 
+            // Clear the existing data before rendering
             _peopleEstimates.Clear();
             _projectEstimates.Clear();
             _timeSeries.Clear();
 
+            // Calculate the initialize estimate (from the current date to the start date given by the user)  
             double estimate = forecast.CurrentProject + (forecast.Offset * forecast.ProjectGrowthRate);
 
-            for (int i = 1; i < forecast.NumberOfDays + 1; i++)
+            // For each day user as selected calculate the estimates
+            for (int i = 0; i < forecast.NumberOfDays; i++)
             {
                 estimate += forecast.ProjectGrowthRate;
+                
+                // Number of Estimated projects rounded off to the nearest whole number
                 _projectEstimates.Add(Convert.ToInt32(estimate));
+                
+                // Number of required people to build project, decimal points will be ceiled to the next int (6.1 -> 7)
                 _peopleEstimates.Add((int) Math.Ceiling(Convert.ToInt32(estimate) * forecast.PeoplePerProject));
-                _timeSeries.Add(_startDate.AddDays(i - 1));
+                
+                // Estimated Date
+                _timeSeries.Add(_startDate.AddDays(i));
             }
             StateHasChanged();
         }

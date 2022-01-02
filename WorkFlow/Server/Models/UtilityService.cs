@@ -17,6 +17,10 @@ namespace WorkFlow.Server.Models {
             _httpContextAccessor = httpContextAccessor;
         }
 
+        /// <summary>
+        /// Get the current user from HTTP context
+        /// </summary>
+        /// <returns></returns>
         public async Task<User?> GetUser() {
             if (_httpContextAccessor.HttpContext == null) return null;
             String? userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
