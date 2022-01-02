@@ -86,7 +86,7 @@ namespace WorkFlow.Server.Areas.Identity.Pages.Account {
                     String userId = await _userManager.GetUserIdAsync(user);
                     String code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    String? callbackUrl = Url.Page(
+                    String callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     null,
                     new

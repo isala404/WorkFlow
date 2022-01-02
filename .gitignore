@@ -489,3 +489,4 @@ global.json
 
 changelog.exe
 .semrel/
+WorkFlow/Server/workflow.db*
