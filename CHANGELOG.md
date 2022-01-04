@@ -1,3 +1,18 @@
+## 1.0.2 (2022-01-04)
+
+#### Bug Fixes
+
+* Fixed a issue with update project (f544e9d0)
+
+#### Documentation
+
+* Update the changelog (7af52cec)
+
+#### Build
+
+* Added a loader for cloud run bootup (59c3dec1)
+
+
 ## 1.0.1 (2022-01-04)
 
 #### Bug Fixes
