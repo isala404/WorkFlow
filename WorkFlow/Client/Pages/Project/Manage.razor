@@ -101,6 +101,7 @@ else
     private async void HandleValidSubmit() {
         try
         {
+            _project!.Company = _navService.GetCurrentCompany();
             _project = await _projectService.Update(_project!.Id, _project!);
             Toast?.AddNotification("Success", $"Project ({_project.Name}) was updated", "green");
         }
