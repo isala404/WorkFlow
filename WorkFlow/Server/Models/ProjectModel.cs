@@ -103,7 +103,7 @@ namespace WorkFlow.Server.Models {
             if (user == null) throw new InvalidDataException("Invalid User.");
 
             // Select that has correct projectUri and companyUri and check if the user has access to read it  
-            Project? project = await _context.Projects.FirstOrDefaultAsync(p =>
+            Project? project = await _context.Projects.Include("Users").FirstOrDefaultAsync(p =>
                 p.Uri == projectUri &&
                 p.Company!.Uri == companyUri &&
                 (
