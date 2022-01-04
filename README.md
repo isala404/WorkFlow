@@ -5,7 +5,7 @@ Workflow is a project management software that will help you to manage project o
 This was mainly developed to show case my skills of creating enterprise grade applications using **.NET 6** as the backend **Blazor** to render the frontend UIs.
 
 ## Demo - https://workflow.isala.me/
-Username - suffect \
+Username - demo_user \
 Password - Abcd@1234
 > Note: Database will be resetted after each session
 
