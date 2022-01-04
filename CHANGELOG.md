@@ -1,3 +1,19 @@
+## 1.0.1 (2022-01-04)
+
+#### Bug Fixes
+
+* Added a missing relationship fetch (137be2db)
+
+#### Documentation
+
+* Updated demo username (ad56d65c)
+* Update the changelog (ee7e87db)
+
+#### Build
+
+* Updated docker build to include a nginx reverse proxy (455d20da)
+
+
 ## 1.0.0 (2022-01-02)
 
 #### Feature
